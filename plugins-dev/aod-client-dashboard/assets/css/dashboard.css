@@ -1,0 +1,283 @@
+/* AOD Client Dashboard — interface de gestion front-end */
+:root{
+	--cd-accent:#111827;
+	--cd-accent-2:#2563eb;
+	--cd-bg:#f3f4f6;
+	--cd-side:#111827;
+	--cd-side-txt:#e5e7eb;
+	--cd-line:#e5e7eb;
+	--cd-ok:#1a7f37;
+	--cd-warn:#b45309;
+	--cd-bad:#b32d2e;
+	--cd-radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body.aod-cd{
+	font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+	background:var(--cd-bg);color:#111827;
+	display:flex;min-height:100vh;font-size:14px;
+}
+
+/* ---- Barre latérale ---- */
+.aod-cd-side{
+	width:240px;flex:0 0 240px;background:var(--cd-side);color:var(--cd-side-txt);
+	display:flex;flex-direction:column;position:sticky;top:0;height:100vh;
+}
+.aod-cd-brand{
+	padding:22px 20px;font-weight:800;font-size:18px;color:#fff;
+	border-bottom:1px solid rgba(255,255,255,.08);letter-spacing:.2px;
+}
+.aod-cd-nav{padding:12px 10px;display:flex;flex-direction:column;gap:2px;flex:1}
+.aod-cd-navlink{
+	display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;
+	color:var(--cd-side-txt);text-decoration:none;font-weight:500;transition:.15s;
+}
+.aod-cd-navlink:hover{background:rgba(255,255,255,.07);color:#fff}
+.aod-cd-navlink.is-active{background:#fff;color:var(--cd-accent);font-weight:700}
+.aod-cd-ico{font-size:17px;width:20px;text-align:center}
+.aod-cd-side-foot{padding:14px;border-top:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:8px}
+.aod-cd-view,.aod-cd-logout{color:var(--cd-side-txt);text-decoration:none;font-size:13px;opacity:.85}
+.aod-cd-view:hover,.aod-cd-logout:hover{opacity:1;color:#fff}
+.aod-cd-logout{color:#fca5a5}
+
+/* ---- Zone principale ---- */
+.aod-cd-main{flex:1;min-width:0;display:flex;flex-direction:column}
+.aod-cd-top{
+	display:flex;align-items:center;justify-content:space-between;
+	padding:18px 28px;background:#fff;border-bottom:1px solid var(--cd-line);
+	position:sticky;top:0;z-index:5;
+}
+.aod-cd-h1{margin:0;font-size:20px;font-weight:800}
+.aod-cd-user{font-size:13px;color:#6b7280;background:#f3f4f6;padding:6px 12px;border-radius:20px}
+.aod-cd-content{padding:24px 28px}
+
+/* ---- Onglets de filtre ---- */
+.aod-cd-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.aod-cd-tab{
+	display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:30px;
+	background:#fff;border:1px solid var(--cd-line);color:#374151;text-decoration:none;font-weight:600;
+}
+.aod-cd-tab:hover{border-color:#9ca3af}
+.aod-cd-tab.is-active{background:var(--cd-accent);color:#fff;border-color:var(--cd-accent)}
+.aod-cd-badge{background:rgba(0,0,0,.08);border-radius:20px;padding:1px 8px;font-size:12px}
+.aod-cd-tab.is-active .aod-cd-badge{background:rgba(255,255,255,.22)}
+
+/* ---- Tableaux ---- */
+.aod-cd-tablewrap{background:#fff;border:1px solid var(--cd-line);border-radius:var(--cd-radius);overflow:hidden;overflow-x:auto}
+.aod-cd-table{width:100%;border-collapse:collapse;min-width:760px}
+.aod-cd-table th{
+	text-align:start;padding:12px 14px;font-size:12px;text-transform:uppercase;letter-spacing:.4px;
+	color:#6b7280;background:#f9fafb;border-bottom:1px solid var(--cd-line);
+}
+.aod-cd-table td{padding:13px 14px;border-bottom:1px solid #f1f1f4;vertical-align:middle}
+.aod-cd-table tr:last-child td{border-bottom:0}
+.aod-cd-table tr:hover td{background:#fafafa}
+.aod-cd-table code{background:#f3f4f6;padding:2px 6px;border-radius:6px;font-size:12px}
+.aod-cd-muted{color:#9ca3af}
+.aod-cd-track{color:var(--cd-ok);font-weight:600}
+.aod-cd-prod{display:flex;align-items:center;gap:10px}
+.aod-cd-prod img{border-radius:8px;display:block}
+
+/* ---- Sélecteur de statut ---- */
+.aod-cd-status{
+	padding:7px 10px;border:1px solid var(--cd-line);border-radius:9px;background:#fff;
+	font-size:13px;cursor:pointer;max-width:170px;
+}
+.aod-cd-status.is-saving{opacity:.5}
+.aod-cd-status.is-ok{border-color:var(--cd-ok);box-shadow:0 0 0 2px rgba(26,127,55,.12)}
+
+/* ---- Cartes stats ---- */
+.aod-cd-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+.aod-cd-card{background:#fff;border:1px solid var(--cd-line);border-radius:var(--cd-radius);padding:20px}
+.aod-cd-card-val{font-size:26px;font-weight:800;color:var(--cd-accent)}
+.aod-cd-card-lab{margin-top:6px;color:#6b7280;font-size:13px}
+
+/* ---- Graphe CA (barres CSS, sans JS) ---- */
+.aod-cd-chart{display:flex;align-items:flex-end;gap:6px;height:200px;margin-top:14px;padding:14px 14px 0;background:#fff;border:1px solid var(--cd-line);border-radius:var(--cd-radius);overflow-x:auto}
+.aod-cd-chart-col{flex:1 0 18px;display:flex;flex-direction:column;align-items:center;height:100%}
+.aod-cd-chart-barwrap{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;min-height:0}
+.aod-cd-chart-bar{display:block;width:70%;max-width:34px;min-height:2px;background:var(--cd-accent);border-radius:6px 6px 0 0;transition:opacity .15s}
+.aod-cd-chart-col:hover .aod-cd-chart-bar{opacity:.82}
+.aod-cd-chart-lab{margin-top:6px;font-size:11px;color:#6b7280;white-space:nowrap}
+
+/* ---- Boutons & barre d'action ---- */
+.aod-cd-bar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.aod-cd-btn{
+	display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;
+	background:#fff;border:1px solid var(--cd-line);color:#374151;text-decoration:none;
+	font-weight:600;font-size:13px;cursor:pointer;line-height:1.2;transition:.15s;
+}
+.aod-cd-btn:hover{border-color:#9ca3af;background:#fafafa}
+.aod-cd-btn-primary{background:var(--cd-accent);border-color:var(--cd-accent);color:#fff}
+.aod-cd-btn-primary:hover{background:#000;color:#fff}
+.aod-cd-btn-primary:disabled{opacity:.5;cursor:default}
+.aod-cd-btn-sm{padding:6px 11px;font-size:12px}
+.aod-cd-btn-danger{color:var(--cd-bad);border-color:#f3c9c8}
+.aod-cd-btn-danger:hover{background:var(--cd-bad);color:#fff;border-color:var(--cd-bad)}
+.aod-cd-rowactions{white-space:nowrap}
+
+/* ---- Formulaire produit ---- */
+.aod-cd-form{background:#fff;border:1px solid var(--cd-line);border-radius:var(--cd-radius);padding:24px;max-width:920px}
+.aod-cd-form-title{margin:0 0 18px;font-size:17px;font-weight:800}
+.aod-cd-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:26px}
+.aod-cd-col{display:flex;flex-direction:column;gap:16px}
+.aod-cd-field{display:flex;flex-direction:column;gap:6px}
+.aod-cd-label{font-size:13px;font-weight:600;color:#374151}
+.aod-cd-form input[type=text],
+.aod-cd-form input[type=number],
+.aod-cd-form input[type=file],
+.aod-cd-form textarea,
+.aod-cd-form select{
+	width:100%;padding:10px 12px;border:1px solid var(--cd-line);border-radius:10px;
+	font-size:14px;font-family:inherit;background:#fff;color:#111827;
+}
+.aod-cd-form input:focus,.aod-cd-form textarea:focus,.aod-cd-form select:focus{
+	outline:none;border-color:var(--cd-accent-2);box-shadow:0 0 0 3px rgba(37,99,235,.12);
+}
+.aod-cd-row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.aod-cd-check{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#374151;cursor:pointer}
+.aod-cd-check input{width:auto}
+.aod-cd-stock-qty{margin-top:10px}
+.aod-cd-imgbox{
+	width:100%;aspect-ratio:1;max-width:180px;border:1px dashed var(--cd-line);border-radius:12px;
+	display:flex;align-items:center;justify-content:center;overflow:hidden;background:#f9fafb;margin-bottom:8px;
+}
+.aod-cd-imgprev{width:100%;height:100%;object-fit:cover}
+.aod-cd-imgempty{color:#9ca3af;font-size:13px}
+.aod-cd-form-foot{display:flex;align-items:center;gap:12px;margin-top:22px;padding-top:18px;border-top:1px solid var(--cd-line)}
+.aod-cd-form-msg{font-size:13px;color:var(--cd-bad)}
+.aod-cd-form-msg.is-bad{color:var(--cd-bad)}
+@media(max-width:780px){.aod-cd-grid{grid-template-columns:1fr}}
+
+/* ---- Livraison : tarifs wilayas + transporteurs ---- */
+.aod-cd-scroll{max-height:420px;overflow-y:auto;border:1px solid var(--cd-line);border-radius:12px}
+.aod-cd-pricetable{min-width:0}
+.aod-cd-pricetable th{position:sticky;top:0;z-index:1}
+.aod-cd-pricetable input{width:120px;padding:7px 9px;border:1px solid var(--cd-line);border-radius:8px;font-size:13px}
+.aod-cd-pricetable input:focus{outline:none;border-color:var(--cd-accent-2);box-shadow:0 0 0 2px rgba(37,99,235,.12)}
+.aod-cd-carrier{margin-top:14px;padding:16px 18px;border:1px solid var(--cd-line);border-radius:12px;background:#fafafa}
+.aod-cd-carrier-h{margin:0 0 8px;font-size:15px;font-weight:700;display:flex;align-items:center;gap:10px}
+.aod-cd-ok-badge{font-size:11px;font-weight:700;color:#fff;background:var(--cd-ok);padding:2px 9px;border-radius:20px}
+/* Réutilisation des champs admin des transporteurs (.form-table) en contexte front */
+.aod-cd-carrier .form-table{width:100%;border-collapse:collapse}
+.aod-cd-carrier .form-table th{text-align:start;padding:8px 12px 8px 0;font-weight:600;font-size:13px;color:#374151;vertical-align:top;width:180px}
+.aod-cd-carrier .form-table td{padding:8px 0;font-size:14px}
+.aod-cd-carrier .form-table input[type=text],
+.aod-cd-carrier .form-table input[type=number],
+.aod-cd-carrier .form-table select{padding:9px 11px;border:1px solid var(--cd-line);border-radius:9px;font-size:14px;background:#fff}
+.aod-cd-carrier .form-table input.regular-text{width:100%;max-width:340px}
+.aod-cd-carrier .form-table .description{color:#6b7280;font-size:12px;margin:4px 0 0}
+.aod-cd-carrier .form-table label{margin-inline-end:10px}
+
+/* ---- N° de commande cliquable ---- */
+.aod-cd-order-detail{
+	background:none;border:0;padding:0;cursor:pointer;color:var(--cd-accent-2);
+	font:inherit;text-decoration:underline;text-underline-offset:2px;
+}
+.aod-cd-order-detail:hover{color:#000}
+
+/* ---- Modale ---- */
+.aod-cd-modal{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
+.aod-cd-modal[hidden]{display:none}
+.aod-cd-modal-backdrop{position:fixed;inset:0;background:rgba(17,24,39,.55)}
+.aod-cd-modal-box{
+	position:relative;background:#fff;border-radius:var(--cd-radius);width:100%;max-width:640px;
+	box-shadow:0 20px 60px rgba(0,0,0,.3);z-index:1;animation:aod-cd-pop .18s ease;
+}
+@keyframes aod-cd-pop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.aod-cd-modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--cd-line)}
+.aod-cd-modal-title{margin:0;font-size:18px;font-weight:800}
+.aod-cd-modal-x{background:none;border:0;font-size:28px;line-height:1;cursor:pointer;color:#9ca3af;padding:0 4px}
+.aod-cd-modal-x:hover{color:#111827}
+.aod-cd-modal-body{padding:22px}
+
+/* ---- Détail commande ---- */
+.aod-cd-od-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.aod-cd-od-status{background:var(--cd-accent);color:#fff;padding:5px 14px;border-radius:20px;font-weight:700;font-size:13px}
+.aod-cd-od-date{color:#6b7280;font-size:13px}
+.aod-cd-od-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:8px}
+.aod-cd-od-box{background:#f9fafb;border:1px solid var(--cd-line);border-radius:12px;padding:14px 16px}
+.aod-cd-od-box h4{margin:0 0 10px;font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:#6b7280}
+.aod-cd-od-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px;font-size:14px}
+.aod-cd-od-list a{color:var(--cd-accent-2);text-decoration:none}
+.aod-cd-od-list code{background:#eef2ff;padding:2px 6px;border-radius:6px;font-size:12px}
+.aod-cd-od-sub{margin:20px 0 8px;font-size:14px;font-weight:800}
+.aod-cd-od-notes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.aod-cd-od-notes li{background:#f9fafb;border-radius:10px;padding:10px 12px;font-size:13px}
+.aod-cd-od-notes p{margin:4px 0 0}
+.aod-cd-od-notedate{color:#9ca3af;font-size:12px;font-weight:600}
+@media(max-width:560px){.aod-cd-od-grid{grid-template-columns:1fr}}
+
+/* ---- Divers ---- */
+.aod-cd-empty,.aod-cd-note,.aod-cd-soon{color:#6b7280}
+.aod-cd-note{margin-top:14px;font-size:13px}
+.aod-cd-soon{background:#fff;border:1px dashed var(--cd-line);border-radius:var(--cd-radius);padding:40px;text-align:center}
+.aod-cd-toast{
+	position:fixed;bottom:24px;inset-inline-end:24px;background:var(--cd-accent);color:#fff;
+	padding:12px 18px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18);
+	opacity:0;transform:translateY(10px);transition:.25s;z-index:50;
+}
+.aod-cd-toast.show{opacity:1;transform:translateY(0)}
+.aod-cd-toast.bad{background:var(--cd-bad)}
+
+/* ---- Responsive ---- */
+@media(max-width:780px){
+	body.aod-cd{flex-direction:column}
+	.aod-cd-side{width:100%;flex:none;height:auto;position:static;flex-direction:row;flex-wrap:wrap;align-items:center}
+	.aod-cd-brand{border:0;flex:1}
+	.aod-cd-nav{flex-direction:row;flex-wrap:wrap;flex:1 0 100%;order:3}
+	.aod-cd-side-foot{flex-direction:row;border:0}
+	.aod-cd-content{padding:16px}
+}
+
+/* ---- Couleurs / variantes (édition produit) ---- */
+.aod-cd-colors{margin-top:22px;border-top:1px solid var(--cd-line);padding-top:18px}
+.aod-cd-form-subtitle{margin:0 0 4px;font-size:15px;font-weight:800}
+.aod-cd-color-head,.aod-cd-color-row{
+	display:grid;grid-template-columns:52px 1.4fr 1fr .9fr .9fr 32px;
+	gap:10px;align-items:center;
+}
+.aod-cd-color-head{margin:10px 0 6px;font-size:12px;font-weight:700;color:#6b7280}
+.aod-cd-color-head span{padding-inline-start:2px}
+.aod-cd-color-rows{display:flex;flex-direction:column;gap:10px}
+.aod-cd-color-row input[type=text],.aod-cd-color-row input[type=number]{
+	width:100%;padding:9px 10px;border:1px solid var(--cd-line);border-radius:9px;font-size:14px;
+}
+.aod-cd-color-imgbox{
+	position:relative;width:52px;height:52px;border:1px dashed var(--cd-line);border-radius:10px;
+	overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#f9fafb;
+}
+.aod-cd-color-imgbox img{width:100%;height:100%;object-fit:cover}
+.aod-cd-color-imgempty{font-size:18px;opacity:.5}
+.aod-cd-color-imgfile{position:absolute;inset:0;opacity:0;cursor:pointer}
+.aod-cd-color-del{
+	border:0;background:#fee2e2;color:#b91c1c;width:30px;height:30px;border-radius:8px;
+	font-size:20px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.aod-cd-color-del:hover{background:#fecaca}
+.aod-cd-color-add{margin-top:12px}
+@media(max-width:680px){
+	.aod-cd-color-head{display:none}
+	.aod-cd-color-row{grid-template-columns:52px 1fr 1fr;grid-auto-rows:auto}
+	.aod-cd-color-del{grid-column:3;justify-self:end}
+}
+
+/* ---- Recherche ---- */
+.aod-cd-search{display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.aod-cd-search input[type="search"]{
+	flex:1;min-width:200px;max-width:360px;padding:9px 12px;font-size:14px;
+	border:1px solid var(--cd-line);border-radius:10px;background:#fff;
+}
+.aod-cd-search input[type="search"]:focus{outline:none;border-color:var(--cd-accent-2);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+
+/* ---- Pagination ---- */
+.aod-cd-pagination{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:18px}
+.aod-cd-page{
+	min-width:36px;height:36px;padding:0 10px;display:inline-flex;align-items:center;justify-content:center;
+	border:1px solid var(--cd-line);border-radius:9px;background:#fff;color:#111827;
+	text-decoration:none;font-size:13px;font-weight:600;transition:.15s;
+}
+.aod-cd-page:hover{border-color:#9ca3af;background:#fafafa}
+.aod-cd-page.is-active{background:var(--cd-accent);border-color:var(--cd-accent);color:#fff;cursor:default}
+.aod-cd-page-gap{padding:0 4px;color:#9ca3af}

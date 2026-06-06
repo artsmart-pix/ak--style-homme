@@ -1,0 +1,99 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: AOD COD Form 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ar\n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5);\n"
+
+msgid "Commander maintenant — Paiement à la livraison"
+msgstr "اطلب الآن — الدفع عند الاستلام"
+
+msgid "Nom complet"
+msgstr "الاسم الكامل"
+
+msgid "Téléphone"
+msgstr "رقم الهاتف"
+
+msgid "Wilaya"
+msgstr "الولاية"
+
+msgid "Commune"
+msgstr "البلدية"
+
+msgid "Choisir une wilaya"
+msgstr "اختر الولاية"
+
+msgid "Choisir une commune"
+msgstr "اختر البلدية"
+
+msgid "Mode de livraison"
+msgstr "طريقة التوصيل"
+
+msgid "À domicile"
+msgstr "إلى المنزل"
+
+msgid "Stop-desk (bureau)"
+msgstr "مكتب التوصيل (ستوب ديسك)"
+
+msgid "Adresse"
+msgstr "العنوان"
+
+msgid "Quantité"
+msgstr "الكمية"
+
+msgid "Sous-total"
+msgstr "المجموع الفرعي"
+
+msgid "Livraison"
+msgstr "التوصيل"
+
+msgid "Total"
+msgstr "المجموع"
+
+msgid "Confirmer la commande"
+msgstr "تأكيد الطلب"
+
+msgid "Envoi en cours…"
+msgstr "جاري الإرسال…"
+
+msgid "Numéro de téléphone invalide (ex : 0550 12 34 56)."
+msgstr "رقم الهاتف غير صحيح (مثال: 0550 12 34 56)."
+
+msgid "Veuillez remplir tous les champs obligatoires."
+msgstr "يرجى ملء جميع الحقول الإلزامية."
+
+msgid "Commande enregistrée ! Nous vous appellerons pour confirmer."
+msgstr "تم تسجيل طلبك! سنتصل بك للتأكيد."
+
+msgid "Le nom est obligatoire."
+msgstr "الاسم إلزامي."
+
+msgid "Numéro de téléphone invalide."
+msgstr "رقم الهاتف غير صحيح."
+
+msgid "Wilaya invalide."
+msgstr "الولاية غير صحيحة."
+
+msgid "Commune invalide."
+msgstr "البلدية غير صحيحة."
+
+msgid "Produit indisponible."
+msgstr "المنتج غير متوفر."
+
+msgid "Erreur lors de la création de la commande."
+msgstr "حدث خطأ أثناء إنشاء الطلب."
+
+msgid "Paiement à la livraison"
+msgstr "الدفع عند الاستلام"
+
+msgid "Paiement à la livraison — vous payez à la réception, aucun versement à l’avance."
+msgstr "الدفع عند الاستلام — تدفع عند استلام طلبك، دون أي دفع مسبق."
+
+msgid "Domicile"
+msgstr "المنزل"
+
+msgid "Stop-desk"
+msgstr "مكتب التوصيل"

@@ -1,0 +1,6 @@
+# Environnement local — ne pas committer
+.env
+wordpress/
+library/themes/*.zip
+library/plugins/*.zip
+*.log

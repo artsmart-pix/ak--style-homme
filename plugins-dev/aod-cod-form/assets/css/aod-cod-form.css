@@ -1,0 +1,279 @@
+/* AOD COD Form — design (RTL-aware) */
+.aod-cod {
+	--aod-green: #16a34a;
+	--aod-green-dark: #15803d;
+	--aod-green-tint: #f0fdf4;
+	--aod-green-border: #bbf7d0;
+	--aod-border: #e5e7eb;
+	--aod-text: #111827;
+	--aod-muted: #6b7280;
+	--aod-radius: 14px;
+
+	margin: 28px 0;
+	padding: 22px;
+	border: 1px solid var(--aod-border);
+	border-radius: var(--aod-radius);
+	background: #fff;
+	max-width: 540px;
+	color: var(--aod-text);
+	box-shadow: 0 6px 24px rgba(17, 24, 39, .06);
+	box-sizing: border-box;
+}
+
+/* Titre avec barre d'accent */
+.aod-cod__title {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0 0 18px;
+	font-size: 1.2em;
+	font-weight: 800;
+	line-height: 1.3;
+}
+.aod-cod__title::before {
+	content: "";
+	flex: 0 0 auto;
+	width: 5px;
+	height: 1.25em;
+	border-radius: 999px;
+	background: var(--aod-green);
+}
+
+/* Champs */
+.aod-cod__field { margin-bottom: 14px; }
+.aod-cod__field > label {
+	display: block;
+	margin-bottom: 6px;
+	font-weight: 600;
+	font-size: .88em;
+	color: var(--aod-muted);
+}
+.aod-cod__field > label span { color: #ef4444; }
+
+.aod-cod__form input[type="text"],
+.aod-cod__form input[type="tel"],
+.aod-cod__form input[type="number"],
+.aod-cod__form select {
+	width: 100%;
+	padding: 12px 14px;
+	border: 1.5px solid var(--aod-border);
+	border-radius: 10px;
+	font-size: 1em;
+	line-height: 1.6;
+	box-sizing: border-box;
+	background: #fff;
+	color: var(--aod-text);
+	transition: border-color .15s, box-shadow .15s;
+	-webkit-appearance: none;
+	appearance: none;
+}
+/* L'arabe a des glyphes plus hauts : on garantit la place verticale */
+.aod-cod__form select {
+	height: auto;
+	min-height: 50px;
+	line-height: 1.8;
+}
+.aod-cod__form input:focus,
+.aod-cod__form select:focus {
+	outline: none;
+	border-color: var(--aod-green);
+	box-shadow: 0 0 0 3px rgba(22, 163, 74, .15);
+}
+.aod-cod__form input::placeholder { color: #9ca3af; }
+
+/* Flèche personnalisée pour les selects */
+.aod-cod__form select {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b7280' d='M6 8 0 2 1.4.6 6 5.2 10.6.6 12 2z'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 14px center;
+	padding-right: 38px;
+}
+.rtl .aod-cod__form select {
+	background-position: left 14px center;
+	padding-right: 14px;
+	padding-left: 38px;
+}
+.aod-cod__form select:disabled { background-color: #f9fafb; color: #9ca3af; cursor: not-allowed; }
+
+/* Wilaya / Commune : pleine largeur, l'un sous l'autre (noms longs AR) */
+.aod-cod__row { display: block; }
+.aod-cod__row .aod-cod__field { width: 100%; }
+
+/* Selects un peu plus grands pour bien afficher le contenu */
+.aod-cod__row select {
+	padding-top: 13px;
+	padding-bottom: 13px;
+	font-size: 1.05em;
+}
+
+/* Cartes de livraison */
+.aod-cod__radios { display: flex; gap: 12px; }
+.aod-cod__radio { flex: 1; cursor: pointer; margin: 0; }
+.aod-cod__radio input {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+.aod-cod__radio-card {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	height: 100%;
+	padding: 12px 14px;
+	border: 1.5px solid var(--aod-border);
+	border-radius: 12px;
+	background: #fff;
+	transition: border-color .15s, background .15s, box-shadow .15s;
+}
+.aod-cod__radio-icon { font-size: 1.4em; line-height: 1; }
+.aod-cod__radio-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.aod-cod__radio-title { font-weight: 600; font-size: .95em; }
+.aod-cod__radio-price { font-size: .85em; font-weight: 700; color: var(--aod-green); }
+.aod-cod__radio-price:empty::before { content: "—"; color: var(--aod-muted); font-weight: 400; }
+
+.aod-cod__radio input:focus-visible + .aod-cod__radio-card {
+	box-shadow: 0 0 0 3px rgba(22, 163, 74, .15);
+}
+.aod-cod__radio input:checked + .aod-cod__radio-card {
+	border-color: var(--aod-green);
+	background: var(--aod-green-tint);
+	box-shadow: inset 0 0 0 1px var(--aod-green);
+}
+
+/* Récapitulatif */
+.aod-cod__summary {
+	margin: 18px 0;
+	padding: 14px 16px;
+	background: #f9fafb;
+	border: 1px solid var(--aod-border);
+	border-radius: 12px;
+}
+.aod-cod__summary > div {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 12px;
+	padding: 4px 0;
+	font-size: .95em;
+	color: var(--aod-muted);
+}
+.aod-cod__summary > div strong { color: var(--aod-text); font-weight: 600; }
+.aod-cod__grand {
+	font-size: 1.05em !important;
+	color: var(--aod-text) !important;
+	border-top: 1px dashed var(--aod-border);
+	margin-top: 8px;
+	padding-top: 10px !important;
+}
+.aod-cod__grand strong { font-size: 1.25em; font-weight: 800 !important; color: var(--aod-green) !important; }
+
+/* Bouton */
+.aod-cod__submit {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: 100%;
+	padding: 15px;
+	font-size: 1.08em;
+	font-weight: 800;
+	border: none;
+	border-radius: 12px;
+	background: var(--aod-green);
+	color: #fff !important;
+	cursor: pointer;
+	transition: background .15s, transform .05s, box-shadow .15s;
+	box-shadow: 0 8px 18px rgba(22, 163, 74, .28);
+}
+.aod-cod__submit::before { content: "🛒"; font-size: 1.1em; }
+.aod-cod__submit:hover { background: var(--aod-green-dark); box-shadow: 0 10px 22px rgba(22, 163, 74, .34); }
+.aod-cod__submit:active { transform: translateY(1px); }
+.aod-cod__submit[disabled] { opacity: .65; cursor: not-allowed; box-shadow: none; }
+
+/* Réassurance */
+.aod-cod__reassure {
+	margin: 12px 0 0;
+	text-align: center;
+	font-size: .82em;
+	color: var(--aod-muted);
+	line-height: 1.4;
+}
+
+/* Messages */
+.aod-cod__msg { margin: 12px 0 0; text-align: center; font-weight: 600; }
+.aod-cod__msg:empty { margin: 0; }
+.aod-cod__msg.is-error {
+	color: #b91c1c;
+	background: #fef2f2;
+	border: 1px solid #fecaca;
+	border-radius: 10px;
+	padding: 10px 12px;
+}
+.aod-cod__msg.is-success {
+	color: var(--aod-green-dark);
+	background: var(--aod-green-tint);
+	border: 1px solid var(--aod-green-border);
+	border-radius: 10px;
+	padding: 10px 12px;
+}
+
+/* Incitation livraison gratuite */
+.aod-cod__free-hint {
+	margin: 10px 0 0;
+	padding: 8px 12px;
+	text-align: center;
+	font-size: .85em;
+	font-weight: 600;
+	color: var(--aod-green-dark);
+	background: var(--aod-green-tint);
+	border: 1px dashed var(--aod-green-border);
+	border-radius: 10px;
+}
+.aod-cod__free-hint[hidden] { display: none; }
+.aod-cod__radio-price s { opacity: .6; font-weight: 400; margin-inline-end: 4px; }
+
+/* RTL : WordPress ajoute la classe .rtl au <body> pour l'arabe */
+.rtl .aod-cod__title::before { } /* l'accent reste à gauche logique via flex */
+.rtl .aod-cod__summary > div { flex-direction: row-reverse; }
+
+@media (max-width: 480px) {
+	.aod-cod { padding: 18px; }
+	.aod-cod__row,
+	.aod-cod__radios { flex-direction: column; gap: 10px; }
+}
+
+/* ---- Sélecteur de couleur avec quantité par couleur (produit variable) ---- */
+.aod-cod__colors-hint{margin:0 0 8px;font-size:12.5px;color:#6b7280}
+.aod-cod__color-list{display:flex;flex-direction:column;gap:8px}
+.aod-cod__color{
+	display:flex;align-items:center;justify-content:space-between;gap:10px;
+	border:2px solid #e5e7eb;border-radius:12px;padding:8px 10px;background:#fff;transition:.15s;
+}
+.aod-cod__color.is-selected{
+	border-color:var(--aod-accent,#2563eb);box-shadow:0 0 0 3px rgba(37,99,235,.12);
+}
+.aod-cod__color-pick{display:flex;align-items:center;gap:10px;cursor:pointer;min-width:0;flex:1}
+.aod-cod__color-thumb{
+	width:40px;height:40px;border-radius:8px;background-size:cover;background-position:center;
+	flex:none;border:1px solid #e5e7eb;
+}
+.aod-cod__color-info{display:flex;flex-direction:column;min-width:0}
+.aod-cod__color-name{font-weight:700;font-size:14px;line-height:1.2}
+.aod-cod__color-price{font-size:13px;color:#6b7280}
+/* Stepper quantité */
+.aod-cod__color-qty{display:flex;align-items:center;gap:0;flex:none}
+.aod-cod__qstep{
+	width:32px;height:32px;border:1px solid #d1d5db;background:#f9fafb;cursor:pointer;
+	font-size:18px;line-height:1;color:#374151;display:flex;align-items:center;justify-content:center;
+	-webkit-appearance:none;appearance:none;padding:0;
+}
+.aod-cod__qstep:first-child{border-radius:8px 0 0 8px}
+.aod-cod__qstep:last-child{border-radius:0 8px 8px 0}
+.aod-cod__qstep:hover{background:#eef2ff;border-color:var(--aod-accent,#2563eb);color:var(--aod-accent,#2563eb)}
+.aod-cod__color-qtyinput{
+	width:46px;height:32px;text-align:center;border:1px solid #d1d5db;border-left:0;border-right:0;
+	font-size:14px;font-weight:600;padding:0;border-radius:0;-moz-appearance:textfield;appearance:textfield;
+}
+.aod-cod__color-qtyinput::-webkit-outer-spin-button,
+.aod-cod__color-qtyinput::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}

@@ -1,0 +1,23 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "aod/cod-form",
+	"version": "1.0.0",
+	"title": "Formulaire COD (AOD)",
+	"category": "widgets",
+	"icon": "cart",
+	"description": "Formulaire de commande à la livraison (COD) : wilaya, commune, frais de livraison et total en direct.",
+	"keywords": [ "cod", "commande", "livraison", "wilaya", "algerie" ],
+	"textdomain": "aod-cod-form",
+	"editorScript": "aod-cod-block",
+	"attributes": {
+		"productId": {
+			"type": "number",
+			"default": 0
+		}
+	},
+	"supports": {
+		"html": false,
+		"multiple": true
+	}
+}
