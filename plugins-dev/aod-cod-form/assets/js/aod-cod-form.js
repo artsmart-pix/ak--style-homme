@@ -84,17 +84,24 @@
 				var full = $radio.attr( 'data-img-full' ) || $radio.attr( 'data-img' );
 				if ( ! full ) { return; }
 				var srcset  = $radio.attr( 'data-srcset' ) || '';
+				var w       = $radio.attr( 'data-img-w' ) || '';
+				var h       = $radio.attr( 'data-img-h' ) || '';
 				var $gallery = $( '.woocommerce-product-gallery' );
 				if ( ! $gallery.length ) { return; }
 				// Image principale = première de la galerie (gère flexslider/photoswipe).
 				var $cell = $gallery.find( '.woocommerce-product-gallery__image' ).first();
 				if ( ! $cell.length ) { $cell = $gallery; }
-				var $img = $cell.find( 'img' ).first();
+				// `.not( '.zoomImg' )` : ignorer le calque de zoom injecté par jquery.zoom.
+				var $img = $cell.find( 'img' ).not( '.zoomImg' ).first();
 				if ( ! $img.length ) { return; }
 				$img.attr( 'src', full );
 				if ( srcset ) { $img.attr( 'srcset', srcset ); } else { $img.removeAttr( 'srcset' ); }
 				$img.removeAttr( 'data-src' ).removeAttr( 'sizes' );
 				$img.attr( 'data-large_image', full );
+				// Dimensions lues par PhotoSwipe : sans ça la lightbox garde le ratio
+				// de l'image d'origine et déforme la nouvelle photo.
+				if ( w ) { $img.attr( 'data-large_image_width', w ); }
+				if ( h ) { $img.attr( 'data-large_image_height', h ); }
 				// Lien (lightbox/PhotoSwipe) + miniature de la cellule.
 				$cell.attr( 'data-thumb', full );
 				$cell.find( 'a' ).first().attr( 'href', full );
@@ -106,6 +113,12 @@
 				// premier rendu, donc sans ça le zoom afficherait toujours la photo d'origine.
 				if ( $.fn.zoom ) {
 					$cell.trigger( 'zoom.destroy' );
+					// jquery.zoom charge sa grande image de façon asynchrone et superpose
+					// un calque `.zoomImg` (opacity 0) sur la photo. Entre deux changements,
+					// l'ancien calque peut survivre au `zoom.destroy` et rester superposé :
+					// au survol/zoom il réapparaît → on voit la couleur précédente. On le
+					// retire explicitement avant de recréer le zoom sur la nouvelle photo.
+					$cell.find( '.zoomImg' ).remove();
 					$cell.zoom( { url: full, touch: false } );
 				}
 			}

@@ -181,11 +181,14 @@ class AOD_COD_Form {
 					}
 					$img_id   = isset( $val['image_id'] ) ? (int) $val['image_id'] : 0;
 					$hex      = ( isset( $val['hex'] ) && preg_match( '/^#[0-9a-fA-F]{6}$/', (string) $val['hex'] ) ) ? strtolower( (string) $val['hex'] ) : '';
+					$single   = $img_id ? wp_get_attachment_image_src( $img_id, 'woocommerce_single' ) : false;
 					$values[] = array(
 						'name'     => $name,
 						'price'    => ( isset( $val['price'] ) && '' !== $val['price'] ) ? (float) $val['price'] : 0.0,
 						'img'      => $img_id ? wp_get_attachment_image_url( $img_id, 'woocommerce_thumbnail' ) : '',
-						'img_full' => $img_id ? wp_get_attachment_image_url( $img_id, 'woocommerce_single' ) : '',
+						'img_full' => $single ? $single[0] : '',
+						'img_w'    => $single ? (int) $single[1] : 0,
+						'img_h'    => $single ? (int) $single[2] : 0,
 						'srcset'   => $img_id ? (string) wp_get_attachment_image_srcset( $img_id, 'woocommerce_single' ) : '',
 						'hex'      => $hex,
 					);
@@ -222,11 +225,14 @@ class AOD_COD_Form {
 					continue;
 				}
 				$img_id   = $v->get_image_id();
+				$single   = $img_id ? wp_get_attachment_image_src( $img_id, 'woocommerce_single' ) : false;
 				$values[] = array(
 					'name'     => $name,
 					'price'    => 0.0,
 					'img'      => $img_id ? wp_get_attachment_image_url( $img_id, 'woocommerce_thumbnail' ) : '',
-					'img_full' => $img_id ? wp_get_attachment_image_url( $img_id, 'woocommerce_single' ) : '',
+					'img_full' => $single ? $single[0] : '',
+					'img_w'    => $single ? (int) $single[1] : 0,
+					'img_h'    => $single ? (int) $single[2] : 0,
 					'srcset'   => $img_id ? (string) wp_get_attachment_image_srcset( $img_id, 'woocommerce_single' ) : '',
 					'hex'      => '',
 				);
@@ -337,7 +343,7 @@ class AOD_COD_Form {
 								$is_visual = $sec['visual'] || $has_hex;
 								?>
 								<label class="aod-cod__opt<?php echo $is_visual ? ' aod-cod__opt--visual' : ''; ?>" for="<?php echo esc_attr( $oid ); ?>">
-									<input type="radio" id="<?php echo esc_attr( $oid ); ?>" name="opt[<?php echo esc_attr( $si ); ?>]" value="<?php echo esc_attr( $val['name'] ); ?>" data-price="<?php echo esc_attr( $val['price'] ); ?>" data-img="<?php echo esc_url( $val['img'] ); ?>" data-img-full="<?php echo esc_url( $val['img_full'] ); ?>" data-srcset="<?php echo esc_attr( $val['srcset'] ); ?>">
+									<input type="radio" id="<?php echo esc_attr( $oid ); ?>" name="opt[<?php echo esc_attr( $si ); ?>]" value="<?php echo esc_attr( $val['name'] ); ?>" data-price="<?php echo esc_attr( $val['price'] ); ?>" data-img="<?php echo esc_url( $val['img'] ); ?>" data-img-full="<?php echo esc_url( $val['img_full'] ); ?>" data-img-w="<?php echo esc_attr( $val['img_w'] ); ?>" data-img-h="<?php echo esc_attr( $val['img_h'] ); ?>" data-srcset="<?php echo esc_attr( $val['srcset'] ); ?>">
 									<span class="aod-cod__opt-card">
 										<?php if ( $is_visual && $val['img'] ) : ?>
 											<span class="aod-cod__opt-thumb" style="background-image:url('<?php echo esc_url( $val['img'] ); ?>')"></span>
