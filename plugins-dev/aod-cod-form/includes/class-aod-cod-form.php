@@ -288,18 +288,17 @@ class AOD_COD_Form {
 						</div>
 					</div>
 				<?php endif; ?>
-				<div class="aod-cod__field">
-					<label><?php esc_html_e( 'Nom complet', 'aod-cod-form' ); ?> <span>*</span></label>
-					<input type="text" name="name" autocomplete="name" required>
+				<div class="aod-cod__field aod-cod__float">
+					<input type="text" id="aod-cod-name" name="name" autocomplete="name" placeholder=" " required>
+					<label for="aod-cod-name"><?php esc_html_e( 'Nom complet', 'aod-cod-form' ); ?> <span>*</span></label>
 				</div>
-				<div class="aod-cod__field">
-					<label><?php esc_html_e( 'Téléphone', 'aod-cod-form' ); ?> <span>*</span></label>
-					<input type="tel" name="phone" inputmode="numeric" autocomplete="tel" placeholder="0550 12 34 56" required>
+				<div class="aod-cod__field aod-cod__float">
+					<input type="tel" id="aod-cod-phone" name="phone" inputmode="numeric" autocomplete="tel" placeholder=" " required>
+					<label for="aod-cod-phone"><?php esc_html_e( 'Téléphone', 'aod-cod-form' ); ?> <span>*</span></label>
 				</div>
 				<div class="aod-cod__row">
-					<div class="aod-cod__field">
-						<label><?php esc_html_e( 'Wilaya', 'aod-cod-form' ); ?> <span>*</span></label>
-						<select name="wilaya" required>
+					<div class="aod-cod__field aod-cod__float aod-cod__float--sel">
+						<select id="aod-cod-wilaya" name="wilaya" required>
 							<option value=""><?php esc_html_e( 'Choisir une wilaya', 'aod-cod-form' ); ?></option>
 							<?php foreach ( AOD_COD_Data::places() as $w ) : ?>
 								<option value="<?php echo esc_attr( $w['code'] ); ?>">
@@ -307,12 +306,13 @@ class AOD_COD_Form {
 								</option>
 							<?php endforeach; ?>
 						</select>
+						<label for="aod-cod-wilaya"><?php esc_html_e( 'Wilaya', 'aod-cod-form' ); ?> <span>*</span></label>
 					</div>
-					<div class="aod-cod__field">
-						<label><?php esc_html_e( 'Commune', 'aod-cod-form' ); ?> <span>*</span></label>
-						<select name="commune" required disabled>
+					<div class="aod-cod__field aod-cod__float aod-cod__float--sel">
+						<select id="aod-cod-commune" name="commune" required disabled>
 							<option value=""><?php esc_html_e( 'Choisir une commune', 'aod-cod-form' ); ?></option>
 						</select>
+						<label for="aod-cod-commune"><?php esc_html_e( 'Commune', 'aod-cod-form' ); ?> <span>*</span></label>
 					</div>
 				</div>
 				<div class="aod-cod__field aod-cod__delivery">
@@ -341,14 +341,14 @@ class AOD_COD_Form {
 					</div>
 					<p class="aod-cod__free-hint" hidden></p>
 				</div>
-				<div class="aod-cod__field aod-cod__address">
-					<label><?php esc_html_e( 'Adresse', 'aod-cod-form' ); ?></label>
-					<input type="text" name="address" autocomplete="street-address">
+				<div class="aod-cod__field aod-cod__address aod-cod__float">
+					<input type="text" id="aod-cod-address" name="address" autocomplete="street-address" placeholder=" ">
+					<label for="aod-cod-address"><?php esc_html_e( 'Adresse', 'aod-cod-form' ); ?></label>
 				</div>
 				<?php if ( ! ( $is_variable && $variations ) ) : ?>
-				<div class="aod-cod__field aod-cod__qty">
-					<label><?php esc_html_e( 'Quantité', 'aod-cod-form' ); ?></label>
-					<input type="number" name="qty" value="1" min="1" step="1">
+				<div class="aod-cod__field aod-cod__qty aod-cod__float">
+					<input type="number" id="aod-cod-qty" name="qty" value="1" min="1" step="1" placeholder=" ">
+					<label for="aod-cod-qty"><?php esc_html_e( 'Quantité', 'aod-cod-form' ); ?></label>
 					<?php if ( $tiers ) : ?>
 						<ul class="aod-cod__tiers">
 							<?php foreach ( $tiers as $t ) : ?>
