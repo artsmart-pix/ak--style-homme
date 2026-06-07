@@ -95,9 +95,19 @@
 				if ( srcset ) { $img.attr( 'srcset', srcset ); } else { $img.removeAttr( 'srcset' ); }
 				$img.removeAttr( 'data-src' ).removeAttr( 'sizes' );
 				$img.attr( 'data-large_image', full );
-				// Lien (zoom/lightbox) + miniature de la cellule.
+				// Lien (lightbox/PhotoSwipe) + miniature de la cellule.
 				$cell.attr( 'data-thumb', full );
 				$cell.find( 'a' ).first().attr( 'href', full );
+				// La galerie est un carrousel (flexslider) : on vient de remplacer la 1re
+				// diapo, mais la diapo affichée peut être une autre → l'utilisateur resterait
+				// sur l'image précédente. On force WooCommerce à revenir sur la 1re diapo.
+				$gallery.trigger( 'woocommerce_gallery_reset_slide_position' );
+				// Ré-initialise le zoom au survol : WooCommerce mémorise la grande image au
+				// premier rendu, donc sans ça le zoom afficherait toujours la photo d'origine.
+				if ( $.fn.zoom ) {
+					$cell.trigger( 'zoom.destroy' );
+					$cell.zoom( { url: full, touch: false } );
+				}
 			}
 
 			// Seuil de livraison gratuite (0 = désactivé).
