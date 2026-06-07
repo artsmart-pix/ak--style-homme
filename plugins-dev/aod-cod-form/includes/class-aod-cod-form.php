@@ -220,6 +220,12 @@ class AOD_COD_Form {
 			}
 		}
 
+		// Arguments de vente (liste à puces).
+		$selling_points = $product->get_meta( '_aod_selling_points' );
+		if ( ! is_array( $selling_points ) ) {
+			$selling_points = array();
+		}
+
 		// Pack assortiment : liste des produits inclus (affichage informatif).
 		$pack_items = array();
 		if ( '1' === (string) $product->get_meta( '_aod_is_pack' ) ) {
@@ -238,6 +244,13 @@ class AOD_COD_Form {
 		?>
 		<div class="aod-cod" data-product="<?php echo esc_attr( $product_id ); ?>" data-price="<?php echo esc_attr( $price ); ?>" data-tiers="<?php echo esc_attr( wp_json_encode( $tiers ) ); ?>">
 			<h3 class="aod-cod__title"><?php esc_html_e( 'Commander maintenant — Paiement à la livraison', 'aod-cod-form' ); ?></h3>
+			<?php if ( $selling_points ) : ?>
+				<ul class="aod-cod__points">
+					<?php foreach ( $selling_points as $pt ) : ?>
+						<li><?php echo esc_html( $pt ); ?></li>
+					<?php endforeach; ?>
+				</ul>
+			<?php endif; ?>
 			<?php if ( $pack_items ) : ?>
 				<div class="aod-cod__pack">
 					<span class="aod-cod__pack-label"><?php esc_html_e( 'Ce pack contient :', 'aod-cod-form' ); ?></span>

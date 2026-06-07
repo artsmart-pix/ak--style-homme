@@ -969,6 +969,18 @@ class AOD_CD_Dashboard {
 			'return'  => 'objects',
 		) );
 
+		// Lot 2 : poids, prix d'achat, arguments de vente, galerie.
+		$weight      = $product ? (string) $product->get_weight() : '';
+		$cost        = $product ? (string) $product->get_meta( '_aod_cost_price' ) : '';
+		$points      = $product ? $product->get_meta( '_aod_selling_points' ) : array();
+		$points_text = is_array( $points ) ? implode( "\n", $points ) : '';
+		$gallery_ids = $product ? $product->get_gallery_image_ids() : array();
+
+		// Lot 3 : seuil de stock bas, programmation de la promo.
+		$low_stock = $product ? (string) $product->get_low_stock_amount() : '';
+		$sale_from = ( $product && $product->get_date_on_sale_from() ) ? $product->get_date_on_sale_from()->date( 'Y-m-d' ) : '';
+		$sale_to   = ( $product && $product->get_date_on_sale_to() ) ? $product->get_date_on_sale_to()->date( 'Y-m-d' ) : '';
+
 		$title = $pid ? __( 'Modifier le produit', 'aod-client-dashboard' ) : __( 'Nouveau produit', 'aod-client-dashboard' );
 		?>
 		<div class="aod-cd-bar">
@@ -1003,9 +1015,38 @@ class AOD_CD_Dashboard {
 						</label>
 					</div>
 
+					<div class="aod-cd-row2">
+						<label class="aod-cd-field">
+							<span class="aod-cd-label"><?php esc_html_e( 'Date début promo (optionnel)', 'aod-client-dashboard' ); ?></span>
+							<input type="date" name="sale_from" value="<?php echo esc_attr( $sale_from ); ?>">
+						</label>
+						<label class="aod-cd-field">
+							<span class="aod-cd-label"><?php esc_html_e( 'Date fin promo (optionnel)', 'aod-client-dashboard' ); ?></span>
+							<input type="date" name="sale_to" value="<?php echo esc_attr( $sale_to ); ?>">
+						</label>
+					</div>
+
+					<div class="aod-cd-row2">
+						<label class="aod-cd-field">
+							<span class="aod-cd-label"><?php esc_html_e( 'Référence / SKU (optionnel)', 'aod-client-dashboard' ); ?></span>
+							<input type="text" name="sku" value="<?php echo esc_attr( $sku ); ?>">
+						</label>
+						<label class="aod-cd-field">
+							<span class="aod-cd-label"><?php printf( esc_html__( 'Poids (kg, optionnel)', 'aod-client-dashboard' ), '' ); ?></span>
+							<input type="number" step="0.001" min="0" name="weight" value="<?php echo esc_attr( $weight ); ?>" placeholder="<?php esc_attr_e( 'ex : 0.5', 'aod-client-dashboard' ); ?>">
+						</label>
+					</div>
+
 					<label class="aod-cd-field">
-						<span class="aod-cd-label"><?php esc_html_e( 'Référence / SKU (optionnel)', 'aod-client-dashboard' ); ?></span>
-						<input type="text" name="sku" value="<?php echo esc_attr( $sku ); ?>">
+						<span class="aod-cd-label"><?php printf( esc_html__( 'Prix d’achat (%s, optionnel)', 'aod-client-dashboard' ), esc_html( $currency ) ); ?></span>
+						<input type="number" step="0.01" min="0" name="cost_price" value="<?php echo esc_attr( $cost ); ?>">
+						<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Sert au calcul de la marge (non affiché au client).', 'aod-client-dashboard' ); ?></span>
+					</label>
+
+					<label class="aod-cd-field">
+						<span class="aod-cd-label"><?php esc_html_e( 'Arguments de vente (un par ligne)', 'aod-client-dashboard' ); ?></span>
+						<textarea name="selling_points" rows="4" placeholder="<?php esc_attr_e( "Livraison rapide\nGarantie 1 an\nQualité premium", 'aod-client-dashboard' ); ?>"><?php echo esc_textarea( $points_text ); ?></textarea>
+						<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Affichés en liste à puces sur la page produit.', 'aod-client-dashboard' ); ?></span>
 					</label>
 				</div>
 
@@ -1019,10 +1060,29 @@ class AOD_CD_Dashboard {
 						<input type="file" name="image" accept="image/*" class="aod-cd-imgfile">
 					</div>
 
+					<div class="aod-cd-field">
+						<span class="aod-cd-label"><?php esc_html_e( 'Galerie (photos supplémentaires)', 'aod-client-dashboard' ); ?></span>
+						<?php if ( $gallery_ids ) : ?>
+							<div class="aod-cd-gallery">
+								<?php foreach ( $gallery_ids as $gid ) :
+									$gurl = wp_get_attachment_image_url( $gid, 'thumbnail' );
+									if ( ! $gurl ) { continue; } ?>
+									<label class="aod-cd-gallery-item">
+										<img src="<?php echo esc_url( $gurl ); ?>" alt="">
+										<span class="aod-cd-gallery-rm">
+											<input type="checkbox" name="gallery_remove[]" value="<?php echo esc_attr( $gid ); ?>"> <?php esc_html_e( 'Retirer', 'aod-client-dashboard' ); ?>
+										</span>
+									</label>
+								<?php endforeach; ?>
+							</div>
+						<?php endif; ?>
+						<input type="file" name="gallery_images[]" accept="image/*" multiple class="aod-cd-galleryfile">
+						<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Ajoutez une ou plusieurs photos. Cochez « Retirer » pour enlever une photo existante.', 'aod-client-dashboard' ); ?></span>
+					</div>
+
 					<label class="aod-cd-field">
-						<span class="aod-cd-label"><?php esc_html_e( 'Catégorie', 'aod-client-dashboard' ); ?></span>
-						<select name="category">
-							<option value="0"><?php esc_html_e( '— Aucune —', 'aod-client-dashboard' ); ?></option>
+						<span class="aod-cd-label"><?php esc_html_e( 'Catégories', 'aod-client-dashboard' ); ?></span>
+						<select name="category[]" multiple size="5" class="aod-cd-catselect">
 							<?php if ( ! is_wp_error( $categories ) ) :
 								foreach ( $categories as $cat ) :
 									$sel = in_array( $cat->term_id, (array) $cat_ids, true ) ? ' selected' : '';
@@ -1030,6 +1090,7 @@ class AOD_CD_Dashboard {
 								endforeach;
 							endif; ?>
 						</select>
+						<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Maintenez Ctrl (Cmd sur Mac) pour en sélectionner plusieurs.', 'aod-client-dashboard' ); ?></span>
 					</label>
 
 					<label class="aod-cd-field">
@@ -1043,6 +1104,7 @@ class AOD_CD_Dashboard {
 							<?php esc_html_e( 'Gérer le stock', 'aod-client-dashboard' ); ?>
 						</label>
 						<input type="number" min="0" name="stock_quantity" class="aod-cd-stock-qty" value="<?php echo esc_attr( (string) $qty ); ?>" placeholder="<?php esc_attr_e( 'Quantité', 'aod-client-dashboard' ); ?>" <?php echo $manage ? '' : 'style="display:none"'; ?>>
+						<input type="number" min="0" name="low_stock_amount" class="aod-cd-stock-qty" value="<?php echo esc_attr( $low_stock ); ?>" placeholder="<?php esc_attr_e( 'Alerte stock bas (optionnel)', 'aod-client-dashboard' ); ?>" <?php echo $manage ? '' : 'style="display:none"'; ?>>
 					</div>
 
 					<label class="aod-cd-field">
@@ -1304,10 +1366,12 @@ class AOD_CD_Dashboard {
 		$status = ( isset( $_POST['status'] ) && 'draft' === $_POST['status'] ) ? 'draft' : 'publish';
 		$product->set_status( $status );
 
-		// Catégories : existante sélectionnée + éventuelle nouvelle.
+		// Catégories : sélection multiple + éventuelle nouvelle.
 		$cat_ids = array();
 		if ( ! empty( $_POST['category'] ) ) {
-			$cat_ids[] = absint( $_POST['category'] );
+			foreach ( (array) $_POST['category'] as $c ) {
+				$cat_ids[] = absint( $c );
+			}
 		}
 		if ( ! empty( $_POST['new_category'] ) ) {
 			$new = sanitize_text_field( wp_unslash( $_POST['new_category'] ) );
@@ -1319,9 +1383,41 @@ class AOD_CD_Dashboard {
 				$cat_ids[] = (int) $term['term_id'];
 			}
 		}
-		if ( $cat_ids ) {
-			$product->set_category_ids( array_values( array_unique( array_filter( $cat_ids ) ) ) );
+		// Toujours appliquer (permet aussi de tout retirer si rien n'est sélectionné).
+		$product->set_category_ids( array_values( array_unique( array_filter( $cat_ids ) ) ) );
+
+		// Poids (expédition) + prix d'achat (marge) + arguments de vente.
+		if ( isset( $_POST['weight'] ) ) {
+			$w = wc_format_decimal( wp_unslash( $_POST['weight'] ) );
+			$product->set_weight( '' !== $w ? $w : '' );
 		}
+		if ( isset( $_POST['cost_price'] ) ) {
+			$cost = wc_format_decimal( wp_unslash( $_POST['cost_price'] ) );
+			if ( '' !== $cost ) {
+				$product->update_meta_data( '_aod_cost_price', $cost );
+			} else {
+				$product->delete_meta_data( '_aod_cost_price' );
+			}
+		}
+		if ( isset( $_POST['selling_points'] ) ) {
+			$lines  = preg_split( '/\r\n|\r|\n/', (string) wp_unslash( $_POST['selling_points'] ) );
+			$points = array();
+			foreach ( $lines as $l ) {
+				$l = sanitize_text_field( trim( $l ) );
+				if ( '' !== $l ) {
+					$points[] = $l;
+				}
+			}
+			if ( $points ) {
+				$product->update_meta_data( '_aod_selling_points', $points );
+			} else {
+				$product->delete_meta_data( '_aod_selling_points' );
+			}
+		}
+
+		// Programmation de la promo (dates de début / fin).
+		$product->set_date_on_sale_from( ! empty( $_POST['sale_from'] ) ? sanitize_text_field( wp_unslash( $_POST['sale_from'] ) ) : '' );
+		$product->set_date_on_sale_to( ! empty( $_POST['sale_to'] ) ? sanitize_text_field( wp_unslash( $_POST['sale_to'] ) ) : '' );
 
 		if ( $colors ) {
 			// Produit variable : le parent n'a ni stock ni prix propres ; le prix
@@ -1344,6 +1440,10 @@ class AOD_CD_Dashboard {
 				$qty = isset( $_POST['stock_quantity'] ) ? wc_stock_amount( wp_unslash( $_POST['stock_quantity'] ) ) : 0;
 				$product->set_stock_quantity( $qty );
 				$product->set_stock_status( $qty > 0 ? 'instock' : 'outofstock' );
+				$low = isset( $_POST['low_stock_amount'] ) ? trim( (string) wp_unslash( $_POST['low_stock_amount'] ) ) : '';
+				$product->set_low_stock_amount( '' !== $low ? wc_stock_amount( $low ) : '' );
+			} else {
+				$product->set_low_stock_amount( '' );
 			}
 			// Paliers de prix par quantité (prix unitaire de référence = promo sinon normal).
 			$base   = ( '' !== $sale ) ? (float) $sale : (float) $reg;
@@ -1387,6 +1487,9 @@ class AOD_CD_Dashboard {
 			}
 			set_post_thumbnail( $new_id, $att_id );
 		}
+
+		// Galerie : retrait des photos cochées + ajout des nouvelles.
+		$this->save_gallery( $product, $new_id );
 
 		// Variations.
 		if ( $colors ) {
@@ -1503,6 +1606,52 @@ class AOD_CD_Dashboard {
 			$items[] = array( 'id' => (int) $cid, 'qty' => (int) $qty );
 		}
 		return $items;
+	}
+
+	/**
+	 * Met à jour la galerie d'images d'un produit : retire les images cochées,
+	 * ajoute les nouveaux fichiers uploadés (champ multiple gallery_images[]).
+	 *
+	 * @param WC_Product $product
+	 * @param int        $new_id
+	 */
+	protected function save_gallery( $product, $new_id ) {
+		$gallery = $product->get_gallery_image_ids();
+
+		// Retraits demandés.
+		if ( ! empty( $_POST['gallery_remove'] ) && is_array( $_POST['gallery_remove'] ) ) {
+			$remove  = array_map( 'absint', wp_unslash( $_POST['gallery_remove'] ) );
+			$gallery = array_values( array_diff( $gallery, $remove ) );
+		}
+
+		// Ajouts (upload multiple).
+		if ( ! empty( $_FILES['gallery_images']['name'][0] ) ) {
+			require_once ABSPATH . 'wp-admin/includes/image.php';
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			require_once ABSPATH . 'wp-admin/includes/media.php';
+			$files = $_FILES['gallery_images'];
+			$count = count( $files['name'] );
+			for ( $i = 0; $i < $count; $i++ ) {
+				if ( empty( $files['name'][ $i ] ) ) {
+					continue;
+				}
+				$_FILES['gallery_single'] = array(
+					'name'     => $files['name'][ $i ],
+					'type'     => $files['type'][ $i ],
+					'tmp_name' => $files['tmp_name'][ $i ],
+					'error'    => $files['error'][ $i ],
+					'size'     => $files['size'][ $i ],
+				);
+				$att = media_handle_upload( 'gallery_single', $new_id );
+				if ( ! is_wp_error( $att ) ) {
+					$gallery[] = (int) $att;
+				}
+			}
+			unset( $_FILES['gallery_single'] );
+		}
+
+		$product->set_gallery_image_ids( array_values( array_unique( array_filter( $gallery ) ) ) );
+		$product->save();
 	}
 
 	/**

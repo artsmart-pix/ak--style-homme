@@ -291,6 +291,13 @@ body.aod-cd{
 .aod-cd-pack-add{margin-top:12px}
 .aod-cd-pack-savings{margin-top:10px;font-size:13px;font-weight:700;color:#166534;background:#dcfce7;border-radius:9px;padding:8px 12px}
 
+/* Galerie d'images (Lot 2) */
+.aod-cd-gallery{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+.aod-cd-gallery-item{display:flex;flex-direction:column;gap:4px;align-items:center;font-size:11px}
+.aod-cd-gallery-item img{width:64px;height:64px;object-fit:cover;border-radius:9px;border:1px solid var(--cd-line)}
+.aod-cd-gallery-rm{display:flex;align-items:center;gap:3px;color:#b91c1c}
+.aod-cd-catselect{width:100%;padding:6px;border:1px solid var(--cd-line);border-radius:9px;font-size:14px}
+
 /* ---- Recherche ---- */
 .aod-cd-search{display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
 .aod-cd-search input[type="search"]{
