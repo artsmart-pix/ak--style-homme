@@ -122,6 +122,8 @@ class AOD_COD_Form {
 				'free_active'    => __( '🎉 Livraison gratuite débloquée !', 'aod-cod-form' ),
 				'phone_invalid'  => __( 'Numéro de téléphone invalide (ex : 0550 12 34 56).', 'aod-cod-form' ),
 				'required'       => __( 'Veuillez remplir tous les champs obligatoires.', 'aod-cod-form' ),
+				'prev_image'     => __( 'Image précédente', 'aod-cod-form' ),
+				'next_image'     => __( 'Image suivante', 'aod-cod-form' ),
 			),
 		) );
 	}

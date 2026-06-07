@@ -332,5 +332,44 @@
 				$msg.addClass( 'is-error' ).text( m );
 			}
 		} );
+
+		// Flèches ‹ › superposées sur la grande photo pour parcourir toutes les
+		// images du produit. La galerie est unique sur la page : on initialise une
+		// seule fois, hors de la boucle des formulaires.
+		initGalleryNav();
 	} );
+
+	// Boutons précédent/suivant sur la galerie WooCommerce (flexslider).
+	function initGalleryNav() {
+		var $gallery = $( '.woocommerce-product-gallery' );
+		if ( ! $gallery.length ) { return; }
+		// Déjà initialisé (script chargé deux fois) → on ne duplique pas.
+		if ( $gallery.find( '> .aod-gallery-nav' ).length ) { return; }
+		// Compter les vraies diapos (hors clones que flexslider ajoute après init).
+		var slideCount = $gallery.find( '.woocommerce-product-gallery__image' ).not( '.clone' ).length;
+		if ( slideCount < 2 ) { return; } // une seule image : pas de navigation.
+
+		var labels = ( window.AOD_COD && AOD_COD.i18n ) || {};
+		var prevLabel = labels.prev_image || 'Image précédente';
+		var nextLabel = labels.next_image || 'Image suivante';
+
+		var $prev = $( '<button type="button" class="aod-gallery-nav aod-gallery-nav--prev" aria-label="' + prevLabel + '">‹</button>' );
+		var $next = $( '<button type="button" class="aod-gallery-nav aod-gallery-nav--next" aria-label="' + nextLabel + '">›</button>' );
+
+		// Navigation : on privilégie l'API flexslider ; sinon on simule un clic sur
+		// la navigation native ; en dernier recours on ne fait rien.
+		function go( dir ) {
+			// flexslider est initialisé dès qu'il a enveloppé la galerie dans .flex-viewport.
+			if ( $.fn.flexslider && $gallery.find( '.flex-viewport' ).length ) {
+				try { $gallery.flexslider( dir ); return; } catch ( e ) {}
+			}
+			var $link = $gallery.find( '.flex-direction-nav .flex-' + dir + ' a' );
+			if ( $link.length ) { $link.trigger( 'click' ); }
+		}
+
+		$prev.on( 'click', function ( e ) { e.preventDefault(); go( 'prev' ); } );
+		$next.on( 'click', function ( e ) { e.preventDefault(); go( 'next' ); } );
+
+		$gallery.append( $prev, $next );
+	}
 } )( jQuery );

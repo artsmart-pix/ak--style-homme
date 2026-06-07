@@ -315,3 +315,24 @@
 }
 /* Pastille de couleur prédéfinie (pas de photo) : on affiche la vraie couleur. */
 .aod-cod__opt-thumb--color{box-shadow:inset 0 0 0 2px #fff;border-color:rgba(0,0,0,.18)}
+
+/* ---- Flèches de navigation ‹ › superposées sur la galerie produit ---- */
+.woocommerce-product-gallery .aod-gallery-nav{
+	position:absolute;top:50%;transform:translateY(-50%);z-index:99;
+	display:flex;align-items:center;justify-content:center;
+	width:40px;height:40px;padding:0;margin:0;
+	border:1px solid rgba(0,0,0,.08);border-radius:50%;
+	background:rgba(255,255,255,.9);color:#1a1a1a;
+	font-size:24px;line-height:1;cursor:pointer;
+	box-shadow:0 1px 4px rgba(0,0,0,.18);
+	transition:background .12s, transform .05s, box-shadow .12s;
+	-webkit-appearance:none;appearance:none;
+}
+.woocommerce-product-gallery .aod-gallery-nav:hover{background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.woocommerce-product-gallery .aod-gallery-nav:active{transform:translateY(-50%) scale(.94)}
+.woocommerce-product-gallery .aod-gallery-nav:focus-visible{outline:2px solid var(--sh-accent,#008060);outline-offset:2px}
+.woocommerce-product-gallery .aod-gallery-nav--prev{left:12px}
+.woocommerce-product-gallery .aod-gallery-nav--next{right:12px}
+/* RTL : on inverse les positions pour garder ‹ = précédent côté logique. */
+.rtl .woocommerce-product-gallery .aod-gallery-nav--prev{left:auto;right:12px}
+.rtl .woocommerce-product-gallery .aod-gallery-nav--next{right:auto;left:12px}
