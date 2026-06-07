@@ -1636,8 +1636,10 @@ class AOD_CD_Dashboard {
 		}
 
 		// Paliers de prix par quantité (« 2 pour X ») — compatibles avec les sections d'options.
-		// Prix unitaire de référence = promo sinon prix normal.
-		$base          = ( '' !== $sale ) ? (float) $sale : (float) $reg;
+		// Référence = PRIX NORMAL (jamais la promo) : une offre de lot est une remise sur
+		// le prix habituel, pas sur une promo temporaire. Sinon un produit en promo ferait
+		// disparaître des paliers pourtant avantageux par rapport au prix normal.
+		$base          = (float) $reg;
 		$dropped_tiers = 0;
 		$tiers         = $this->collect_qty_tiers( $base, $dropped_tiers );
 		if ( $tiers ) {
