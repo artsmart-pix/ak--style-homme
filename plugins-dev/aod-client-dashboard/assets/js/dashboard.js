@@ -386,6 +386,164 @@
 		updateSavings();
 	}
 
+	/* Catégories : création, renommage et suppression (page « Catégories ») */
+	function bindCategories() {
+		var wrap = document.getElementById( 'aod-cd-cats' );
+		if ( ! wrap ) { return; }
+		var list    = wrap.querySelector( '.aod-cd-cat-list' );
+		var newForm = document.getElementById( 'aod-cd-cat-new' );
+		var tpl     = document.getElementById( 'aod-cd-cat-row-tpl' );
+
+		function post( action, params ) {
+			var body = new URLSearchParams();
+			body.append( 'action', action );
+			body.append( 'nonce', CD.nonce );
+			Object.keys( params ).forEach( function ( k ) { body.append( k, params[ k ] ); } );
+			return fetch( CD.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body } )
+				.then( function ( r ) { return r.json(); } );
+		}
+
+		// Création.
+		if ( newForm && list && tpl ) {
+			newForm.addEventListener( 'submit', function ( e ) {
+				e.preventDefault();
+				var input = newForm.querySelector( '.aod-cd-cat-newname' );
+				var name  = ( input.value || '' ).trim();
+				if ( ! name ) { return; }
+				var btn = newForm.querySelector( 'button[type="submit"]' );
+				if ( btn ) { btn.disabled = true; }
+				post( 'aod_cd_save_category', { name: name } ).then( function ( res ) {
+					if ( btn ) { btn.disabled = false; }
+					if ( res && res.success ) {
+						var empty = list.querySelector( '.aod-cd-cat-empty' );
+						if ( empty ) { empty.remove(); }
+						var node = tpl.content.firstElementChild.cloneNode( true );
+						node.dataset.id = String( res.data.id );
+						node.querySelector( '.aod-cd-cat-name' ).value = res.data.name;
+						node.querySelector( '.aod-cd-cat-count' ).textContent = CD.i18nCatZero || '0';
+						list.appendChild( node );
+						input.value = '';
+						input.focus();
+						toast( res.data.message || 'OK', false );
+					} else {
+						toast( ( res && res.data && res.data.message ) || 'Erreur.', true );
+					}
+				} ).catch( function () {
+					if ( btn ) { btn.disabled = false; }
+					toast( 'Erreur réseau.', true );
+				} );
+			} );
+		}
+
+		// Renommage / suppression (délégation sur la liste).
+		if ( list ) {
+			list.addEventListener( 'click', function ( e ) {
+				var saveBtn = e.target.closest( '.aod-cd-cat-save' );
+				var delBtn  = e.target.closest( '.aod-cd-cat-del' );
+				if ( saveBtn ) {
+					var row   = saveBtn.closest( '.aod-cd-cat-row' );
+					var name  = ( row.querySelector( '.aod-cd-cat-name' ).value || '' ).trim();
+					if ( ! name ) { return; }
+					saveBtn.disabled = true;
+					post( 'aod_cd_save_category', { term_id: row.dataset.id, name: name } ).then( function ( res ) {
+						saveBtn.disabled = false;
+						if ( res && res.success ) {
+							row.querySelector( '.aod-cd-cat-name' ).value = res.data.name;
+							toast( res.data.message || 'OK', false );
+						} else {
+							toast( ( res && res.data && res.data.message ) || 'Erreur.', true );
+						}
+					} ).catch( function () {
+						saveBtn.disabled = false;
+						toast( 'Erreur réseau.', true );
+					} );
+					return;
+				}
+				if ( delBtn ) {
+					var r = delBtn.closest( '.aod-cd-cat-row' );
+					if ( ! window.confirm( CD.i18nCatDelConfirm || 'Supprimer ?' ) ) { return; }
+					delBtn.disabled = true;
+					post( 'aod_cd_delete_category', { term_id: r.dataset.id } ).then( function ( res ) {
+						if ( res && res.success ) {
+							r.remove();
+							toast( res.data.message || 'OK', false );
+						} else {
+							delBtn.disabled = false;
+							toast( ( res && res.data && res.data.message ) || 'Erreur.', true );
+						}
+					} ).catch( function () {
+						delBtn.disabled = false;
+						toast( 'Erreur réseau.', true );
+					} );
+				}
+			} );
+		}
+	}
+
+	/* Palette de couleurs prédéfinies pour les valeurs d'options (pastille 🎨) */
+	function bindColorPalette() {
+		var palette = document.getElementById( 'aod-cd-palette' );
+		if ( ! palette ) { return; }
+		var current = null; // pastille déclencheuse en cours.
+
+		function closePalette() {
+			palette.hidden = true;
+			current = null;
+		}
+
+		function openPalette( swatch ) {
+			current = swatch;
+			palette.hidden = false;
+			var r = swatch.getBoundingClientRect();
+			var w = palette.offsetWidth || 280;
+			var left = Math.max( 8, Math.min( r.left, window.innerWidth - w - 8 ) );
+			var top  = r.bottom + 6;
+			// Si pas la place en dessous, on remonte au-dessus de la pastille.
+			if ( top + palette.offsetHeight > window.innerHeight - 8 ) {
+				top = Math.max( 8, r.top - palette.offsetHeight - 6 );
+			}
+			palette.style.left = left + 'px';
+			palette.style.top  = top + 'px';
+		}
+
+		// Ouvre la palette depuis une pastille de valeur.
+		document.addEventListener( 'click', function ( e ) {
+			var sw = e.target.closest( '.aod-cd-opt-swatch' );
+			if ( sw ) {
+				e.preventDefault();
+				if ( current === sw && ! palette.hidden ) { closePalette(); }
+				else { openPalette( sw ); }
+				return;
+			}
+			// Choix d'une couleur dans la palette.
+			var pick = e.target.closest( '.aod-cd-palette-sw' );
+			if ( pick && current ) {
+				e.preventDefault();
+				var value = current.closest( '.aod-cd-opt-value' );
+				var hex   = pick.dataset.hex || '';
+				var name  = pick.dataset.name || '';
+				if ( value ) {
+					var nameInput = value.querySelector( '.aod-cd-opt-name' );
+					var hexInput  = value.querySelector( '.aod-cd-opt-hex' );
+					if ( nameInput && ! nameInput.value.trim() ) { nameInput.value = name; }
+					if ( hexInput ) { hexInput.value = hex; }
+				}
+				current.style.backgroundColor = hex;
+				current.classList.add( 'has-color' );
+				closePalette();
+				return;
+			}
+			// Clic en dehors : on ferme.
+			if ( ! palette.hidden && ! e.target.closest( '#aod-cd-palette' ) ) {
+				closePalette();
+			}
+		} );
+
+		document.addEventListener( 'keydown', function ( e ) {
+			if ( 'Escape' === e.key && ! palette.hidden ) { closePalette(); }
+		} );
+	}
+
 	/* Formulaires de réglages génériques (Livraison, Pixels, WhatsApp…) */
 	function bindSettingsForms() {
 		document.querySelectorAll( '.aod-cd-settings-form' ).forEach( function ( form ) {
@@ -527,6 +685,8 @@
 	document.addEventListener( 'DOMContentLoaded', function () {
 		bindStatus();
 		bindProducts();
+		try { bindCategories(); }   catch ( err ) { /* catégories */ }
+		try { bindColorPalette(); } catch ( err ) { /* palette */ }
 		bindSettingsForms();
 		bindWhatsappTest();
 		bindOrderDetail();

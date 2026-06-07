@@ -180,12 +180,14 @@ class AOD_COD_Form {
 						continue;
 					}
 					$img_id   = isset( $val['image_id'] ) ? (int) $val['image_id'] : 0;
+					$hex      = ( isset( $val['hex'] ) && preg_match( '/^#[0-9a-fA-F]{6}$/', (string) $val['hex'] ) ) ? strtolower( (string) $val['hex'] ) : '';
 					$values[] = array(
 						'name'     => $name,
 						'price'    => ( isset( $val['price'] ) && '' !== $val['price'] ) ? (float) $val['price'] : 0.0,
 						'img'      => $img_id ? wp_get_attachment_image_url( $img_id, 'woocommerce_thumbnail' ) : '',
 						'img_full' => $img_id ? wp_get_attachment_image_url( $img_id, 'woocommerce_single' ) : '',
 						'srcset'   => $img_id ? (string) wp_get_attachment_image_srcset( $img_id, 'woocommerce_single' ) : '',
+						'hex'      => $hex,
 					);
 				}
 				if ( ! $values ) {
@@ -226,6 +228,7 @@ class AOD_COD_Form {
 					'img'      => $img_id ? wp_get_attachment_image_url( $img_id, 'woocommerce_thumbnail' ) : '',
 					'img_full' => $img_id ? wp_get_attachment_image_url( $img_id, 'woocommerce_single' ) : '',
 					'srcset'   => $img_id ? (string) wp_get_attachment_image_srcset( $img_id, 'woocommerce_single' ) : '',
+					'hex'      => '',
 				);
 			}
 			if ( $values ) {
@@ -329,11 +332,17 @@ class AOD_COD_Form {
 							foreach ( $sec['values'] as $vi => $val ) :
 								$oid = 'aod-cod-opt-' . (int) $product_id . '-' . (int) $si . '-' . (int) $vi;
 								?>
-								<label class="aod-cod__opt<?php echo $sec['visual'] ? ' aod-cod__opt--visual' : ''; ?>" for="<?php echo esc_attr( $oid ); ?>">
+								<?php
+								$has_hex   = ! empty( $val['hex'] );
+								$is_visual = $sec['visual'] || $has_hex;
+								?>
+								<label class="aod-cod__opt<?php echo $is_visual ? ' aod-cod__opt--visual' : ''; ?>" for="<?php echo esc_attr( $oid ); ?>">
 									<input type="radio" id="<?php echo esc_attr( $oid ); ?>" name="opt[<?php echo esc_attr( $si ); ?>]" value="<?php echo esc_attr( $val['name'] ); ?>" data-price="<?php echo esc_attr( $val['price'] ); ?>" data-img="<?php echo esc_url( $val['img'] ); ?>" data-img-full="<?php echo esc_url( $val['img_full'] ); ?>" data-srcset="<?php echo esc_attr( $val['srcset'] ); ?>">
 									<span class="aod-cod__opt-card">
-										<?php if ( $sec['visual'] && $val['img'] ) : ?>
+										<?php if ( $is_visual && $val['img'] ) : ?>
 											<span class="aod-cod__opt-thumb" style="background-image:url('<?php echo esc_url( $val['img'] ); ?>')"></span>
+										<?php elseif ( $has_hex ) : ?>
+											<span class="aod-cod__opt-thumb aod-cod__opt-thumb--color" style="background-color:<?php echo esc_attr( $val['hex'] ); ?>"></span>
 										<?php endif; ?>
 										<span class="aod-cod__opt-name"><?php echo esc_html( $val['name'] ); ?></span>
 										<?php if ( $val['price'] > 0 ) : ?>

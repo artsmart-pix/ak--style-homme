@@ -313,3 +313,5 @@
 	width:72px;height:72px;border-radius:6px;background-size:cover;background-position:center;
 	border:1px solid var(--sh-line);
 }
+/* Pastille de couleur prédéfinie (pas de photo) : on affiche la vraie couleur. */
+.aod-cod__opt-thumb--color{box-shadow:inset 0 0 0 2px #fff;border-color:rgba(0,0,0,.18)}

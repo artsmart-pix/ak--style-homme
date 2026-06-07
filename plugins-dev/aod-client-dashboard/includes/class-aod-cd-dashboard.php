@@ -30,13 +30,14 @@ class AOD_CD_Dashboard {
 
 	private function __construct() {
 		$this->sections = array(
-			'orders'    => array( __( 'Commandes', 'aod-client-dashboard' ), '🧾' ),
-			'products'  => array( __( 'Produits', 'aod-client-dashboard' ), '📦' ),
-			'shipping'  => array( __( 'Livraison', 'aod-client-dashboard' ), '🚚' ),
-			'stats'     => array( __( 'Statistiques', 'aod-client-dashboard' ), '📊' ),
-			'marketing' => array( __( 'Pixels & Tracking', 'aod-client-dashboard' ), '🎯' ),
-			'whatsapp'  => array( __( 'WhatsApp', 'aod-client-dashboard' ), '💬' ),
-			'account'   => array( __( 'Mon compte', 'aod-client-dashboard' ), '👤' ),
+			'orders'     => array( __( 'Commandes', 'aod-client-dashboard' ), '🧾' ),
+			'products'   => array( __( 'Produits', 'aod-client-dashboard' ), '📦' ),
+			'categories' => array( __( 'Catégories', 'aod-client-dashboard' ), '🏷️' ),
+			'shipping'   => array( __( 'Livraison', 'aod-client-dashboard' ), '🚚' ),
+			'stats'      => array( __( 'Statistiques', 'aod-client-dashboard' ), '📊' ),
+			'marketing'  => array( __( 'Pixels & Tracking', 'aod-client-dashboard' ), '🎯' ),
+			'whatsapp'   => array( __( 'WhatsApp', 'aod-client-dashboard' ), '💬' ),
+			'account'    => array( __( 'Mon compte', 'aod-client-dashboard' ), '👤' ),
 		);
 
 		add_action( 'init', array( __CLASS__, 'add_rewrite' ) );
@@ -49,6 +50,8 @@ class AOD_CD_Dashboard {
 		add_action( 'wp_ajax_aod_cd_order_note', array( $this, 'ajax_order_note' ) );
 		add_action( 'wp_ajax_aod_cd_save_product', array( $this, 'ajax_save_product' ) );
 		add_action( 'wp_ajax_aod_cd_delete_product', array( $this, 'ajax_delete_product' ) );
+		add_action( 'wp_ajax_aod_cd_save_category', array( $this, 'ajax_save_category' ) );
+		add_action( 'wp_ajax_aod_cd_delete_category', array( $this, 'ajax_delete_category' ) );
 		add_action( 'wp_ajax_aod_cd_save_shipping', array( $this, 'ajax_save_shipping' ) );
 		add_action( 'wp_ajax_aod_cd_save_pixels', array( $this, 'ajax_save_pixels' ) );
 		add_action( 'wp_ajax_aod_cd_save_whatsapp', array( $this, 'ajax_save_whatsapp' ) );
@@ -180,7 +183,11 @@ class AOD_CD_Dashboard {
 			ajaxUrl: <?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>,
 			nonce:   <?php echo wp_json_encode( wp_create_nonce( 'aod_cd' ) ); ?>,
 			base:    <?php echo wp_json_encode( $base ); ?>,
-			i18nNotePrompt: <?php echo wp_json_encode( __( 'Note pour cette commande :', 'aod-client-dashboard' ) ); ?>
+			i18nNotePrompt: <?php echo wp_json_encode( __( 'Note pour cette commande :', 'aod-client-dashboard' ) ); ?>,
+			i18nCatRename:  <?php echo wp_json_encode( __( 'Renommer', 'aod-client-dashboard' ) ); ?>,
+			i18nCatDelete:  <?php echo wp_json_encode( __( 'Supprimer', 'aod-client-dashboard' ) ); ?>,
+			i18nCatDelConfirm: <?php echo wp_json_encode( __( 'Supprimer cette catégorie ? Les produits concernés perdront ce classement.', 'aod-client-dashboard' ) ); ?>,
+			i18nCatZero:    <?php echo wp_json_encode( __( '0 produit', 'aod-client-dashboard' ) ); ?>
 		};
 	</script>
 </head>
@@ -245,6 +252,9 @@ class AOD_CD_Dashboard {
 				break;
 			case 'products':
 				$this->section_products();
+				break;
+			case 'categories':
+				$this->render_categories_page();
 				break;
 			case 'shipping':
 				$this->section_shipping();
@@ -880,6 +890,65 @@ class AOD_CD_Dashboard {
 		return $args ? add_query_arg( $args, $url ) : $url;
 	}
 
+	/* ============================================================
+	 * Catégories de produits : page de gestion (créer / renommer / supprimer)
+	 * ========================================================== */
+
+	/**
+	 * Page « Catégories » : création, renommage et suppression des catégories
+	 * de produits (taxonomie product_cat). La suppression ne touche pas aux
+	 * produits — ils perdent simplement ce classement.
+	 */
+	protected function render_categories_page() {
+		$terms = get_terms( array( 'taxonomy' => 'product_cat', 'hide_empty' => false, 'orderby' => 'name', 'order' => 'ASC' ) );
+		if ( is_wp_error( $terms ) ) {
+			$terms = array();
+		}
+		?>
+		<div class="aod-cd-cats" id="aod-cd-cats">
+			<h2 class="aod-cd-form-title"><?php esc_html_e( 'Catégories de produits', 'aod-client-dashboard' ); ?></h2>
+			<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Créez, renommez ou supprimez les catégories qui servent à classer vos produits. Supprimer une catégorie n’efface aucun produit : les produits concernés perdent simplement ce classement.', 'aod-client-dashboard' ); ?></p>
+
+			<form class="aod-cd-cat-new" id="aod-cd-cat-new">
+				<input type="text" name="cat_name" class="aod-cd-cat-newname" placeholder="<?php esc_attr_e( 'Nom de la nouvelle catégorie', 'aod-client-dashboard' ); ?>" required>
+				<button type="submit" class="aod-cd-btn aod-cd-btn-primary">+ <?php esc_html_e( 'Ajouter', 'aod-client-dashboard' ); ?></button>
+			</form>
+
+			<div class="aod-cd-cat-list">
+				<?php if ( empty( $terms ) ) : ?>
+					<p class="aod-cd-empty aod-cd-cat-empty"><?php esc_html_e( 'Aucune catégorie pour le moment.', 'aod-client-dashboard' ); ?></p>
+				<?php else :
+					foreach ( $terms as $t ) {
+						$this->render_category_row( $t->term_id, $t->name, (int) $t->count );
+					}
+				endif; ?>
+			</div>
+			<template id="aod-cd-cat-row-tpl"><?php $this->render_category_row( 0, '', 0 ); ?></template>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Une ligne de catégorie dans la page de gestion.
+	 *
+	 * @param int    $id    Term ID.
+	 * @param string $name  Nom de la catégorie.
+	 * @param int    $count Nombre de produits rattachés.
+	 */
+	protected function render_category_row( $id, $name, $count ) {
+		?>
+		<div class="aod-cd-cat-row" data-id="<?php echo esc_attr( (string) $id ); ?>">
+			<input type="text" class="aod-cd-cat-name" value="<?php echo esc_attr( $name ); ?>">
+			<span class="aod-cd-cat-count"><?php
+				/* translators: %d: nombre de produits */
+				printf( esc_html( _n( '%d produit', '%d produits', $count, 'aod-client-dashboard' ) ), (int) $count );
+			?></span>
+			<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-cat-save"><?php esc_html_e( 'Renommer', 'aod-client-dashboard' ); ?></button>
+			<button type="button" class="aod-cd-color-del aod-cd-cat-del" aria-label="<?php esc_attr_e( 'Supprimer la catégorie', 'aod-client-dashboard' ); ?>">&times;</button>
+		</div>
+		<?php
+	}
+
 	/**
 	 * Liste des produits avec actions (ajouter / éditer / supprimer).
 	 */
@@ -1201,6 +1270,7 @@ class AOD_CD_Dashboard {
 						<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-opt-add" data-next="<?php echo esc_attr( (string) $si ); ?>">+ <?php esc_html_e( 'Ajouter une section', 'aod-client-dashboard' ); ?></button>
 
 						<template id="aod-cd-opt-section-tpl"><?php $this->render_option_section( '{SI}', array( 'values' => array( array() ) ) ); ?></template>
+						<?php $this->render_color_palette_popover(); ?>
 					</div>
 				</div>
 			</details>
@@ -1322,6 +1392,7 @@ class AOD_CD_Dashboard {
 						'price'    => ( isset( $val['price'] ) && '' !== $val['price'] ) ? (string) $val['price'] : '',
 						'image_id' => $img_id,
 						'img'      => $img_id ? wp_get_attachment_image_url( $img_id, 'thumbnail' ) : '',
+						'hex'      => isset( $val['hex'] ) ? $this->sanitize_hex( (string) $val['hex'] ) : '',
 					);
 				}
 				if ( ! $values ) {
@@ -1414,9 +1485,10 @@ class AOD_CD_Dashboard {
 	 * @param array      $val name, price, image_id, img.
 	 */
 	protected function render_option_value( $si, $vi, $val ) {
-		$val = wp_parse_args( $val, array( 'name' => '', 'price' => '', 'image_id' => 0, 'img' => '' ) );
+		$val = wp_parse_args( $val, array( 'name' => '', 'price' => '', 'image_id' => 0, 'img' => '', 'hex' => '' ) );
 		$s   = esc_attr( (string) $si );
 		$v   = esc_attr( (string) $vi );
+		$hex = $this->sanitize_hex( (string) $val['hex'] );
 		?>
 		<div class="aod-cd-opt-value" data-vi="<?php echo $v; ?>">
 			<label class="aod-cd-opt-imgbox">
@@ -1425,10 +1497,85 @@ class AOD_CD_Dashboard {
 				<input type="hidden" name="opt_value_imgid[<?php echo $s; ?>][<?php echo $v; ?>]" value="<?php echo esc_attr( (string) $val['image_id'] ); ?>">
 				<input type="file" name="opt_img[<?php echo $s; ?>][<?php echo $v; ?>]" accept="image/*" class="aod-cd-opt-imgfile">
 			</label>
+			<button type="button" class="aod-cd-opt-swatch<?php echo $hex ? ' has-color' : ''; ?>" style="<?php echo $hex ? 'background-color:' . esc_attr( $hex ) : ''; ?>" aria-label="<?php esc_attr_e( 'Choisir une couleur', 'aod-client-dashboard' ); ?>" title="<?php esc_attr_e( 'Choisir une couleur prédéfinie', 'aod-client-dashboard' ); ?>">🎨</button>
+			<input type="hidden" name="opt_value_hex[<?php echo $s; ?>][<?php echo $v; ?>]" class="aod-cd-opt-hex" value="<?php echo esc_attr( $hex ); ?>">
 			<input type="text" name="opt_value_name[<?php echo $s; ?>][<?php echo $v; ?>]" class="aod-cd-opt-name" value="<?php echo esc_attr( $val['name'] ); ?>" placeholder="<?php esc_attr_e( 'ex : Rouge, L, 42…', 'aod-client-dashboard' ); ?>">
 			<span class="aod-cd-opt-plus" aria-hidden="true">+</span>
 			<input type="number" step="0.01" min="0" name="opt_value_price[<?php echo $s; ?>][<?php echo $v; ?>]" class="aod-cd-opt-price" value="<?php echo esc_attr( $val['price'] ); ?>" placeholder="<?php esc_attr_e( 'supplément', 'aod-client-dashboard' ); ?>">
 			<button type="button" class="aod-cd-color-del aod-cd-opt-val-del" aria-label="<?php esc_attr_e( 'Supprimer cette valeur', 'aod-client-dashboard' ); ?>">&times;</button>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Palette de couleurs prédéfinies (nom → code hex réel). Permet au marchand
+	 * de piocher une couleur sans la saisir à la main ; la pastille affiche la
+	 * vraie couleur côté client (formulaire de commande).
+	 *
+	 * @return array Liste de [ nom, hex ].
+	 */
+	protected function color_palette() {
+		return array(
+			array( __( 'Noir', 'aod-client-dashboard' ), '#1a1a1a' ),
+			array( __( 'Blanc', 'aod-client-dashboard' ), '#ffffff' ),
+			array( __( 'Gris', 'aod-client-dashboard' ), '#9ca3af' ),
+			array( __( 'Gris clair', 'aod-client-dashboard' ), '#d1d5db' ),
+			array( __( 'Gris foncé', 'aod-client-dashboard' ), '#4b5563' ),
+			array( __( 'Beige', 'aod-client-dashboard' ), '#e8d9b5' ),
+			array( __( 'Crème', 'aod-client-dashboard' ), '#f7f1de' ),
+			array( __( 'Marron', 'aod-client-dashboard' ), '#7b4a2b' ),
+			array( __( 'Bordeaux', 'aod-client-dashboard' ), '#5c1a2b' ),
+			array( __( 'Rouge', 'aod-client-dashboard' ), '#e02b2b' ),
+			array( __( 'Rouge foncé', 'aod-client-dashboard' ), '#9b1c1c' ),
+			array( __( 'Rose', 'aod-client-dashboard' ), '#f48fb1' ),
+			array( __( 'Fuchsia', 'aod-client-dashboard' ), '#d6336c' ),
+			array( __( 'Corail', 'aod-client-dashboard' ), '#ff6f61' ),
+			array( __( 'Orange', 'aod-client-dashboard' ), '#f97316' ),
+			array( __( 'Moutarde', 'aod-client-dashboard' ), '#c99700' ),
+			array( __( 'Jaune', 'aod-client-dashboard' ), '#f5c518' ),
+			array( __( 'Or', 'aod-client-dashboard' ), '#d4af37' ),
+			array( __( 'Vert clair', 'aod-client-dashboard' ), '#8bc34a' ),
+			array( __( 'Vert', 'aod-client-dashboard' ), '#2e9e4f' ),
+			array( __( 'Vert foncé', 'aod-client-dashboard' ), '#1b5e20' ),
+			array( __( 'Kaki', 'aod-client-dashboard' ), '#6b6b3a' ),
+			array( __( 'Turquoise', 'aod-client-dashboard' ), '#1abc9c' ),
+			array( __( 'Cyan', 'aod-client-dashboard' ), '#06b6d4' ),
+			array( __( 'Bleu ciel', 'aod-client-dashboard' ), '#60a5fa' ),
+			array( __( 'Bleu', 'aod-client-dashboard' ), '#2563eb' ),
+			array( __( 'Bleu marine', 'aod-client-dashboard' ), '#1e3a5f' ),
+			array( __( 'Mauve', 'aod-client-dashboard' ), '#b39ddb' ),
+			array( __( 'Violet', 'aod-client-dashboard' ), '#7c3aed' ),
+			array( __( 'Argent', 'aod-client-dashboard' ), '#c0c0c0' ),
+		);
+	}
+
+	/**
+	 * Valide un code couleur hexadécimal #RRGGBB. Renvoie '' si invalide.
+	 *
+	 * @param string $raw
+	 * @return string
+	 */
+	protected function sanitize_hex( $raw ) {
+		$raw = trim( (string) $raw );
+		return preg_match( '/^#[0-9a-fA-F]{6}$/', $raw ) ? strtolower( $raw ) : '';
+	}
+
+	/**
+	 * Popover de la palette de couleurs prédéfinies, rendu une seule fois dans
+	 * le formulaire produit. Ouvert via les pastilles 🎨 des valeurs (JS).
+	 */
+	protected function render_color_palette_popover() {
+		?>
+		<div class="aod-cd-palette" id="aod-cd-palette" hidden>
+			<div class="aod-cd-palette-grid">
+				<?php foreach ( $this->color_palette() as $c ) :
+					list( $cname, $chex ) = $c; ?>
+					<button type="button" class="aod-cd-palette-sw" data-name="<?php echo esc_attr( $cname ); ?>" data-hex="<?php echo esc_attr( $chex ); ?>" title="<?php echo esc_attr( $cname ); ?>">
+						<span class="aod-cd-palette-dot" style="background-color:<?php echo esc_attr( $chex ); ?>"></span>
+						<span class="aod-cd-palette-lbl"><?php echo esc_html( $cname ); ?></span>
+					</button>
+				<?php endforeach; ?>
+			</div>
 		</div>
 		<?php
 	}
@@ -1739,10 +1886,12 @@ class AOD_CD_Dashboard {
 					$price = '';
 				}
 				$imgid = ( $visual && isset( $_POST['opt_value_imgid'][ $si ][ $vi ] ) ) ? absint( $_POST['opt_value_imgid'][ $si ][ $vi ] ) : 0;
+				$hex   = isset( $_POST['opt_value_hex'][ $si ][ $vi ] ) ? $this->sanitize_hex( (string) wp_unslash( $_POST['opt_value_hex'][ $si ][ $vi ] ) ) : '';
 				$values[ $vi ] = array(
 					'name'     => $name,
 					'price'    => $price,
 					'image_id' => $imgid,
+					'hex'      => $hex,
 				);
 			}
 			if ( '' === $label || ! $values ) {
@@ -1816,6 +1965,7 @@ class AOD_CD_Dashboard {
 					'name'     => (string) $value['name'],
 					'price'    => ( isset( $value['price'] ) && '' !== $value['price'] ) ? (string) $value['price'] : '',
 					'image_id' => isset( $value['image_id'] ) ? (int) $value['image_id'] : 0,
+					'hex'      => isset( $value['hex'] ) ? $this->sanitize_hex( (string) $value['hex'] ) : '',
 				);
 			}
 			if ( ! $values ) {
@@ -1973,6 +2123,67 @@ class AOD_CD_Dashboard {
 		}
 		$product->delete( false ); // false = corbeille (réversible), pas suppression définitive.
 		wp_send_json_success( array( 'message' => __( 'Produit déplacé dans la corbeille.', 'aod-client-dashboard' ) ) );
+	}
+
+	/* ============================================================
+	 * AJAX : catégories de produits (créer / renommer / supprimer)
+	 * ========================================================== */
+
+	/**
+	 * Crée (term_id absent ou 0) ou renomme (term_id fourni) une catégorie de
+	 * produits. Renvoie l'identifiant, le nom et le compteur à jour.
+	 */
+	public function ajax_save_category() {
+		check_ajax_referer( 'aod_cd', 'nonce' );
+		if ( ! current_user_can( 'edit_products' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Accès refusé.', 'aod-client-dashboard' ) ), 403 );
+		}
+		$term_id = isset( $_POST['term_id'] ) ? absint( $_POST['term_id'] ) : 0;
+		$name    = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
+		if ( '' === $name ) {
+			wp_send_json_error( array( 'message' => __( 'Le nom de la catégorie est obligatoire.', 'aod-client-dashboard' ) ), 400 );
+		}
+
+		if ( $term_id ) {
+			$res = wp_update_term( $term_id, 'product_cat', array( 'name' => $name ) );
+		} else {
+			$res = wp_insert_term( $name, 'product_cat' );
+		}
+		if ( is_wp_error( $res ) ) {
+			$msg = $res->get_error_message();
+			if ( 'term_exists' === $res->get_error_code() ) {
+				$msg = __( 'Cette catégorie existe déjà.', 'aod-client-dashboard' );
+			}
+			wp_send_json_error( array( 'message' => $msg ), 400 );
+		}
+
+		$id   = is_array( $res ) ? (int) $res['term_id'] : (int) $term_id;
+		$term = get_term( $id, 'product_cat' );
+		wp_send_json_success( array(
+			'message' => $term_id ? __( 'Catégorie renommée.', 'aod-client-dashboard' ) : __( 'Catégorie créée.', 'aod-client-dashboard' ),
+			'id'      => $id,
+			'name'    => $term && ! is_wp_error( $term ) ? $term->name : $name,
+			'count'   => $term && ! is_wp_error( $term ) ? (int) $term->count : 0,
+		) );
+	}
+
+	/**
+	 * Supprime une catégorie de produits. Les produits rattachés sont conservés.
+	 */
+	public function ajax_delete_category() {
+		check_ajax_referer( 'aod_cd', 'nonce' );
+		if ( ! current_user_can( 'edit_products' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Accès refusé.', 'aod-client-dashboard' ) ), 403 );
+		}
+		$term_id = isset( $_POST['term_id'] ) ? absint( $_POST['term_id'] ) : 0;
+		if ( ! $term_id ) {
+			wp_send_json_error( array( 'message' => __( 'Catégorie introuvable.', 'aod-client-dashboard' ) ), 400 );
+		}
+		$res = wp_delete_term( $term_id, 'product_cat' );
+		if ( is_wp_error( $res ) || ! $res ) {
+			wp_send_json_error( array( 'message' => __( 'Suppression impossible.', 'aod-client-dashboard' ) ), 400 );
+		}
+		wp_send_json_success( array( 'message' => __( 'Catégorie supprimée.', 'aod-client-dashboard' ) ) );
 	}
 
 	/* ============================================================
