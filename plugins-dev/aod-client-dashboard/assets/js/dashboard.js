@@ -89,6 +89,12 @@
 		// Couleurs / variantes : ajout, suppression, aperçu photo par ligne.
 		bindColorRows();
 
+		// Paliers de prix par quantité (packs) : ajout / suppression de lignes.
+		bindTierRows();
+
+		// Libellé de l'axe de variante : synchronise l'en-tête de colonne en direct.
+		bindVariantLabel();
+
 		// Enregistrement du produit (formulaire multipart via FormData).
 		var form = document.getElementById( 'aod-cd-product-form' );
 		if ( form ) {
@@ -190,6 +196,48 @@
 			var url   = URL.createObjectURL( file.files[0] );
 			if ( prev )  { prev.src = url; prev.style.display = ''; }
 			if ( empty ) { empty.style.display = 'none'; }
+		} );
+	}
+
+	/* Paliers de prix par quantité (packs) : lignes ajoutables */
+	function bindTierRows() {
+		var wrap = document.getElementById( 'aod-cd-tiers' );
+		if ( ! wrap ) { return; }
+		var rows   = wrap.querySelector( '.aod-cd-tier-rows' );
+		var tpl    = document.getElementById( 'aod-cd-tier-tpl' );
+		var addBtn = wrap.querySelector( '.aod-cd-tier-add' );
+
+		if ( addBtn && tpl && rows ) {
+			addBtn.addEventListener( 'click', function () {
+				var next = parseInt( addBtn.dataset.next, 10 ) || 0;
+				var html = tpl.innerHTML.replace( /__i__/g, String( next ) );
+				var tmp  = document.createElement( 'div' );
+				tmp.innerHTML = html.trim();
+				var node = tmp.firstChild;
+				rows.appendChild( node );
+				addBtn.dataset.next = String( next + 1 );
+				var first = node.querySelector( 'input' );
+				if ( first ) { first.focus(); }
+			} );
+		}
+
+		wrap.addEventListener( 'click', function ( e ) {
+			var del = e.target.closest( '.aod-cd-tier-del' );
+			if ( del ) {
+				var row = del.closest( '.aod-cd-tier-row' );
+				if ( row ) { row.remove(); }
+			}
+		} );
+	}
+
+	/* Libellé de l'axe de variante : met à jour l'en-tête de colonne en direct */
+	function bindVariantLabel() {
+		var input = document.getElementById( 'aod-cd-variant-label' );
+		if ( ! input ) { return; }
+		var head = document.querySelector( '.aod-cd-variant-colname' );
+		if ( ! head ) { return; }
+		input.addEventListener( 'input', function () {
+			head.textContent = input.value.trim() || 'Couleur';
 		} );
 	}
 

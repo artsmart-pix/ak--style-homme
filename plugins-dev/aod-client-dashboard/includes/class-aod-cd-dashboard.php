@@ -889,6 +889,21 @@ class AOD_CD_Dashboard {
 
 		$categories = get_terms( array( 'taxonomy' => 'product_cat', 'hide_empty' => false ) );
 
+		// Libellé de l'axe de variante (générique : Couleur, Taille, Modèle…).
+		$variant_label = $product ? (string) $product->get_meta( '_aod_variant_label' ) : '';
+		if ( '' === $variant_label ) {
+			$variant_label = __( 'Couleur', 'aod-client-dashboard' );
+		}
+
+		// Paliers de prix par quantité (packs « 2 pour X ») — produits simples.
+		$tiers = array();
+		if ( $product ) {
+			$raw = $product->get_meta( '_aod_qty_tiers' );
+			if ( is_array( $raw ) ) {
+				$tiers = $raw;
+			}
+		}
+
 		$title = $pid ? __( 'Modifier le produit', 'aod-client-dashboard' ) : __( 'Nouveau produit', 'aod-client-dashboard' );
 		?>
 		<div class="aod-cd-bar">
@@ -976,12 +991,18 @@ class AOD_CD_Dashboard {
 			</div>
 
 			<div class="aod-cd-colors" id="aod-cd-colors">
-				<h3 class="aod-cd-form-subtitle"><?php esc_html_e( 'Couleurs / Variantes', 'aod-client-dashboard' ); ?></h3>
-				<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Laissez vide pour un produit simple. Ajoutez une ligne par couleur : chacune peut avoir son prix, son stock et sa photo. Le client choisira la couleur sur la page produit.', 'aod-client-dashboard' ); ?></p>
+				<h3 class="aod-cd-form-subtitle"><?php esc_html_e( 'Variantes', 'aod-client-dashboard' ); ?></h3>
+				<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Laissez vide pour un produit simple. Ajoutez une ligne par variante : chacune peut avoir son prix, son stock et sa photo. Le client choisira la variante sur la page produit.', 'aod-client-dashboard' ); ?></p>
+
+				<label class="aod-cd-field" style="max-width:280px">
+					<span class="aod-cd-label"><?php esc_html_e( 'Nom de la variante', 'aod-client-dashboard' ); ?></span>
+					<input type="text" name="variant_label" id="aod-cd-variant-label" value="<?php echo esc_attr( $variant_label ); ?>" placeholder="<?php esc_attr_e( 'ex : Couleur, Taille, Modèle…', 'aod-client-dashboard' ); ?>">
+					<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Le mot affiché au client pour choisir (Couleur, Taille, Pointure, Grammage…).', 'aod-client-dashboard' ); ?></span>
+				</label>
 
 				<div class="aod-cd-color-head">
 					<span></span>
-					<span><?php esc_html_e( 'Couleur', 'aod-client-dashboard' ); ?></span>
+					<span class="aod-cd-variant-colname"><?php echo esc_html( $variant_label ); ?></span>
 					<span><?php printf( esc_html__( 'Prix (%s)', 'aod-client-dashboard' ), esc_html( $currency ) ); ?></span>
 					<span><?php esc_html_e( 'Promo', 'aod-client-dashboard' ); ?></span>
 					<span><?php esc_html_e( 'Stock', 'aod-client-dashboard' ); ?></span>
@@ -998,10 +1019,37 @@ class AOD_CD_Dashboard {
 					?>
 				</div>
 
-				<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-color-add" data-next="<?php echo esc_attr( (string) $ri ); ?>">+ <?php esc_html_e( 'Ajouter une couleur', 'aod-client-dashboard' ); ?></button>
+				<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-color-add" data-next="<?php echo esc_attr( (string) $ri ); ?>">+ <?php esc_html_e( 'Ajouter une variante', 'aod-client-dashboard' ); ?></button>
 
 				<template id="aod-cd-color-tpl">
 					<?php $this->render_color_row( '__i__', array() ); ?>
+				</template>
+			</div>
+
+			<div class="aod-cd-tiers" id="aod-cd-tiers">
+				<h3 class="aod-cd-form-subtitle"><?php esc_html_e( 'Prix par quantité (packs)', 'aod-client-dashboard' ); ?></h3>
+				<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Offrez un prix dégressif par lot (« 2 pour … », « 3 pour … »). Indiquez le prix unitaire appliqué à partir d’une certaine quantité. Laissez vide pour un prix unique. (Produits simples uniquement — sans variantes.)', 'aod-client-dashboard' ); ?></p>
+
+				<div class="aod-cd-tier-head">
+					<span><?php esc_html_e( 'À partir de (qté)', 'aod-client-dashboard' ); ?></span>
+					<span><?php printf( esc_html__( 'Prix unitaire (%s)', 'aod-client-dashboard' ), esc_html( $currency ) ); ?></span>
+					<span></span>
+				</div>
+
+				<div class="aod-cd-tier-rows">
+					<?php
+					$ti = 0;
+					foreach ( $tiers as $row ) {
+						$this->render_tier_row( $ti, $row );
+						$ti++;
+					}
+					?>
+				</div>
+
+				<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-tier-add" data-next="<?php echo esc_attr( (string) $ti ); ?>">+ <?php esc_html_e( 'Ajouter un palier', 'aod-client-dashboard' ); ?></button>
+
+				<template id="aod-cd-tier-tpl">
+					<?php $this->render_tier_row( '__i__', array() ); ?>
 				</template>
 			</div>
 
@@ -1040,6 +1088,24 @@ class AOD_CD_Dashboard {
 		<?php
 	}
 
+	/**
+	 * Une ligne de palier de prix par quantité.
+	 *
+	 * @param int|string $i   Index de la ligne (ou « __i__ » pour le gabarit JS).
+	 * @param array      $row min, price.
+	 */
+	protected function render_tier_row( $i, $row ) {
+		$row = wp_parse_args( $row, array( 'min' => '', 'price' => '' ) );
+		$idx = esc_attr( (string) $i );
+		?>
+		<div class="aod-cd-tier-row" data-row="<?php echo $idx; ?>">
+			<input type="number" min="2" step="1" name="tier_min[<?php echo $idx; ?>]" value="<?php echo esc_attr( (string) $row['min'] ); ?>" placeholder="<?php esc_attr_e( 'ex : 2', 'aod-client-dashboard' ); ?>">
+			<input type="number" min="0" step="0.01" name="tier_price[<?php echo $idx; ?>]" value="<?php echo esc_attr( (string) $row['price'] ); ?>" placeholder="<?php esc_attr_e( 'prix / pièce', 'aod-client-dashboard' ); ?>">
+			<button type="button" class="aod-cd-color-del aod-cd-tier-del" aria-label="<?php esc_attr_e( 'Supprimer ce palier', 'aod-client-dashboard' ); ?>">&times;</button>
+		</div>
+		<?php
+	}
+
 	/* ============================================================
 	 * AJAX : enregistrer (créer / mettre à jour) un produit
 	 * ========================================================== */
@@ -1069,6 +1135,17 @@ class AOD_CD_Dashboard {
 
 		$reg  = isset( $_POST['regular_price'] ) ? wc_format_decimal( wp_unslash( $_POST['regular_price'] ) ) : '';
 		$sale = isset( $_POST['sale_price'] ) ? wc_format_decimal( wp_unslash( $_POST['sale_price'] ) ) : '';
+
+		// Garde-fou : le prix promo ne peut pas dépasser le prix normal.
+		if ( '' !== $sale && '' !== $reg && (float) $sale > (float) $reg ) {
+			wp_send_json_error( array( 'message' => __( 'Le prix promo doit être inférieur ou égal au prix normal.', 'aod-client-dashboard' ) ), 400 );
+		}
+
+		// Libellé générique de l'axe de variante (Couleur, Taille, Modèle…).
+		$axis_label = isset( $_POST['variant_label'] ) ? sanitize_text_field( wp_unslash( $_POST['variant_label'] ) ) : '';
+		if ( '' === $axis_label ) {
+			$axis_label = __( 'Couleur', 'aod-client-dashboard' );
+		}
 
 		// SKU (peut lever une exception si doublon).
 		if ( isset( $_POST['sku'] ) ) {
@@ -1104,10 +1181,13 @@ class AOD_CD_Dashboard {
 
 		if ( $colors ) {
 			// Produit variable : le parent n'a ni stock ni prix propres ; le prix
-			// principal sert de prix par défaut pour les couleurs sans prix.
+			// principal sert de prix par défaut pour les variantes sans prix.
 			$product->set_regular_price( $reg );
 			$product->set_sale_price( '' !== $sale ? $sale : '' );
 			$product->set_manage_stock( false );
+			// Libellé de l'axe conservé ; les paliers quantité ne s'appliquent pas aux variables.
+			$product->update_meta_data( '_aod_variant_label', $axis_label );
+			$product->delete_meta_data( '_aod_qty_tiers' );
 		} else {
 			// Produit simple : prix + stock classiques.
 			$product->set_regular_price( $reg );
@@ -1119,6 +1199,15 @@ class AOD_CD_Dashboard {
 				$product->set_stock_quantity( $qty );
 				$product->set_stock_status( $qty > 0 ? 'instock' : 'outofstock' );
 			}
+			// Paliers de prix par quantité (prix unitaire de référence = promo sinon normal).
+			$base   = ( '' !== $sale ) ? (float) $sale : (float) $reg;
+			$tiers  = $this->collect_qty_tiers( $base );
+			if ( $tiers ) {
+				$product->update_meta_data( '_aod_qty_tiers', $tiers );
+			} else {
+				$product->delete_meta_data( '_aod_qty_tiers' );
+			}
+			$product->delete_meta_data( '_aod_variant_label' );
 		}
 
 		$product->save();
@@ -1143,9 +1232,9 @@ class AOD_CD_Dashboard {
 			set_post_thumbnail( $new_id, $att_id );
 		}
 
-		// Variations couleur.
+		// Variations.
 		if ( $colors ) {
-			$this->save_color_variations( $product, $colors, '' !== $reg ? $reg : '' );
+			$this->save_color_variations( $product, $colors, '' !== $reg ? $reg : '', $axis_label );
 		}
 
 		wp_send_json_success( array(
@@ -1184,20 +1273,62 @@ class AOD_CD_Dashboard {
 	}
 
 	/**
-	 * Crée / met à jour les variations couleur d'un produit variable et supprime
+	 * Rassemble les paliers de prix par quantité postés (lignes valides uniquement).
+	 *
+	 * Une ligne est retenue si : quantité ≥ 2 et prix > 0. Le prix unitaire doit
+	 * être inférieur au prix de base (sinon le palier n'a pas d'intérêt et est ignoré).
+	 * Le résultat est trié par quantité croissante.
+	 *
+	 * @param float $base_price Prix unitaire de référence (promo sinon normal).
+	 * @return array Liste de [ 'min' => int, 'price' => float ].
+	 */
+	protected function collect_qty_tiers( $base_price ) {
+		if ( empty( $_POST['tier_min'] ) || ! is_array( $_POST['tier_min'] ) ) {
+			return array();
+		}
+		$mins   = wp_unslash( $_POST['tier_min'] );   // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$prices = isset( $_POST['tier_price'] ) ? wp_unslash( $_POST['tier_price'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$tiers  = array();
+		$seen   = array();
+		foreach ( $mins as $i => $raw_min ) {
+			$min   = absint( $raw_min );
+			$price = isset( $prices[ $i ] ) ? (float) wc_format_decimal( $prices[ $i ] ) : 0;
+			if ( $min < 2 || $price <= 0 ) {
+				continue;
+			}
+			if ( $base_price > 0 && $price >= $base_price ) {
+				continue; // Palier sans réduction réelle : ignoré.
+			}
+			if ( isset( $seen[ $min ] ) ) {
+				continue; // Doublon de quantité : on garde le premier.
+			}
+			$seen[ $min ] = true;
+			$tiers[]      = array( 'min' => $min, 'price' => $price );
+		}
+		usort( $tiers, function ( $a, $b ) {
+			return $a['min'] - $b['min'];
+		} );
+		return $tiers;
+	}
+
+	/**
+	 * Crée / met à jour les variations d'un produit variable et supprime
 	 * celles qui ne sont plus présentes.
 	 *
 	 * @param WC_Product_Variable $product
 	 * @param array               $colors        Lignes issues de collect_color_rows().
 	 * @param string              $default_price Prix par défaut (prix principal).
+	 * @param string              $axis_label    Libellé de l'axe (Couleur, Taille…).
 	 */
-	protected function save_color_variations( $product, $colors, $default_price ) {
+	protected function save_color_variations( $product, $colors, $default_price, $axis_label = 'Couleur' ) {
 		$pid = $product->get_id();
 
-		// 1) Attribut « Couleur » (local, utilisé pour les variations).
-		$attribute = new WC_Product_Attribute();
+		// 1) Attribut de variante (local) : libellé configurable, slug dérivé.
+		$axis_label = '' !== trim( (string) $axis_label ) ? $axis_label : 'Couleur';
+		$axis_slug  = sanitize_title( $axis_label );
+		$attribute  = new WC_Product_Attribute();
 		$attribute->set_id( 0 );
-		$attribute->set_name( 'Couleur' );
+		$attribute->set_name( $axis_label );
 		$attribute->set_options( wp_list_pluck( $colors, 'name' ) );
 		$attribute->set_position( 0 );
 		$attribute->set_visible( true );
@@ -1241,11 +1372,15 @@ class AOD_CD_Dashboard {
 				$variation->set_parent_id( $pid );
 			}
 
-			$variation->set_attributes( array( 'couleur' => $label ) );
+			$variation->set_attributes( array( $axis_slug => $label ) );
 
 			$price = ( '' !== $row['price'] ) ? wc_format_decimal( $row['price'] ) : $default_price;
 			$variation->set_regular_price( $price );
 			$sale = ( '' !== $row['sale'] ) ? wc_format_decimal( $row['sale'] ) : '';
+			// Garde-fou : une promo supérieure au prix de la variante est ignorée.
+			if ( '' !== $sale && '' !== (string) $price && (float) $sale > (float) $price ) {
+				$sale = '';
+			}
 			$variation->set_sale_price( '' !== $sale ? $sale : '' );
 
 			if ( '' !== $row['stock'] ) {

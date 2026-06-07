@@ -264,6 +264,19 @@ body.aod-cd{
 	.aod-cd-color-del{grid-column:3;justify-self:end}
 }
 
+/* Paliers de prix par quantité (packs) */
+.aod-cd-tiers{margin-top:22px;border-top:1px solid var(--cd-line);padding-top:18px}
+.aod-cd-tier-head,.aod-cd-tier-row{
+	display:grid;grid-template-columns:1fr 1fr 32px;gap:10px;align-items:center;
+}
+.aod-cd-tier-head{margin:10px 0 6px;font-size:12px;font-weight:700;color:#6b7280}
+.aod-cd-tier-head span{padding-inline-start:2px}
+.aod-cd-tier-rows{display:flex;flex-direction:column;gap:10px}
+.aod-cd-tier-row input[type=number]{
+	width:100%;padding:9px 10px;border:1px solid var(--cd-line);border-radius:9px;font-size:14px;
+}
+.aod-cd-tier-add{margin-top:12px}
+
 /* ---- Recherche ---- */
 .aod-cd-search{display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
 .aod-cd-search input[type="search"]{

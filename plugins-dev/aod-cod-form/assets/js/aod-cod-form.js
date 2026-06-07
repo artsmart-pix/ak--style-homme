@@ -13,6 +13,26 @@
 			var $form     = $box.find( '.aod-cod__form' );
 			var price     = parseFloat( $box.data( 'price' ) ) || 0;
 			var productId = $box.data( 'product' );
+			// Paliers de prix par quantité (packs) — produits simples.
+			var tiers     = $box.data( 'tiers' ) || [];
+			if ( typeof tiers === 'string' ) {
+				try { tiers = JSON.parse( tiers ); } catch ( e ) { tiers = []; }
+			}
+			if ( ! Array.isArray( tiers ) ) { tiers = []; }
+
+			// Prix unitaire applicable pour une quantité (palier le plus avantageux atteint).
+			function tierUnit( qty ) {
+				var unit = price, bestMin = 1;
+				for ( var i = 0; i < tiers.length; i++ ) {
+					var min = parseInt( tiers[ i ].min, 10 ) || 0;
+					var p   = parseFloat( tiers[ i ].price ) || 0;
+					if ( min >= 2 && p > 0 && p < price && qty >= min && min >= bestMin ) {
+						bestMin = min;
+						unit    = p;
+					}
+				}
+				return unit;
+			}
 			var $wilaya   = $form.find( 'select[name="wilaya"]' );
 			var $commune  = $form.find( 'select[name="commune"]' );
 			var $qty      = $form.find( 'input[name="qty"]' );
@@ -37,7 +57,22 @@
 					return sum;
 				}
 				var qty = Math.max( 1, parseInt( $qty.val(), 10 ) || 1 );
-				return price * qty;
+				return tierUnit( qty ) * qty;
+			}
+
+			// Met en évidence le palier actif selon la quantité courante.
+			function updateTierHint() {
+				if ( ! tiers.length ) { return; }
+				var qty = Math.max( 1, parseInt( $qty.val(), 10 ) || 1 );
+				var bestMin = 1;
+				for ( var i = 0; i < tiers.length; i++ ) {
+					var min = parseInt( tiers[ i ].min, 10 ) || 0;
+					if ( min >= 2 && qty >= min && min >= bestMin ) { bestMin = min; }
+				}
+				$box.find( '.aod-cod__tiers li' ).each( function () {
+					var m = parseInt( $( this ).attr( 'data-min' ), 10 ) || 0;
+					$( this ).toggleClass( 'is-active', m === bestMin );
+				} );
 			}
 
 			// Quantité totale (toutes couleurs) — utile pour le lead.
@@ -115,6 +150,8 @@
 				var subtotal = subtotalNow();
 				var th       = freeThreshold();
 				var free     = th > 0 && subtotal >= th;
+
+				updateTierHint();
 
 				// Prix sur chaque carte de mode de livraison.
 				$box.find( '.aod-cod__radio-price' ).each( function () {

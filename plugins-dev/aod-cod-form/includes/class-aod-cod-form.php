@@ -199,15 +199,36 @@ class AOD_COD_Form {
 			? (float) $variations[0]['price']
 			: (float) wc_get_price_to_display( $product );
 
+		// Libellé générique de l'axe de variante (Couleur, Taille, Modèle…).
+		$variant_label = (string) $product->get_meta( '_aod_variant_label' );
+		if ( '' === $variant_label ) {
+			$variant_label = __( 'Couleur', 'aod-cod-form' );
+		}
+
+		// Paliers de prix par quantité (packs) — produits simples uniquement.
+		$tiers = array();
+		if ( ! $is_variable ) {
+			$raw = $product->get_meta( '_aod_qty_tiers' );
+			if ( is_array( $raw ) ) {
+				foreach ( $raw as $t ) {
+					$min = isset( $t['min'] ) ? (int) $t['min'] : 0;
+					$tp  = isset( $t['price'] ) ? (float) $t['price'] : 0;
+					if ( $min >= 2 && $tp > 0 ) {
+						$tiers[] = array( 'min' => $min, 'price' => $tp );
+					}
+				}
+			}
+		}
+
 		ob_start();
 		?>
-		<div class="aod-cod" data-product="<?php echo esc_attr( $product_id ); ?>" data-price="<?php echo esc_attr( $price ); ?>">
+		<div class="aod-cod" data-product="<?php echo esc_attr( $product_id ); ?>" data-price="<?php echo esc_attr( $price ); ?>" data-tiers="<?php echo esc_attr( wp_json_encode( $tiers ) ); ?>">
 			<h3 class="aod-cod__title"><?php esc_html_e( 'Commander maintenant — Paiement à la livraison', 'aod-cod-form' ); ?></h3>
 			<form class="aod-cod__form" novalidate>
 				<?php if ( $is_variable && $variations ) : ?>
 					<div class="aod-cod__field aod-cod__colors">
-						<label><?php esc_html_e( 'Couleur(s)', 'aod-cod-form' ); ?> <span>*</span></label>
-						<p class="aod-cod__colors-hint"><?php esc_html_e( 'Indiquez la quantité par couleur (cliquez une couleur pour voir sa photo).', 'aod-cod-form' ); ?></p>
+						<label><?php echo esc_html( $variant_label ); ?> <span>*</span></label>
+						<p class="aod-cod__colors-hint"><?php esc_html_e( 'Indiquez la quantité par variante (cliquez une variante pour voir sa photo).', 'aod-cod-form' ); ?></p>
 						<div class="aod-cod__color-list">
 							<?php foreach ( $variations as $vi => $v ) : ?>
 								<div class="aod-cod__color" data-id="<?php echo esc_attr( $v['id'] ); ?>" data-price="<?php echo esc_attr( $v['price'] ); ?>" data-img="<?php echo esc_url( $v['img'] ); ?>" data-img-full="<?php echo esc_url( $v['img_full'] ); ?>" data-srcset="<?php echo esc_attr( $v['srcset'] ); ?>">
@@ -291,6 +312,22 @@ class AOD_COD_Form {
 				<div class="aod-cod__field aod-cod__qty">
 					<label><?php esc_html_e( 'Quantité', 'aod-cod-form' ); ?></label>
 					<input type="number" name="qty" value="1" min="1" step="1">
+					<?php if ( $tiers ) : ?>
+						<ul class="aod-cod__tiers">
+							<?php foreach ( $tiers as $t ) : ?>
+								<li data-min="<?php echo esc_attr( $t['min'] ); ?>">
+									<?php
+									/* translators: 1: quantité, 2: prix total du lot */
+									printf(
+										esc_html__( '%1$d pièces : %2$s', 'aod-cod-form' ),
+										(int) $t['min'],
+										wp_strip_all_tags( wc_price( $t['price'] * $t['min'] ) )
+									);
+									?>
+								</li>
+							<?php endforeach; ?>
+						</ul>
+					<?php endif; ?>
 				</div>
 				<?php endif; ?>
 
@@ -399,8 +436,19 @@ class AOD_COD_Form {
 			$order    = wc_create_order();
 			$subtotal = 0;
 			foreach ( $lines as $line ) {
-				$order->add_product( $line['product'], $line['qty'] );
-				$subtotal += (float) wc_get_price_to_display( $line['product'] ) * $line['qty'];
+				// Prix unitaire éventuellement réduit par un palier quantité (produit simple).
+				$unit       = $this->tier_unit_price( $line['product'], $line['qty'] );
+				$line_total = $unit * $line['qty'];
+				$item_id    = $order->add_product( $line['product'], $line['qty'] );
+				if ( $item_id ) {
+					$item = $order->get_item( $item_id );
+					if ( $item ) {
+						$item->set_subtotal( $line_total );
+						$item->set_total( $line_total );
+						$item->save();
+					}
+				}
+				$subtotal += $line_total;
 			}
 
 			$address_parts = array(
@@ -472,5 +520,39 @@ class AOD_COD_Form {
 		} catch ( Exception $e ) {
 			wp_send_json_error( array( 'message' => __( 'Erreur lors de la création de la commande.', 'aod-cod-form' ) ), 500 );
 		}
+	}
+
+	/**
+	 * Prix unitaire d'un produit pour une quantité donnée, en appliquant les
+	 * paliers de prix par quantité (« packs ») définis sur le produit.
+	 *
+	 * Les paliers ne s'appliquent qu'aux produits simples (jamais aux variations).
+	 * On retient le prix du plus grand palier dont la quantité minimale est atteinte,
+	 * et uniquement s'il est réellement inférieur au prix de base (anti-incohérence).
+	 *
+	 * @param WC_Product $product
+	 * @param int        $qty
+	 * @return float Prix unitaire à facturer.
+	 */
+	protected function tier_unit_price( $product, $qty ) {
+		$base = (float) wc_get_price_to_display( $product );
+		if ( ! $product || $product->is_type( 'variation' ) ) {
+			return $base;
+		}
+		$tiers = $product->get_meta( '_aod_qty_tiers' );
+		if ( ! is_array( $tiers ) || ! $tiers ) {
+			return $base;
+		}
+		$unit     = $base;
+		$best_min = 1;
+		foreach ( $tiers as $t ) {
+			$min   = isset( $t['min'] ) ? (int) $t['min'] : 0;
+			$price = isset( $t['price'] ) ? (float) $t['price'] : 0;
+			if ( $min >= 2 && $price > 0 && $price < $base && $qty >= $min && $min >= $best_min ) {
+				$best_min = $min;
+				$unit     = $price;
+			}
+		}
+		return $unit;
 	}
 }
