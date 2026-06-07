@@ -1049,12 +1049,14 @@ class AOD_CD_Dashboard {
 			<a class="aod-cd-btn" href="<?php echo esc_url( $this->products_url() ); ?>">&larr; <?php esc_html_e( 'Retour à la liste', 'aod-client-dashboard' ); ?></a>
 		</div>
 
-		<form class="aod-cd-form" id="aod-cd-product-form" enctype="multipart/form-data">
+		<form class="aod-cd-form aod-cd-acc-form" id="aod-cd-product-form" enctype="multipart/form-data">
 			<input type="hidden" name="product_id" value="<?php echo esc_attr( (string) $pid ); ?>">
 			<h2 class="aod-cd-form-title"><?php echo esc_html( $title ); ?></h2>
 
-			<div class="aod-cd-grid">
-				<div class="aod-cd-col">
+			<!-- Section : Informations générales -->
+			<details class="aod-cd-acc" open>
+				<summary class="aod-cd-acc-sum"><span class="aod-cd-acc-ic">📝</span> <?php esc_html_e( 'Informations générales', 'aod-client-dashboard' ); ?></summary>
+				<div class="aod-cd-acc-body">
 					<label class="aod-cd-field">
 						<span class="aod-cd-label"><?php esc_html_e( 'Nom du produit', 'aod-client-dashboard' ); ?> *</span>
 						<input type="text" name="name" required value="<?php echo esc_attr( $name ); ?>">
@@ -1065,11 +1067,51 @@ class AOD_CD_Dashboard {
 						<textarea name="description" rows="6"><?php echo esc_textarea( $desc ); ?></textarea>
 					</label>
 
+					<label class="aod-cd-field">
+						<span class="aod-cd-label"><?php esc_html_e( 'Arguments de vente (un par ligne)', 'aod-client-dashboard' ); ?></span>
+						<textarea name="selling_points" rows="4" placeholder="<?php esc_attr_e( "Livraison rapide\nGarantie 1 an\nQualité premium", 'aod-client-dashboard' ); ?>"><?php echo esc_textarea( $points_text ); ?></textarea>
+						<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Affichés en liste à puces sur la page produit.', 'aod-client-dashboard' ); ?></span>
+					</label>
+
+					<div class="aod-cd-row2">
+						<label class="aod-cd-field">
+							<span class="aod-cd-label"><?php esc_html_e( 'Catégories', 'aod-client-dashboard' ); ?></span>
+							<select name="category[]" multiple size="5" class="aod-cd-catselect">
+								<?php if ( ! is_wp_error( $categories ) ) :
+									foreach ( $categories as $cat ) :
+										$sel = in_array( $cat->term_id, (array) $cat_ids, true ) ? ' selected' : '';
+										echo '<option value="' . esc_attr( $cat->term_id ) . '"' . esc_attr( $sel ) . '>' . esc_html( $cat->name ) . '</option>';
+									endforeach;
+								endif; ?>
+							</select>
+							<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Maintenez Ctrl (Cmd sur Mac) pour en sélectionner plusieurs.', 'aod-client-dashboard' ); ?></span>
+						</label>
+						<div class="aod-cd-field">
+							<label class="aod-cd-field" style="margin:0">
+								<span class="aod-cd-label"><?php esc_html_e( 'Nouvelle catégorie (optionnel)', 'aod-client-dashboard' ); ?></span>
+								<input type="text" name="new_category" placeholder="<?php esc_attr_e( 'Crée et assigne une catégorie', 'aod-client-dashboard' ); ?>">
+							</label>
+							<label class="aod-cd-field" style="margin:14px 0 0">
+								<span class="aod-cd-label"><?php esc_html_e( 'Statut', 'aod-client-dashboard' ); ?></span>
+								<select name="status">
+									<option value="publish" <?php selected( $status, 'publish' ); ?>><?php esc_html_e( 'En ligne', 'aod-client-dashboard' ); ?></option>
+									<option value="draft" <?php selected( $status, 'draft' ); ?>><?php esc_html_e( 'Brouillon', 'aod-client-dashboard' ); ?></option>
+								</select>
+							</label>
+						</div>
+					</div>
+				</div>
+			</details>
+
+			<!-- Section : Prix & promotion -->
+			<details class="aod-cd-acc" open>
+				<summary class="aod-cd-acc-sum"><span class="aod-cd-acc-ic">💰</span> <?php esc_html_e( 'Prix & promotion', 'aod-client-dashboard' ); ?></summary>
+				<div class="aod-cd-acc-body">
 					<div class="aod-cd-row2">
 						<label class="aod-cd-field">
 							<span class="aod-cd-label"><?php printf( esc_html__( 'Prix (%s)', 'aod-client-dashboard' ), esc_html( $currency ) ); ?> *</span>
 							<input type="number" step="0.01" min="0" name="regular_price" required value="<?php echo esc_attr( $reg ); ?>">
-							<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Si vous ajoutez des couleurs ci-dessous, ce prix sert de prix par défaut (utilisé quand une couleur n’a pas son propre prix).', 'aod-client-dashboard' ); ?></span>
+							<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Si vous ajoutez des variantes, ce prix sert de prix par défaut (utilisé quand une variante n’a pas son propre prix).', 'aod-client-dashboard' ); ?></span>
 						</label>
 						<label class="aod-cd-field">
 							<span class="aod-cd-label"><?php esc_html_e( 'Prix promo (optionnel)', 'aod-client-dashboard' ); ?></span>
@@ -1088,31 +1130,18 @@ class AOD_CD_Dashboard {
 						</label>
 					</div>
 
-					<div class="aod-cd-row2">
-						<label class="aod-cd-field">
-							<span class="aod-cd-label"><?php esc_html_e( 'Référence / SKU (optionnel)', 'aod-client-dashboard' ); ?></span>
-							<input type="text" name="sku" value="<?php echo esc_attr( $sku ); ?>">
-						</label>
-						<label class="aod-cd-field">
-							<span class="aod-cd-label"><?php printf( esc_html__( 'Poids (kg, optionnel)', 'aod-client-dashboard' ), '' ); ?></span>
-							<input type="number" step="0.001" min="0" name="weight" value="<?php echo esc_attr( $weight ); ?>" placeholder="<?php esc_attr_e( 'ex : 0.5', 'aod-client-dashboard' ); ?>">
-						</label>
-					</div>
-
-					<label class="aod-cd-field">
+					<label class="aod-cd-field" style="max-width:280px">
 						<span class="aod-cd-label"><?php printf( esc_html__( 'Prix d’achat (%s, optionnel)', 'aod-client-dashboard' ), esc_html( $currency ) ); ?></span>
 						<input type="number" step="0.01" min="0" name="cost_price" value="<?php echo esc_attr( $cost ); ?>">
 						<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Sert au calcul de la marge (non affiché au client).', 'aod-client-dashboard' ); ?></span>
 					</label>
-
-					<label class="aod-cd-field">
-						<span class="aod-cd-label"><?php esc_html_e( 'Arguments de vente (un par ligne)', 'aod-client-dashboard' ); ?></span>
-						<textarea name="selling_points" rows="4" placeholder="<?php esc_attr_e( "Livraison rapide\nGarantie 1 an\nQualité premium", 'aod-client-dashboard' ); ?>"><?php echo esc_textarea( $points_text ); ?></textarea>
-						<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Affichés en liste à puces sur la page produit.', 'aod-client-dashboard' ); ?></span>
-					</label>
 				</div>
+			</details>
 
-				<div class="aod-cd-col">
+			<!-- Section : Images -->
+			<details class="aod-cd-acc">
+				<summary class="aod-cd-acc-sum"><span class="aod-cd-acc-ic">🖼️</span> <?php esc_html_e( 'Images', 'aod-client-dashboard' ); ?> <span class="aod-cd-acc-sub"><?php esc_html_e( 'photo principale & galerie', 'aod-client-dashboard' ); ?></span></summary>
+				<div class="aod-cd-acc-body aod-cd-grid2">
 					<div class="aod-cd-field">
 						<span class="aod-cd-label"><?php esc_html_e( 'Photo principale', 'aod-client-dashboard' ); ?></span>
 						<div class="aod-cd-imgbox">
@@ -1141,25 +1170,13 @@ class AOD_CD_Dashboard {
 						<input type="file" name="gallery_images[]" accept="image/*" multiple class="aod-cd-galleryfile">
 						<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Ajoutez une ou plusieurs photos. Cochez « Retirer » pour enlever une photo existante.', 'aod-client-dashboard' ); ?></span>
 					</div>
+				</div>
+			</details>
 
-					<label class="aod-cd-field">
-						<span class="aod-cd-label"><?php esc_html_e( 'Catégories', 'aod-client-dashboard' ); ?></span>
-						<select name="category[]" multiple size="5" class="aod-cd-catselect">
-							<?php if ( ! is_wp_error( $categories ) ) :
-								foreach ( $categories as $cat ) :
-									$sel = in_array( $cat->term_id, (array) $cat_ids, true ) ? ' selected' : '';
-									echo '<option value="' . esc_attr( $cat->term_id ) . '"' . esc_attr( $sel ) . '>' . esc_html( $cat->name ) . '</option>';
-								endforeach;
-							endif; ?>
-						</select>
-						<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Maintenez Ctrl (Cmd sur Mac) pour en sélectionner plusieurs.', 'aod-client-dashboard' ); ?></span>
-					</label>
-
-					<label class="aod-cd-field">
-						<span class="aod-cd-label"><?php esc_html_e( 'Nouvelle catégorie (optionnel)', 'aod-client-dashboard' ); ?></span>
-						<input type="text" name="new_category" placeholder="<?php esc_attr_e( 'Crée et assigne une catégorie', 'aod-client-dashboard' ); ?>">
-					</label>
-
+			<!-- Section : Stock & logistique -->
+			<details class="aod-cd-acc">
+				<summary class="aod-cd-acc-sum"><span class="aod-cd-acc-ic">📦</span> <?php esc_html_e( 'Stock & logistique', 'aod-client-dashboard' ); ?></summary>
+				<div class="aod-cd-acc-body">
 					<div class="aod-cd-field">
 						<label class="aod-cd-check">
 							<input type="checkbox" name="manage_stock" value="1" <?php checked( $manage ); ?> class="aod-cd-stock-toggle">
@@ -1169,116 +1186,141 @@ class AOD_CD_Dashboard {
 						<input type="number" min="0" name="low_stock_amount" class="aod-cd-stock-qty" value="<?php echo esc_attr( $low_stock ); ?>" placeholder="<?php esc_attr_e( 'Alerte stock bas (optionnel)', 'aod-client-dashboard' ); ?>" <?php echo $manage ? '' : 'style="display:none"'; ?>>
 					</div>
 
-					<label class="aod-cd-field">
-						<span class="aod-cd-label"><?php esc_html_e( 'Statut', 'aod-client-dashboard' ); ?></span>
-						<select name="status">
-							<option value="publish" <?php selected( $status, 'publish' ); ?>><?php esc_html_e( 'En ligne', 'aod-client-dashboard' ); ?></option>
-							<option value="draft" <?php selected( $status, 'draft' ); ?>><?php esc_html_e( 'Brouillon', 'aod-client-dashboard' ); ?></option>
-						</select>
-					</label>
-				</div>
-			</div>
-
-			<div class="aod-cd-colors" id="aod-cd-colors">
-				<h3 class="aod-cd-form-subtitle"><?php esc_html_e( 'Variantes', 'aod-client-dashboard' ); ?></h3>
-				<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Laissez vide pour un produit simple. Ajoutez une ligne par variante : chacune peut avoir son prix, son stock et sa photo. Le client choisira la variante sur la page produit.', 'aod-client-dashboard' ); ?></p>
-
-				<label class="aod-cd-field" style="max-width:280px">
-					<span class="aod-cd-label"><?php esc_html_e( 'Nom de la variante', 'aod-client-dashboard' ); ?></span>
-					<input type="text" name="variant_label" id="aod-cd-variant-label" value="<?php echo esc_attr( $variant_label ); ?>" placeholder="<?php esc_attr_e( 'ex : Couleur, Taille, Modèle…', 'aod-client-dashboard' ); ?>">
-					<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Le mot affiché au client pour choisir (Couleur, Taille, Pointure, Grammage…).', 'aod-client-dashboard' ); ?></span>
-				</label>
-
-				<div class="aod-cd-color-head">
-					<span></span>
-					<span class="aod-cd-variant-colname"><?php echo esc_html( $variant_label ); ?></span>
-					<span><?php printf( esc_html__( 'Prix (%s)', 'aod-client-dashboard' ), esc_html( $currency ) ); ?></span>
-					<span><?php esc_html_e( 'Promo', 'aod-client-dashboard' ); ?></span>
-					<span><?php esc_html_e( 'Stock', 'aod-client-dashboard' ); ?></span>
-					<span></span>
-				</div>
-
-				<div class="aod-cd-color-rows">
-					<?php
-					$ri = 0;
-					foreach ( $color_rows as $row ) {
-						$this->render_color_row( $ri, $row );
-						$ri++;
-					}
-					?>
-				</div>
-
-				<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-color-add" data-next="<?php echo esc_attr( (string) $ri ); ?>">+ <?php esc_html_e( 'Ajouter une variante', 'aod-client-dashboard' ); ?></button>
-
-				<template id="aod-cd-color-tpl">
-					<?php $this->render_color_row( '__i__', array() ); ?>
-				</template>
-			</div>
-
-			<div class="aod-cd-tiers" id="aod-cd-tiers">
-				<h3 class="aod-cd-form-subtitle"><?php esc_html_e( 'Prix par quantité (packs)', 'aod-client-dashboard' ); ?></h3>
-				<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Offrez un prix dégressif par lot (« 2 pour … », « 3 pour … »). Indiquez le prix unitaire appliqué à partir d’une certaine quantité. Laissez vide pour un prix unique. (Produits simples uniquement — sans variantes.)', 'aod-client-dashboard' ); ?></p>
-
-				<div class="aod-cd-tier-head">
-					<span><?php esc_html_e( 'À partir de (qté)', 'aod-client-dashboard' ); ?></span>
-					<span><?php printf( esc_html__( 'Prix unitaire (%s)', 'aod-client-dashboard' ), esc_html( $currency ) ); ?></span>
-					<span></span>
-				</div>
-
-				<div class="aod-cd-tier-rows">
-					<?php
-					$ti = 0;
-					foreach ( $tiers as $row ) {
-						$this->render_tier_row( $ti, $row );
-						$ti++;
-					}
-					?>
-				</div>
-
-				<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-tier-add" data-next="<?php echo esc_attr( (string) $ti ); ?>">+ <?php esc_html_e( 'Ajouter un palier', 'aod-client-dashboard' ); ?></button>
-
-				<template id="aod-cd-tier-tpl">
-					<?php $this->render_tier_row( '__i__', array() ); ?>
-				</template>
-			</div>
-
-			<div class="aod-cd-pack" id="aod-cd-pack">
-				<h3 class="aod-cd-form-subtitle"><?php esc_html_e( 'Pack / Assortiment', 'aod-client-dashboard' ); ?></h3>
-				<div class="aod-cd-field">
-					<label class="aod-cd-check">
-						<input type="checkbox" name="is_pack" id="aod-cd-pack-toggle" value="1" <?php checked( $is_pack ); ?>>
-						<?php esc_html_e( 'Ce produit est un pack (plusieurs produits vendus ensemble à prix réduit)', 'aod-client-dashboard' ); ?>
-					</label>
-				</div>
-
-				<div class="aod-cd-pack-body" <?php echo $is_pack ? '' : 'style="display:none"'; ?>>
-					<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Choisissez les produits inclus et leur quantité. Le « Prix » saisi plus haut est le prix de vente du pack ; l’économie par rapport à l’achat séparé est calculée automatiquement.', 'aod-client-dashboard' ); ?></p>
-
-					<div class="aod-cd-pack-head">
-						<span><?php esc_html_e( 'Produit inclus', 'aod-client-dashboard' ); ?></span>
-						<span><?php esc_html_e( 'Qté', 'aod-client-dashboard' ); ?></span>
-						<span></span>
+					<div class="aod-cd-row2">
+						<label class="aod-cd-field">
+							<span class="aod-cd-label"><?php esc_html_e( 'Référence / SKU (optionnel)', 'aod-client-dashboard' ); ?></span>
+							<input type="text" name="sku" value="<?php echo esc_attr( $sku ); ?>">
+						</label>
+						<label class="aod-cd-field">
+							<span class="aod-cd-label"><?php esc_html_e( 'Poids (kg, optionnel)', 'aod-client-dashboard' ); ?></span>
+							<input type="number" step="0.001" min="0" name="weight" value="<?php echo esc_attr( $weight ); ?>" placeholder="<?php esc_attr_e( 'ex : 0.5', 'aod-client-dashboard' ); ?>">
+						</label>
 					</div>
-
-					<div class="aod-cd-pack-rows">
-						<?php
-						$pi = 0;
-						foreach ( $pack_items as $row ) {
-							$this->render_pack_row( $pi, $row, $pack_choices, $pid );
-							$pi++;
-						}
-						?>
-					</div>
-
-					<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-pack-add" data-next="<?php echo esc_attr( (string) $pi ); ?>">+ <?php esc_html_e( 'Ajouter un produit au pack', 'aod-client-dashboard' ); ?></button>
-
-					<p class="aod-cd-pack-savings" hidden></p>
-
-					<template id="aod-cd-pack-tpl">
-						<?php $this->render_pack_row( '__i__', array(), $pack_choices, $pid ); ?>
-					</template>
 				</div>
-			</div>
+			</details>
+
+			<!-- Section : Variantes -->
+			<details class="aod-cd-acc">
+				<summary class="aod-cd-acc-sum"><span class="aod-cd-acc-ic">🎨</span> <?php esc_html_e( 'Variantes', 'aod-client-dashboard' ); ?> <span class="aod-cd-acc-sub"><?php esc_html_e( 'Taille, Couleur, Pointure… (optionnel)', 'aod-client-dashboard' ); ?></span></summary>
+				<div class="aod-cd-acc-body">
+					<div class="aod-cd-colors" id="aod-cd-colors">
+						<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Laissez vide pour un produit simple. Ajoutez une ligne par variante : chacune peut avoir son prix, son stock et sa photo. Le client choisira la variante sur la page produit.', 'aod-client-dashboard' ); ?></p>
+
+						<label class="aod-cd-field" style="max-width:280px">
+							<span class="aod-cd-label"><?php esc_html_e( 'Nom de la variante', 'aod-client-dashboard' ); ?></span>
+							<input type="text" name="variant_label" id="aod-cd-variant-label" value="<?php echo esc_attr( $variant_label ); ?>" placeholder="<?php esc_attr_e( 'ex : Couleur, Taille, Modèle…', 'aod-client-dashboard' ); ?>">
+							<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Le mot affiché au client pour choisir (Couleur, Taille, Pointure, Grammage…).', 'aod-client-dashboard' ); ?></span>
+						</label>
+
+						<div class="aod-cd-size-presets">
+							<span class="aod-cd-label" style="margin:0"><?php esc_html_e( 'Ajout rapide :', 'aod-client-dashboard' ); ?></span>
+							<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-preset" data-label="<?php esc_attr_e( 'Taille', 'aod-client-dashboard' ); ?>" data-sizes="S,M,L,XL,XXL"><?php esc_html_e( 'Vêtement S–XXL', 'aod-client-dashboard' ); ?></button>
+							<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-preset" data-label="<?php esc_attr_e( 'Pointure', 'aod-client-dashboard' ); ?>" data-sizes="35,36,37,38,39,40,41,42,43,44,45,46"><?php esc_html_e( 'Pointures 35–46', 'aod-client-dashboard' ); ?></button>
+							<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-preset" data-label="<?php esc_attr_e( 'Quantité', 'aod-client-dashboard' ); ?>" data-sizes="1,2,3,4,5,6,7,8,9,10"><?php esc_html_e( 'Chiffres 1–10', 'aod-client-dashboard' ); ?></button>
+						</div>
+
+						<div class="aod-cd-color-head">
+							<span></span>
+							<span class="aod-cd-variant-colname"><?php echo esc_html( $variant_label ); ?></span>
+							<span><?php printf( esc_html__( 'Prix (%s)', 'aod-client-dashboard' ), esc_html( $currency ) ); ?></span>
+							<span><?php esc_html_e( 'Promo', 'aod-client-dashboard' ); ?></span>
+							<span><?php esc_html_e( 'Stock', 'aod-client-dashboard' ); ?></span>
+							<span></span>
+						</div>
+
+						<div class="aod-cd-color-rows">
+							<?php
+							$ri = 0;
+							foreach ( $color_rows as $row ) {
+								$this->render_color_row( $ri, $row );
+								$ri++;
+							}
+							?>
+						</div>
+
+						<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-color-add" data-next="<?php echo esc_attr( (string) $ri ); ?>">+ <?php esc_html_e( 'Ajouter une variante', 'aod-client-dashboard' ); ?></button>
+
+						<template id="aod-cd-color-tpl">
+							<?php $this->render_color_row( '__i__', array() ); ?>
+						</template>
+					</div>
+				</div>
+			</details>
+
+			<!-- Section : Paliers de prix -->
+			<details class="aod-cd-acc">
+				<summary class="aod-cd-acc-sum"><span class="aod-cd-acc-ic">🏷️</span> <?php esc_html_e( 'Prix par quantité', 'aod-client-dashboard' ); ?> <span class="aod-cd-acc-sub"><?php esc_html_e( 'packs « 2 pour X » (optionnel)', 'aod-client-dashboard' ); ?></span></summary>
+				<div class="aod-cd-acc-body">
+					<div class="aod-cd-tiers" id="aod-cd-tiers">
+						<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Offrez un prix dégressif par lot (« 2 pour … », « 3 pour … »). Indiquez le prix unitaire appliqué à partir d’une certaine quantité. Laissez vide pour un prix unique. (Produits simples uniquement — sans variantes.)', 'aod-client-dashboard' ); ?></p>
+
+						<div class="aod-cd-tier-head">
+							<span><?php esc_html_e( 'À partir de (qté)', 'aod-client-dashboard' ); ?></span>
+							<span><?php printf( esc_html__( 'Prix unitaire (%s)', 'aod-client-dashboard' ), esc_html( $currency ) ); ?></span>
+							<span></span>
+						</div>
+
+						<div class="aod-cd-tier-rows">
+							<?php
+							$ti = 0;
+							foreach ( $tiers as $row ) {
+								$this->render_tier_row( $ti, $row );
+								$ti++;
+							}
+							?>
+						</div>
+
+						<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-tier-add" data-next="<?php echo esc_attr( (string) $ti ); ?>">+ <?php esc_html_e( 'Ajouter un palier', 'aod-client-dashboard' ); ?></button>
+
+						<template id="aod-cd-tier-tpl">
+							<?php $this->render_tier_row( '__i__', array() ); ?>
+						</template>
+					</div>
+				</div>
+			</details>
+
+			<!-- Section : Pack / Assortiment -->
+			<details class="aod-cd-acc"<?php echo $is_pack ? ' open' : ''; ?>>
+				<summary class="aod-cd-acc-sum"><span class="aod-cd-acc-ic">🎁</span> <?php esc_html_e( 'Pack / Assortiment', 'aod-client-dashboard' ); ?> <span class="aod-cd-acc-sub"><?php esc_html_e( 'plusieurs produits ensemble (optionnel)', 'aod-client-dashboard' ); ?></span></summary>
+				<div class="aod-cd-acc-body">
+					<div class="aod-cd-pack" id="aod-cd-pack">
+						<div class="aod-cd-field">
+							<label class="aod-cd-check">
+								<input type="checkbox" name="is_pack" id="aod-cd-pack-toggle" value="1" <?php checked( $is_pack ); ?>>
+								<?php esc_html_e( 'Ce produit est un pack (plusieurs produits vendus ensemble à prix réduit)', 'aod-client-dashboard' ); ?>
+							</label>
+						</div>
+
+						<div class="aod-cd-pack-body" <?php echo $is_pack ? '' : 'style="display:none"'; ?>>
+							<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Choisissez les produits inclus et leur quantité. Le « Prix » saisi plus haut est le prix de vente du pack ; l’économie par rapport à l’achat séparé est calculée automatiquement.', 'aod-client-dashboard' ); ?></p>
+
+							<div class="aod-cd-pack-head">
+								<span><?php esc_html_e( 'Produit inclus', 'aod-client-dashboard' ); ?></span>
+								<span><?php esc_html_e( 'Qté', 'aod-client-dashboard' ); ?></span>
+								<span></span>
+							</div>
+
+							<div class="aod-cd-pack-rows">
+								<?php
+								$pi = 0;
+								foreach ( $pack_items as $row ) {
+									$this->render_pack_row( $pi, $row, $pack_choices, $pid );
+									$pi++;
+								}
+								?>
+							</div>
+
+							<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-pack-add" data-next="<?php echo esc_attr( (string) $pi ); ?>">+ <?php esc_html_e( 'Ajouter un produit au pack', 'aod-client-dashboard' ); ?></button>
+
+							<p class="aod-cd-pack-savings" hidden></p>
+
+							<template id="aod-cd-pack-tpl">
+								<?php $this->render_pack_row( '__i__', array(), $pack_choices, $pid ); ?>
+							</template>
+						</div>
+					</div>
+				</div>
+			</details>
 
 			<div class="aod-cd-form-foot">
 				<button type="submit" class="aod-cd-btn aod-cd-btn-primary"><?php esc_html_e( 'Enregistrer', 'aod-client-dashboard' ); ?></button>

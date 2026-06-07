@@ -89,6 +89,9 @@
 		// Couleurs / variantes : ajout, suppression, aperçu photo par ligne.
 		bindColorRows();
 
+		// Tailles prédéfinies : ajout en un clic de plusieurs variantes.
+		bindSizePresets();
+
 		// Paliers de prix par quantité (packs) : ajout / suppression de lignes.
 		bindTierRows();
 
@@ -199,6 +202,54 @@
 			var url   = URL.createObjectURL( file.files[0] );
 			if ( prev )  { prev.src = url; prev.style.display = ''; }
 			if ( empty ) { empty.style.display = 'none'; }
+		} );
+	}
+
+	/* Tailles prédéfinies : crée plusieurs lignes de variantes en un clic */
+	function bindSizePresets() {
+		var wrap = document.getElementById( 'aod-cd-colors' );
+		if ( ! wrap ) { return; }
+		var rows   = wrap.querySelector( '.aod-cd-color-rows' );
+		var tpl    = document.getElementById( 'aod-cd-color-tpl' );
+		var addBtn = wrap.querySelector( '.aod-cd-color-add' );
+		if ( ! rows || ! tpl || ! addBtn ) { return; }
+		var labelInput = document.getElementById( 'aod-cd-variant-label' );
+		var colName    = document.querySelector( '.aod-cd-variant-colname' );
+
+		wrap.querySelectorAll( '.aod-cd-preset' ).forEach( function ( btn ) {
+			btn.addEventListener( 'click', function () {
+				var sizes = ( btn.dataset.sizes || '' ).split( ',' ).map( function ( s ) {
+					return s.trim();
+				} ).filter( Boolean );
+				if ( ! sizes.length ) { return; }
+
+				// Renseigne le libellé de l'axe si pertinent (Taille, Pointure…).
+				var label = btn.dataset.label || '';
+				if ( label && labelInput ) {
+					labelInput.value = label;
+					if ( colName ) { colName.textContent = label; }
+				}
+
+				// Évite les doublons : on saute une taille déjà présente.
+				var existing = {};
+				rows.querySelectorAll( '.aod-cd-color-name' ).forEach( function ( inp ) {
+					existing[ inp.value.trim().toLowerCase() ] = true;
+				} );
+
+				sizes.forEach( function ( sz ) {
+					if ( existing[ sz.toLowerCase() ] ) { return; }
+					var next = parseInt( addBtn.dataset.next, 10 ) || 0;
+					var html = tpl.innerHTML.replace( /__i__/g, String( next ) );
+					var tmp  = document.createElement( 'div' );
+					tmp.innerHTML = html.trim();
+					var node = tmp.firstChild;
+					rows.appendChild( node );
+					addBtn.dataset.next = String( next + 1 );
+					var nameInput = node.querySelector( '.aod-cd-color-name' );
+					if ( nameInput ) { nameInput.value = sz; }
+					existing[ sz.toLowerCase() ] = true;
+				} );
+			} );
 		} );
 	}
 
