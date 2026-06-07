@@ -86,16 +86,12 @@
 			} );
 		}
 
-		// Sections d'options (Taille, Couleur…) : ajout/suppression de sections et valeurs.
-		bindOptions();
-
-		// Paliers de prix par quantité (packs) : ajout / suppression de lignes.
-		bindTierRows();
-
-		// Pack assortiment : toggle, lignes de composants, calcul d'économie.
-		bindPackRows();
-
 		// Enregistrement du produit (formulaire multipart via FormData).
+		// IMPORTANT : on attache le handler de soumission AVANT les bindings
+		// optionnels (options / paliers / packs). Si l'un d'eux levait une
+		// exception, le « submit » resterait quand même branché : sans lui, le
+		// navigateur ferait une soumission native du <form> et toutes les
+		// saisies (description, stock, prix…) seraient perdues au rechargement.
 		var form = document.getElementById( 'aod-cd-product-form' );
 		if ( form ) {
 			form.addEventListener( 'submit', function ( e ) {
@@ -134,6 +130,13 @@
 					} );
 			} );
 		}
+
+		// Bindings optionnels : isolés en try/catch pour qu'une erreur dans l'un
+		// (données inattendues, élément absent…) n'empêche jamais les autres ni la
+		// soumission ci-dessus de fonctionner.
+		try { bindOptions(); }   catch ( err ) { /* options */ }
+		try { bindTierRows(); }  catch ( err ) { /* paliers */ }
+		try { bindPackRows(); }  catch ( err ) { /* packs */ }
 
 		// Suppression (corbeille) avec confirmation.
 		document.querySelectorAll( '.aod-cd-del-product' ).forEach( function ( b ) {
@@ -356,11 +359,12 @@
 
 		// Économie = somme(prix composant × qté) − prix du pack.
 		function updateSavings() {
-			if ( ! savings ) { return; }
+			if ( ! savings || ! rows ) { return; }
 			var sum = 0;
 			rows.querySelectorAll( '.aod-cd-pack-row' ).forEach( function ( row ) {
-				var sel = row.querySelector( '.aod-cd-pack-select' );
-				var qty = parseInt( row.querySelector( 'input[type=number]' ).value, 10 ) || 0;
+				var sel    = row.querySelector( '.aod-cd-pack-select' );
+				var qtyEl  = row.querySelector( 'input[type=number]' );
+				var qty    = qtyEl ? ( parseInt( qtyEl.value, 10 ) || 0 ) : 0;
 				if ( sel && sel.value !== '0' ) {
 					var opt = sel.options[ sel.selectedIndex ];
 					var p   = parseFloat( opt && opt.getAttribute( 'data-price' ) ) || 0;
