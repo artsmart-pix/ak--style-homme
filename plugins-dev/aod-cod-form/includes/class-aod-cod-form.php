@@ -103,6 +103,7 @@ class AOD_COD_Form {
 				'communes' => $communes,
 				'home'     => AOD_COD_Data::price_for( $code, 'home' ),
 				'desk'     => AOD_COD_Data::price_for( $code, 'desk' ),
+				'free'     => AOD_COD_Data::is_free_wilaya( $code ) ? 1 : 0,
 			);
 		}
 

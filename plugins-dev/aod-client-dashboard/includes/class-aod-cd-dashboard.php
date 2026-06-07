@@ -2223,6 +2223,12 @@ class AOD_CD_Dashboard {
 						<th><?php esc_html_e( 'Wilaya', 'aod-client-dashboard' ); ?></th>
 						<th><?php printf( esc_html__( 'Domicile (%s)', 'aod-client-dashboard' ), esc_html( $symbol ) ); ?></th>
 						<th><?php printf( esc_html__( 'Stop-desk (%s)', 'aod-client-dashboard' ), esc_html( $symbol ) ); ?></th>
+						<th class="aod-cd-free-col">
+							<label class="aod-cd-free-head">
+								<input type="checkbox" class="aod-cd-free-all">
+								<span><?php esc_html_e( 'Livraison gratuite', 'aod-client-dashboard' ); ?></span>
+							</label>
+						</th>
 					</tr></thead>
 					<tbody>
 						<?php foreach ( AOD_COD_Data::places() as $w ) :
@@ -2231,6 +2237,7 @@ class AOD_CD_Dashboard {
 								<td><?php echo esc_html( sprintf( '%02d - %s', $code, $w['name'] ) ); ?></td>
 								<td><input type="number" min="0" step="any" name="home[<?php echo esc_attr( $code ); ?>]" value="<?php echo isset( $prices[ $code ]['home'] ) ? esc_attr( $prices[ $code ]['home'] ) : ''; ?>"></td>
 								<td><input type="number" min="0" step="any" name="desk[<?php echo esc_attr( $code ); ?>]" value="<?php echo isset( $prices[ $code ]['desk'] ) ? esc_attr( $prices[ $code ]['desk'] ) : ''; ?>"></td>
+								<td class="aod-cd-free-col"><input type="checkbox" class="aod-cd-free-one" name="free[<?php echo esc_attr( $code ); ?>]" value="1" <?php checked( ! empty( $prices[ $code ]['free'] ) ); ?>></td>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>
@@ -2295,6 +2302,7 @@ class AOD_CD_Dashboard {
 		// Tarifs par wilaya (même schéma que le plugin COD).
 		$home   = isset( $_POST['home'] ) ? (array) $_POST['home'] : array();
 		$desk   = isset( $_POST['desk'] ) ? (array) $_POST['desk'] : array();
+		$free   = isset( $_POST['free'] ) ? (array) $_POST['free'] : array();
 		$prices = array();
 		foreach ( AOD_COD_Data::places() as $w ) {
 			$code = (int) $w['code'];
@@ -2303,6 +2311,7 @@ class AOD_CD_Dashboard {
 			$prices[ $code ] = array(
 				'home' => ( '' === $h ) ? '' : (float) $h,
 				'desk' => ( '' === $d ) ? '' : (float) $d,
+				'free' => empty( $free[ $code ] ) ? 0 : 1,
 			);
 		}
 		update_option( AOD_COD_Data::OPTION_PRICES, $prices );

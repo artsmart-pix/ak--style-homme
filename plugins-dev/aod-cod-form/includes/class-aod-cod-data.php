@@ -183,14 +183,31 @@ class AOD_COD_Data {
 	}
 
 	/**
+	 * La wilaya est-elle en livraison gratuite permanente ?
+	 *
+	 * Indépendant du seuil de gratuité : si cette case est cochée pour la wilaya,
+	 * la livraison y est toujours offerte, quel que soit le sous-total.
+	 *
+	 * @param int $code Code wilaya.
+	 * @return bool
+	 */
+	public static function is_free_wilaya( $code ) {
+		$prices = self::prices();
+		return ! empty( $prices[ $code ]['free'] );
+	}
+
+	/**
 	 * Frais de livraison effectifs, seuil de gratuité appliqué.
 	 *
 	 * @param int    $code     Code wilaya.
 	 * @param string $type     'home' ou 'desk'.
 	 * @param float  $subtotal Sous-total produits de la commande.
-	 * @return float 0 si le seuil de gratuité est atteint, sinon le tarif de base.
+	 * @return float 0 si la wilaya est offerte ou si le seuil de gratuité est atteint, sinon le tarif de base.
 	 */
 	public static function effective_shipping( $code, $type, $subtotal ) {
+		if ( self::is_free_wilaya( $code ) ) {
+			return 0.0;
+		}
 		$threshold = self::free_shipping_threshold();
 		if ( $threshold > 0 && (float) $subtotal >= $threshold ) {
 			return 0.0;

@@ -682,12 +682,36 @@
 		} );
 	}
 
+	/* Livraison : checkbox « tout cocher » applique la gratuité à toutes les wilayas */
+	function bindShippingFree() {
+		var all = document.querySelector( '.aod-cd-free-all' );
+		if ( ! all ) { return; }
+		var ones = function () {
+			return Array.prototype.slice.call( document.querySelectorAll( '.aod-cd-free-one' ) );
+		};
+		var syncMaster = function () {
+			var list = ones();
+			if ( ! list.length ) { return; }
+			var checked = list.filter( function ( c ) { return c.checked; } ).length;
+			all.checked = checked === list.length;
+			all.indeterminate = checked > 0 && checked < list.length;
+		};
+		all.addEventListener( 'change', function () {
+			ones().forEach( function ( c ) { c.checked = all.checked; } );
+		} );
+		document.addEventListener( 'change', function ( e ) {
+			if ( e.target && e.target.classList.contains( 'aod-cd-free-one' ) ) { syncMaster(); }
+		} );
+		syncMaster();
+	}
+
 	document.addEventListener( 'DOMContentLoaded', function () {
 		bindStatus();
 		bindProducts();
 		try { bindCategories(); }   catch ( err ) { /* catégories */ }
 		try { bindColorPalette(); } catch ( err ) { /* palette */ }
 		bindSettingsForms();
+		bindShippingFree();
 		bindWhatsappTest();
 		bindOrderDetail();
 		bindOrderNote();

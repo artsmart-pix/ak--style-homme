@@ -3,7 +3,7 @@
  * Plugin Name:       AOD COD Form
  * Plugin URI:        https://artofdoing.net
  * Description:       Formulaire de commande COD (paiement à la livraison) pour l'Algérie : 58 wilayas + 1541 communes, frais de livraison par wilaya, commande directe sur la page produit. RTL/FR/AR.
- * Version:           1.14.0
+ * Version:           1.15.0
  * Author:            Art Of Doing
  * Author URI:        https://artofdoing.net
  * Text Domain:       aod-cod-form
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Accès direct interdit.
 }
 
-define( 'AOD_COD_VERSION', '1.14.0' );
+define( 'AOD_COD_VERSION', '1.15.0' );
 define( 'AOD_COD_FILE', __FILE__ );
 define( 'AOD_COD_PATH', plugin_dir_path( __FILE__ ) );
 define( 'AOD_COD_URL', plugin_dir_url( __FILE__ ) );

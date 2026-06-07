@@ -149,11 +149,18 @@
 				return productsSubtotal();
 			}
 
+			// La wilaya sélectionnée est-elle en livraison gratuite permanente ?
+			function wilayaIsFree() {
+				var code = parseInt( $wilaya.val(), 10 );
+				var w    = AOD_COD.wilayas[ code ];
+				return !! ( w && w.free );
+			}
+
 			// Recalcule cartes de livraison + récap + incitation au seuil.
 			function render() {
 				var subtotal = subtotalNow();
 				var th       = freeThreshold();
-				var free     = th > 0 && subtotal >= th;
+				var free     = wilayaIsFree() || ( th > 0 && subtotal >= th );
 
 				updateTierHint();
 
