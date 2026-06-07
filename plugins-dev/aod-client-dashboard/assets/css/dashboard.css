@@ -204,7 +204,8 @@ body.aod-cd{
 .aod-cd-od-list code{background:#eef2ff;padding:2px 6px;border-radius:6px;font-size:12px}
 .aod-cd-od-sub{margin:20px 0 8px;font-size:14px;font-weight:800}
 .aod-cd-od-notes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
-.aod-cd-od-notes li{background:#f9fafb;border-radius:10px;padding:10px 12px;font-size:13px}
+.aod-cd-od-notes li{background:#f9fafb;border-radius:10px;padding:10px 12px;font-size:13px;border-left:3px solid transparent}
+.aod-cd-od-notes li.is-user{background:#eff6ff;border-left-color:#2563eb}
 .aod-cd-od-notes p{margin:4px 0 0}
 .aod-cd-od-notedate{color:#9ca3af;font-size:12px;font-weight:600}
 @media(max-width:560px){.aod-cd-od-grid{grid-template-columns:1fr}}

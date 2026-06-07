@@ -46,6 +46,7 @@ class AOD_CD_Dashboard {
 		// Actions AJAX du dashboard.
 		add_action( 'wp_ajax_aod_cd_order_status', array( $this, 'ajax_order_status' ) );
 		add_action( 'wp_ajax_aod_cd_order_detail', array( $this, 'ajax_order_detail' ) );
+		add_action( 'wp_ajax_aod_cd_order_note', array( $this, 'ajax_order_note' ) );
 		add_action( 'wp_ajax_aod_cd_save_product', array( $this, 'ajax_save_product' ) );
 		add_action( 'wp_ajax_aod_cd_delete_product', array( $this, 'ajax_delete_product' ) );
 		add_action( 'wp_ajax_aod_cd_save_shipping', array( $this, 'ajax_save_shipping' ) );
@@ -132,7 +133,8 @@ class AOD_CD_Dashboard {
 		window.AOD_CD = {
 			ajaxUrl: <?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>,
 			nonce:   <?php echo wp_json_encode( wp_create_nonce( 'aod_cd' ) ); ?>,
-			base:    <?php echo wp_json_encode( $base ); ?>
+			base:    <?php echo wp_json_encode( $base ); ?>,
+			i18nNotePrompt: <?php echo wp_json_encode( __( 'Note pour cette commande :', 'aod-client-dashboard' ) ); ?>
 		};
 	</script>
 </head>
@@ -274,7 +276,7 @@ class AOD_CD_Dashboard {
 			return;
 		}
 
-		$status_options = wc_get_order_statuses(); // [ 'wc-pending' => 'En attente', ... ]
+		$status_options = $this->status_labels(); // Libellés de statut forcés en français.
 
 		echo '<div class="aod-cd-tablewrap"><table class="aod-cd-table"><thead><tr>';
 		foreach ( array(
@@ -283,9 +285,13 @@ class AOD_CD_Dashboard {
 			__( 'Client', 'aod-client-dashboard' ),
 			__( 'Téléphone', 'aod-client-dashboard' ),
 			__( 'Wilaya', 'aod-client-dashboard' ),
+			__( 'Commune', 'aod-client-dashboard' ),
+			__( 'Prix produit', 'aod-client-dashboard' ),
+			__( 'Prix livraison', 'aod-client-dashboard' ),
 			__( 'Total', 'aod-client-dashboard' ),
-			__( 'Livraison', 'aod-client-dashboard' ),
+			__( 'Suivi', 'aod-client-dashboard' ),
 			__( 'Statut', 'aod-client-dashboard' ),
+			__( 'Note', 'aod-client-dashboard' ),
 		) as $h ) {
 			echo '<th>' . esc_html( $h ) . '</th>';
 		}
@@ -391,8 +397,15 @@ class AOD_CD_Dashboard {
 			? AOD_COD_Data::wilaya_name( $wilaya_code )
 			: $order->get_billing_state();
 		$phone    = $order->get_billing_phone();
+		$commune  = $order->get_meta( '_aod_commune' );
+		$commune  = $commune ? $commune : $order->get_billing_city();
 		$tracking = $order->get_meta( '_aod_ship_tracking' );
 		$status   = 'wc-' . $order->get_status();
+
+		// Décomposition du montant : produit + livraison = total.
+		$currency      = $order->get_currency();
+		$shipping_cost = (float) $order->get_shipping_total();
+		$products_cost = (float) $order->get_total() - $shipping_cost;
 
 		echo '<tr>';
 		echo '<td><button type="button" class="aod-cd-order-detail" data-order="' . esc_attr( $order->get_id() ) . '"><strong>#' . esc_html( $order->get_order_number() ) . '</strong></button></td>';
@@ -400,6 +413,9 @@ class AOD_CD_Dashboard {
 		echo '<td>' . esc_html( trim( $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() ) ) . '</td>';
 		echo '<td>' . ( $phone ? '<a href="tel:' . esc_attr( $phone ) . '">' . esc_html( $phone ) . '</a>' : '&mdash;' ) . '</td>';
 		echo '<td>' . esc_html( $wilaya ? $wilaya : '—' ) . '</td>';
+		echo '<td>' . esc_html( $commune ? $commune : '—' ) . '</td>';
+		echo '<td>' . wp_kses_post( wc_price( $products_cost, array( 'currency' => $currency ) ) ) . '</td>';
+		echo '<td>' . wp_kses_post( wc_price( $shipping_cost, array( 'currency' => $currency ) ) ) . '</td>';
 		echo '<td>' . wp_kses_post( $order->get_formatted_order_total() ) . '</td>';
 		echo '<td>' . ( $tracking
 			? '<span class="aod-cd-track">✓ <code>' . esc_html( $tracking ) . '</code></span>'
@@ -413,7 +429,43 @@ class AOD_CD_Dashboard {
 			);
 		}
 		echo '</select></td>';
+
+		$note_count = count( wc_get_order_notes( array( 'order_id' => $order->get_id() ) ) );
+		echo '<td><button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-note-btn" data-order="' . esc_attr( $order->get_id() ) . '" title="' . esc_attr__( 'Ajouter une note', 'aod-client-dashboard' ) . '">📝'
+			. ( $note_count ? ' <span class="aod-cd-badge">' . (int) $note_count . '</span>' : '' )
+			. '</button></td>';
 		echo '</tr>';
+	}
+
+	/**
+	 * Libellés des statuts de commande, forcés en français.
+	 *
+	 * WooCommerce renvoie ses libellés natifs en anglais lorsque le pack de
+	 * traduction n'est pas chargé (même sous locale fr_FR). On conserve l'ordre
+	 * et les statuts réels de WooCommerce (y compris les statuts personnalisés)
+	 * et on remplace uniquement les libellés connus par leur version française.
+	 *
+	 * @return array [ 'wc-pending' => 'En attente', ... ]
+	 */
+	protected function status_labels() {
+		$fr = array(
+			'wc-pending'        => __( 'En attente', 'aod-client-dashboard' ),
+			'wc-processing'     => __( 'En cours', 'aod-client-dashboard' ),
+			'wc-aod-confirmed'  => __( 'Confirmée', 'aod-client-dashboard' ),
+			'wc-on-hold'        => __( 'En pause', 'aod-client-dashboard' ),
+			'wc-completed'      => __( 'Terminée', 'aod-client-dashboard' ),
+			'wc-cancelled'      => __( 'Annulée', 'aod-client-dashboard' ),
+			'wc-refunded'       => __( 'Remboursée', 'aod-client-dashboard' ),
+			'wc-failed'         => __( 'Échouée', 'aod-client-dashboard' ),
+			'wc-checkout-draft' => __( 'Brouillon', 'aod-client-dashboard' ),
+		);
+
+		$labels = array();
+		foreach ( wc_get_order_statuses() as $key => $label ) {
+			$labels[ $key ] = isset( $fr[ $key ] ) ? $fr[ $key ] : $label;
+		}
+
+		return $labels;
 	}
 
 	/**
@@ -1734,6 +1786,37 @@ class AOD_CD_Dashboard {
 		) );
 	}
 
+	/**
+	 * Ajoute une note (privée) à une commande.
+	 */
+	public function ajax_order_note() {
+		check_ajax_referer( 'aod_cd', 'nonce' );
+		if ( ! current_user_can( 'edit_shop_orders' ) && ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Accès refusé.', 'aod-client-dashboard' ) ), 403 );
+		}
+
+		$order_id = isset( $_POST['order_id'] ) ? absint( $_POST['order_id'] ) : 0;
+		$note     = isset( $_POST['note'] ) ? sanitize_textarea_field( wp_unslash( $_POST['note'] ) ) : '';
+
+		if ( '' === trim( $note ) ) {
+			wp_send_json_error( array( 'message' => __( 'La note est vide.', 'aod-client-dashboard' ) ), 400 );
+		}
+
+		$order = $order_id ? wc_get_order( $order_id ) : false;
+		if ( ! $order instanceof WC_Order ) {
+			wp_send_json_error( array( 'message' => __( 'Commande introuvable.', 'aod-client-dashboard' ) ), 404 );
+		}
+
+		$order->add_order_note( $note, 0, true );
+
+		$count = count( wc_get_order_notes( array( 'order_id' => $order_id ) ) );
+
+		wp_send_json_success( array(
+			'message' => __( 'Note ajoutée.', 'aod-client-dashboard' ),
+			'count'   => $count,
+		) );
+	}
+
 	/* ============================================================
 	 * AJAX : détail d'une commande (modale)
 	 * ========================================================== */
@@ -1829,15 +1912,23 @@ class AOD_CD_Dashboard {
 		echo '<tr><td colspan="2"><strong>' . esc_html__( 'Total', 'aod-client-dashboard' ) . '</strong></td><td><strong>' . wp_kses_post( $order->get_formatted_order_total() ) . '</strong></td></tr>';
 		echo '</tfoot></table>';
 
-		// Historique (notes de commande).
+		// Notes & historique de la commande.
 		$notes = wc_get_order_notes( array( 'order_id' => $order->get_id() ) );
 		if ( $notes ) {
-			echo '<h4 class="aod-cd-od-sub">' . esc_html__( 'Historique', 'aod-client-dashboard' ) . '</h4>';
+			echo '<h4 class="aod-cd-od-sub">' . esc_html__( 'Notes & historique', 'aod-client-dashboard' ) . '</h4>';
 			echo '<ul class="aod-cd-od-notes">';
 			foreach ( $notes as $note ) {
-				echo '<li><span class="aod-cd-od-notedate">' . esc_html( date_i18n( 'd/m H:i', strtotime( $note->date_created ) ) ) . '</span> ' . wp_kses_post( wpautop( wptexturize( $note->content ) ) ) . '</li>';
+				$is_system = ( 'system' === $note->added_by || '' === (string) $note->added_by );
+				$author    = $is_system ? __( 'Système', 'aod-client-dashboard' ) : $note->added_by;
+				echo '<li class="' . ( $is_system ? 'is-system' : 'is-user' ) . '">';
+				echo '<span class="aod-cd-od-notedate">' . esc_html( date_i18n( 'd/m H:i', strtotime( $note->date_created ) ) ) . ' · ' . esc_html( $author ) . '</span> ';
+				echo wp_kses_post( wpautop( wptexturize( $note->content ) ) );
+				echo '</li>';
 			}
 			echo '</ul>';
+		} else {
+			echo '<h4 class="aod-cd-od-sub">' . esc_html__( 'Notes & historique', 'aod-client-dashboard' ) . '</h4>';
+			echo '<p class="aod-cd-muted">' . esc_html__( 'Aucune note pour le moment.', 'aod-client-dashboard' ) . '</p>';
 		}
 	}
 }

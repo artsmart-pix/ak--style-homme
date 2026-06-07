@@ -3,7 +3,7 @@
  * Plugin Name:       AOD Client Dashboard
  * Plugin URI:        https://artofdoing.net
  * Description:       Espace de gestion front-end pour le client de la boutique : commandes, produits, livraison, stats, pixels, WhatsApp — SANS accès à wp-admin. Rôle restreint + interface marquée au thème.
- * Version:           0.4.1
+ * Version:           0.4.3
  * Author:            Art Of Doing
  * Author URI:        https://artofdoing.net
  * Text Domain:       aod-client-dashboard
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Accès direct interdit.
 }
 
-define( 'AOD_CD_VERSION', '0.4.1' );
+define( 'AOD_CD_VERSION', '0.4.3' );
 define( 'AOD_CD_FILE', __FILE__ );
 define( 'AOD_CD_PATH', plugin_dir_path( __FILE__ ) );
 define( 'AOD_CD_URL', plugin_dir_url( __FILE__ ) );
