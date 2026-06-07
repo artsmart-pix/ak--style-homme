@@ -622,8 +622,11 @@ class AOD_CD_Dashboard {
 		$bins    = $this->stats_bins( $period );
 		$monthly = ( 'year' === $period );
 
-		$revenue = 0.0;
-		$top     = array(); // pid|hash => [ name, qty, rev, pid ].
+		$revenue   = 0.0;
+		$prod_rev  = 0.0;   // CA produits (hors livraison) — base de la marge.
+		$cost_tot  = 0.0;   // Coût d'achat cumulé des lignes dont le coût est connu.
+		$miss_cost = false; // Au moins une ligne sans prix d'achat renseigné.
+		$top       = array(); // pid|hash => [ name, qty, rev, cost, pid, cknown ].
 		foreach ( $paid as $o ) {
 			$total    = (float) $o->get_total();
 			$revenue += $total;
@@ -643,19 +646,36 @@ class AOD_CD_Dashboard {
 				$key = $pid ? (string) $pid : 'x' . md5( $item->get_name() );
 				if ( ! isset( $top[ $key ] ) ) {
 					$top[ $key ] = array(
-						'name' => $item->get_name(),
-						'qty'  => 0,
-						'rev'  => 0.0,
-						'pid'  => $pid,
+						'name'   => $item->get_name(),
+						'qty'    => 0,
+						'rev'    => 0.0,
+						'cost'   => 0.0,
+						'cknown' => true,
+						'pid'    => $pid,
 					);
 				}
-				$top[ $key ]['qty'] += (int) $item->get_quantity();
-				$top[ $key ]['rev'] += (float) $item->get_total();
+				$qty       = (int) $item->get_quantity();
+				$line_rev  = (float) $item->get_total();
+				$prod_rev += $line_rev;
+				$top[ $key ]['qty'] += $qty;
+				$top[ $key ]['rev'] += $line_rev;
+
+				// Coût d'achat : meta produit (ou produit parent pour une variation).
+				$cost = $this->item_cost_price( $item );
+				if ( null === $cost ) {
+					$miss_cost              = true;
+					$top[ $key ]['cknown']  = false;
+				} else {
+					$cost_tot               += $cost * $qty;
+					$top[ $key ]['cost']    += $cost * $qty;
+				}
 			}
 		}
 
 		$nb_paid = count( $paid );
 		$avg     = $nb_paid > 0 ? $revenue / $nb_paid : 0.0;
+		$margin  = $prod_rev - $cost_tot;
+		$margin_rate = $prod_rev > 0 ? ( $margin / $prod_rev ) * 100 : 0.0;
 
 		// « En attente » reste un indicateur actionnable (toutes périodes) ;
 		// « Annulées » est rapporté à la période ; « Produits » est l'état courant.
@@ -667,6 +687,8 @@ class AOD_CD_Dashboard {
 			array( __( 'Chiffre d’affaires', 'aod-client-dashboard' ), wp_kses_post( wc_price( $revenue ) ) ),
 			array( __( 'Commandes encaissées', 'aod-client-dashboard' ), (string) $nb_paid ),
 			array( __( 'Panier moyen', 'aod-client-dashboard' ), wp_kses_post( wc_price( $avg ) ) ),
+			array( __( 'Marge estimée', 'aod-client-dashboard' ), wp_kses_post( wc_price( $margin ) ) ),
+			array( __( 'Taux de marge', 'aod-client-dashboard' ), esc_html( number_format_i18n( $margin_rate, 1 ) . ' %' ) ),
 			array( __( 'En attente (en cours)', 'aod-client-dashboard' ), (string) $nb_pending ),
 			array( __( 'Annulées', 'aod-client-dashboard' ), (string) $nb_cancel ),
 			array( __( 'Produits en ligne', 'aod-client-dashboard' ), (string) $nb_prod ),
@@ -699,6 +721,7 @@ class AOD_CD_Dashboard {
 				__( 'Produit', 'aod-client-dashboard' ),
 				__( 'Quantité vendue', 'aod-client-dashboard' ),
 				__( 'CA généré', 'aod-client-dashboard' ),
+				__( 'Marge', 'aod-client-dashboard' ),
 			) as $h ) {
 				echo '<th>' . esc_html( $h ) . '</th>';
 			}
@@ -710,12 +733,51 @@ class AOD_CD_Dashboard {
 				} else {
 					$name = esc_html( $name );
 				}
-				echo '<tr><td>' . $name . '</td><td>' . (int) $row['qty'] . '</td><td>' . wp_kses_post( wc_price( $row['rev'] ) ) . '</td></tr>';
+				// Marge produit : « — » si aucun prix d'achat n'est renseigné pour ce produit.
+				if ( $row['cknown'] && $row['cost'] > 0 ) {
+					$pm     = $row['rev'] - $row['cost'];
+					$margin_cell = wp_kses_post( wc_price( $pm ) );
+				} else {
+					$margin_cell = '<span class="aod-cd-muted">—</span>';
+				}
+				echo '<tr><td>' . $name . '</td><td>' . (int) $row['qty'] . '</td><td>' . wp_kses_post( wc_price( $row['rev'] ) ) . '</td><td>' . $margin_cell . '</td></tr>';
 			}
 			echo '</tbody></table></div>';
 		}
 
 		echo '<p class="aod-cd-note">' . esc_html__( 'CA = total des commandes en cours, confirmées et terminées sur la période sélectionnée. « En attente » et « Produits en ligne » reflètent l’état actuel, toutes périodes confondues.', 'aod-client-dashboard' ) . '</p>';
+		echo '<p class="aod-cd-note">' . esc_html__( 'Marge = CA produits (hors livraison) − prix d’achat. Renseignez le « Prix d’achat » d’un produit pour qu’il compte dans la marge ; les produits sans prix d’achat sont ignorés (un « — » s’affiche).', 'aod-client-dashboard' ) . '</p>';
+		if ( $miss_cost ) {
+			echo '<p class="aod-cd-note">' . esc_html__( 'Note : certains produits vendus n’ont pas de prix d’achat renseigné — la marge affichée est donc une estimation partielle.', 'aod-client-dashboard' ) . '</p>';
+		}
+	}
+
+	/**
+	 * Prix d'achat unitaire d'une ligne de commande.
+	 *
+	 * Lit le meta `_aod_cost_price` du produit ; pour une variation sans coût
+	 * propre, retombe sur le coût du produit parent. Retourne null quand aucun
+	 * prix d'achat n'est renseigné (la ligne est alors exclue du calcul de marge).
+	 *
+	 * @param WC_Order_Item_Product $item Ligne de commande.
+	 * @return float|null Coût unitaire, ou null si inconnu.
+	 */
+	protected function item_cost_price( $item ) {
+		$product = $item->get_product();
+		if ( ! $product ) {
+			return null;
+		}
+		$cost = $product->get_meta( '_aod_cost_price' );
+		if ( ( '' === $cost || null === $cost ) && $product->get_parent_id() ) {
+			$parent = wc_get_product( $product->get_parent_id() );
+			if ( $parent ) {
+				$cost = $parent->get_meta( '_aod_cost_price' );
+			}
+		}
+		if ( '' === $cost || null === $cost ) {
+			return null;
+		}
+		return (float) $cost;
 	}
 
 	/**
