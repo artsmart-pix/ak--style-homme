@@ -220,10 +220,34 @@ class AOD_COD_Form {
 			}
 		}
 
+		// Pack assortiment : liste des produits inclus (affichage informatif).
+		$pack_items = array();
+		if ( '1' === (string) $product->get_meta( '_aod_is_pack' ) ) {
+			$raw = $product->get_meta( '_aod_pack_items' );
+			if ( is_array( $raw ) ) {
+				foreach ( $raw as $it ) {
+					$cp = wc_get_product( isset( $it['id'] ) ? (int) $it['id'] : 0 );
+					if ( $cp ) {
+						$pack_items[] = array( 'name' => $cp->get_name(), 'qty' => isset( $it['qty'] ) ? max( 1, (int) $it['qty'] ) : 1 );
+					}
+				}
+			}
+		}
+
 		ob_start();
 		?>
 		<div class="aod-cod" data-product="<?php echo esc_attr( $product_id ); ?>" data-price="<?php echo esc_attr( $price ); ?>" data-tiers="<?php echo esc_attr( wp_json_encode( $tiers ) ); ?>">
 			<h3 class="aod-cod__title"><?php esc_html_e( 'Commander maintenant — Paiement à la livraison', 'aod-cod-form' ); ?></h3>
+			<?php if ( $pack_items ) : ?>
+				<div class="aod-cod__pack">
+					<span class="aod-cod__pack-label"><?php esc_html_e( 'Ce pack contient :', 'aod-cod-form' ); ?></span>
+					<ul class="aod-cod__pack-list">
+						<?php foreach ( $pack_items as $it ) : ?>
+							<li><span class="aod-cod__pack-qty"><?php echo esc_html( $it['qty'] ); ?>×</span> <?php echo esc_html( $it['name'] ); ?></li>
+						<?php endforeach; ?>
+					</ul>
+				</div>
+			<?php endif; ?>
 			<form class="aod-cod__form" novalidate>
 				<?php if ( $is_variable && $variations ) : ?>
 					<div class="aod-cod__field aod-cod__colors">

@@ -54,6 +54,52 @@ class AOD_CD_Dashboard {
 		add_action( 'wp_ajax_aod_cd_save_whatsapp', array( $this, 'ajax_save_whatsapp' ) );
 		add_action( 'wp_ajax_aod_cd_test_whatsapp', array( $this, 'ajax_test_whatsapp' ) );
 		add_action( 'wp_ajax_aod_cd_save_account', array( $this, 'ajax_save_account' ) );
+
+		// Pack assortiment : décrémente le stock des composants quand la commande est prise.
+		add_action( 'woocommerce_order_status_processing', array( $this, 'reduce_pack_components_stock' ) );
+		add_action( 'woocommerce_order_status_completed', array( $this, 'reduce_pack_components_stock' ) );
+	}
+
+	/**
+	 * Réduit le stock des produits composant un pack présent dans une commande.
+	 *
+	 * WooCommerce ne réduit que le stock du produit-pack lui-même ; ce hook répercute
+	 * la baisse sur chaque produit inclus (quantité du pack × quantité commandée).
+	 * Un drapeau sur la commande empêche tout double décompte.
+	 *
+	 * @param int $order_id
+	 */
+	public function reduce_pack_components_stock( $order_id ) {
+		$order = wc_get_order( $order_id );
+		if ( ! $order || 'yes' === $order->get_meta( '_aod_pack_stock_done' ) ) {
+			return;
+		}
+		$touched = false;
+		foreach ( $order->get_items() as $item ) {
+			$product = $item->get_product();
+			if ( ! $product || '1' !== (string) $product->get_meta( '_aod_is_pack' ) ) {
+				continue;
+			}
+			$components = $product->get_meta( '_aod_pack_items' );
+			if ( ! is_array( $components ) || ! $components ) {
+				continue;
+			}
+			$order_qty = (int) $item->get_quantity();
+			foreach ( $components as $comp ) {
+				$cid = isset( $comp['id'] ) ? (int) $comp['id'] : 0;
+				$cq  = isset( $comp['qty'] ) ? (int) $comp['qty'] : 0;
+				$cp  = $cid ? wc_get_product( $cid ) : null;
+				if ( ! $cp || ! $cp->managing_stock() || $cq < 1 ) {
+					continue;
+				}
+				wc_update_product_stock( $cp, $cq * max( 1, $order_qty ), 'decrease' );
+				$touched = true;
+			}
+		}
+		if ( $touched ) {
+			$order->update_meta_data( '_aod_pack_stock_done', 'yes' );
+			$order->save();
+		}
 	}
 
 	/**
@@ -904,6 +950,25 @@ class AOD_CD_Dashboard {
 			}
 		}
 
+		// Pack assortiment : produit composé de plusieurs autres produits.
+		$is_pack    = $product ? ( '1' === (string) $product->get_meta( '_aod_is_pack' ) ) : false;
+		$pack_items = array();
+		if ( $product ) {
+			$raw = $product->get_meta( '_aod_pack_items' );
+			if ( is_array( $raw ) ) {
+				$pack_items = $raw;
+			}
+		}
+		// Produits sélectionnables comme composants (simples, publiés, hors packs et hors produit courant).
+		$pack_choices = wc_get_products( array(
+			'limit'   => 300,
+			'status'  => 'publish',
+			'type'    => 'simple',
+			'orderby' => 'title',
+			'order'   => 'ASC',
+			'return'  => 'objects',
+		) );
+
 		$title = $pid ? __( 'Modifier le produit', 'aod-client-dashboard' ) : __( 'Nouveau produit', 'aod-client-dashboard' );
 		?>
 		<div class="aod-cd-bar">
@@ -1053,6 +1118,44 @@ class AOD_CD_Dashboard {
 				</template>
 			</div>
 
+			<div class="aod-cd-pack" id="aod-cd-pack">
+				<h3 class="aod-cd-form-subtitle"><?php esc_html_e( 'Pack / Assortiment', 'aod-client-dashboard' ); ?></h3>
+				<div class="aod-cd-field">
+					<label class="aod-cd-check">
+						<input type="checkbox" name="is_pack" id="aod-cd-pack-toggle" value="1" <?php checked( $is_pack ); ?>>
+						<?php esc_html_e( 'Ce produit est un pack (plusieurs produits vendus ensemble à prix réduit)', 'aod-client-dashboard' ); ?>
+					</label>
+				</div>
+
+				<div class="aod-cd-pack-body" <?php echo $is_pack ? '' : 'style="display:none"'; ?>>
+					<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Choisissez les produits inclus et leur quantité. Le « Prix » saisi plus haut est le prix de vente du pack ; l’économie par rapport à l’achat séparé est calculée automatiquement.', 'aod-client-dashboard' ); ?></p>
+
+					<div class="aod-cd-pack-head">
+						<span><?php esc_html_e( 'Produit inclus', 'aod-client-dashboard' ); ?></span>
+						<span><?php esc_html_e( 'Qté', 'aod-client-dashboard' ); ?></span>
+						<span></span>
+					</div>
+
+					<div class="aod-cd-pack-rows">
+						<?php
+						$pi = 0;
+						foreach ( $pack_items as $row ) {
+							$this->render_pack_row( $pi, $row, $pack_choices, $pid );
+							$pi++;
+						}
+						?>
+					</div>
+
+					<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-pack-add" data-next="<?php echo esc_attr( (string) $pi ); ?>">+ <?php esc_html_e( 'Ajouter un produit au pack', 'aod-client-dashboard' ); ?></button>
+
+					<p class="aod-cd-pack-savings" hidden></p>
+
+					<template id="aod-cd-pack-tpl">
+						<?php $this->render_pack_row( '__i__', array(), $pack_choices, $pid ); ?>
+					</template>
+				</div>
+			</div>
+
 			<div class="aod-cd-form-foot">
 				<button type="submit" class="aod-cd-btn aod-cd-btn-primary"><?php esc_html_e( 'Enregistrer', 'aod-client-dashboard' ); ?></button>
 				<a class="aod-cd-btn" href="<?php echo esc_url( $this->products_url() ); ?>"><?php esc_html_e( 'Annuler', 'aod-client-dashboard' ); ?></a>
@@ -1102,6 +1205,47 @@ class AOD_CD_Dashboard {
 			<input type="number" min="2" step="1" name="tier_min[<?php echo $idx; ?>]" value="<?php echo esc_attr( (string) $row['min'] ); ?>" placeholder="<?php esc_attr_e( 'ex : 2', 'aod-client-dashboard' ); ?>">
 			<input type="number" min="0" step="0.01" name="tier_price[<?php echo $idx; ?>]" value="<?php echo esc_attr( (string) $row['price'] ); ?>" placeholder="<?php esc_attr_e( 'prix / pièce', 'aod-client-dashboard' ); ?>">
 			<button type="button" class="aod-cd-color-del aod-cd-tier-del" aria-label="<?php esc_attr_e( 'Supprimer ce palier', 'aod-client-dashboard' ); ?>">&times;</button>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Une ligne de composant de pack (produit inclus + quantité).
+	 *
+	 * @param int|string $i        Index (ou « __i__ » pour le gabarit JS).
+	 * @param array      $row      id, qty.
+	 * @param array      $choices  Produits sélectionnables (WC_Product[]).
+	 * @param int        $self_pid Produit courant (exclu de la liste).
+	 */
+	protected function render_pack_row( $i, $row, $choices, $self_pid ) {
+		$row = wp_parse_args( $row, array( 'id' => 0, 'qty' => 1 ) );
+		$idx = esc_attr( (string) $i );
+		$sel = (int) $row['id'];
+		?>
+		<div class="aod-cd-pack-row" data-row="<?php echo $idx; ?>">
+			<select name="pack_id[<?php echo $idx; ?>]" class="aod-cd-pack-select">
+				<option value="0" data-price="0"><?php esc_html_e( '— Choisir un produit —', 'aod-client-dashboard' ); ?></option>
+				<?php
+				foreach ( $choices as $c ) {
+					if ( ! $c || (int) $c->get_id() === (int) $self_pid ) {
+						continue; // Jamais s'inclure soi-même.
+					}
+					if ( '1' === (string) $c->get_meta( '_aod_is_pack' ) ) {
+						continue; // Pas de pack dans un pack.
+					}
+					printf(
+						'<option value="%d" data-price="%s"%s>%s — %s</option>',
+						(int) $c->get_id(),
+						esc_attr( (string) wc_get_price_to_display( $c ) ),
+						selected( $sel, (int) $c->get_id(), false ),
+						esc_html( $c->get_name() ),
+						wp_strip_all_tags( wc_price( wc_get_price_to_display( $c ) ) )
+					);
+				}
+				?>
+			</select>
+			<input type="number" min="1" step="1" name="pack_qty[<?php echo $idx; ?>]" value="<?php echo esc_attr( (string) max( 1, (int) $row['qty'] ) ); ?>">
+			<button type="button" class="aod-cd-color-del aod-cd-pack-del" aria-label="<?php esc_attr_e( 'Retirer ce produit', 'aod-client-dashboard' ); ?>">&times;</button>
 		</div>
 		<?php
 	}
@@ -1185,9 +1329,11 @@ class AOD_CD_Dashboard {
 			$product->set_regular_price( $reg );
 			$product->set_sale_price( '' !== $sale ? $sale : '' );
 			$product->set_manage_stock( false );
-			// Libellé de l'axe conservé ; les paliers quantité ne s'appliquent pas aux variables.
+			// Libellé de l'axe conservé ; paliers/packs ne s'appliquent pas aux variables.
 			$product->update_meta_data( '_aod_variant_label', $axis_label );
 			$product->delete_meta_data( '_aod_qty_tiers' );
+			$product->delete_meta_data( '_aod_is_pack' );
+			$product->delete_meta_data( '_aod_pack_items' );
 		} else {
 			// Produit simple : prix + stock classiques.
 			$product->set_regular_price( $reg );
@@ -1208,6 +1354,16 @@ class AOD_CD_Dashboard {
 				$product->delete_meta_data( '_aod_qty_tiers' );
 			}
 			$product->delete_meta_data( '_aod_variant_label' );
+
+			// Pack assortiment (produits inclus).
+			$pack_items = ! empty( $_POST['is_pack'] ) ? $this->collect_pack_items( $pid ) : array();
+			if ( $pack_items ) {
+				$product->update_meta_data( '_aod_is_pack', '1' );
+				$product->update_meta_data( '_aod_pack_items', $pack_items );
+			} else {
+				$product->delete_meta_data( '_aod_is_pack' );
+				$product->delete_meta_data( '_aod_pack_items' );
+			}
 		}
 
 		$product->save();
@@ -1309,6 +1465,44 @@ class AOD_CD_Dashboard {
 			return $a['min'] - $b['min'];
 		} );
 		return $tiers;
+	}
+
+	/**
+	 * Rassemble les composants de pack postés (produits valides uniquement).
+	 *
+	 * Filtre : produit existant, publié, simple, différent du produit courant et
+	 * qui n'est pas lui-même un pack (pas d'imbrication). Quantités cumulées par produit.
+	 *
+	 * @param int $self_pid Produit courant (exclu pour éviter l'auto-référence).
+	 * @return array Liste de [ 'id' => int, 'qty' => int ].
+	 */
+	protected function collect_pack_items( $self_pid ) {
+		if ( empty( $_POST['pack_id'] ) || ! is_array( $_POST['pack_id'] ) ) {
+			return array();
+		}
+		$ids  = wp_unslash( $_POST['pack_id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$qtys = isset( $_POST['pack_qty'] ) ? wp_unslash( $_POST['pack_qty'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$byid = array();
+		foreach ( $ids as $i => $raw_id ) {
+			$cid = absint( $raw_id );
+			$qty = isset( $qtys[ $i ] ) ? max( 1, absint( $qtys[ $i ] ) ) : 1;
+			if ( ! $cid || (int) $cid === (int) $self_pid ) {
+				continue;
+			}
+			$cp = wc_get_product( $cid );
+			if ( ! $cp || 'publish' !== $cp->get_status() || ! $cp->is_type( 'simple' ) ) {
+				continue;
+			}
+			if ( '1' === (string) $cp->get_meta( '_aod_is_pack' ) ) {
+				continue; // Pas de pack dans un pack.
+			}
+			$byid[ $cid ] = ( isset( $byid[ $cid ] ) ? $byid[ $cid ] : 0 ) + $qty;
+		}
+		$items = array();
+		foreach ( $byid as $cid => $qty ) {
+			$items[] = array( 'id' => (int) $cid, 'qty' => (int) $qty );
+		}
+		return $items;
 	}
 
 	/**

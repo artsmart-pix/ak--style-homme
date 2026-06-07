@@ -92,6 +92,9 @@
 		// Paliers de prix par quantité (packs) : ajout / suppression de lignes.
 		bindTierRows();
 
+		// Pack assortiment : toggle, lignes de composants, calcul d'économie.
+		bindPackRows();
+
 		// Libellé de l'axe de variante : synchronise l'en-tête de colonne en direct.
 		bindVariantLabel();
 
@@ -228,6 +231,75 @@
 				if ( row ) { row.remove(); }
 			}
 		} );
+	}
+
+	/* Pack assortiment : toggle de section, lignes de composants, économie */
+	function bindPackRows() {
+		var wrap = document.getElementById( 'aod-cd-pack' );
+		if ( ! wrap ) { return; }
+		var toggle  = document.getElementById( 'aod-cd-pack-toggle' );
+		var bodyEl  = wrap.querySelector( '.aod-cd-pack-body' );
+		var rows    = wrap.querySelector( '.aod-cd-pack-rows' );
+		var tpl     = document.getElementById( 'aod-cd-pack-tpl' );
+		var addBtn  = wrap.querySelector( '.aod-cd-pack-add' );
+		var savings = wrap.querySelector( '.aod-cd-pack-savings' );
+
+		if ( toggle && bodyEl ) {
+			toggle.addEventListener( 'change', function () {
+				bodyEl.style.display = toggle.checked ? '' : 'none';
+			} );
+		}
+
+		if ( addBtn && tpl && rows ) {
+			addBtn.addEventListener( 'click', function () {
+				var next = parseInt( addBtn.dataset.next, 10 ) || 0;
+				var html = tpl.innerHTML.replace( /__i__/g, String( next ) );
+				var tmp  = document.createElement( 'div' );
+				tmp.innerHTML = html.trim();
+				var node = tmp.firstChild;
+				rows.appendChild( node );
+				addBtn.dataset.next = String( next + 1 );
+				updateSavings();
+			} );
+		}
+
+		wrap.addEventListener( 'click', function ( e ) {
+			var del = e.target.closest( '.aod-cd-pack-del' );
+			if ( del ) {
+				var row = del.closest( '.aod-cd-pack-row' );
+				if ( row ) { row.remove(); updateSavings(); }
+			}
+		} );
+
+		wrap.addEventListener( 'change', updateSavings );
+		wrap.addEventListener( 'input', updateSavings );
+
+		// Économie = somme(prix composant × qté) − prix du pack.
+		function updateSavings() {
+			if ( ! savings ) { return; }
+			var sum = 0;
+			rows.querySelectorAll( '.aod-cd-pack-row' ).forEach( function ( row ) {
+				var sel = row.querySelector( '.aod-cd-pack-select' );
+				var qty = parseInt( row.querySelector( 'input[type=number]' ).value, 10 ) || 0;
+				if ( sel && sel.value !== '0' ) {
+					var opt = sel.options[ sel.selectedIndex ];
+					var p   = parseFloat( opt && opt.getAttribute( 'data-price' ) ) || 0;
+					sum += p * qty;
+				}
+			} );
+			var packPrice = parseFloat( ( document.querySelector( 'input[name="regular_price"]' ) || {} ).value ) || 0;
+			if ( sum > 0 && packPrice > 0 && sum > packPrice ) {
+				var eco = Math.round( ( sum - packPrice ) * 100 ) / 100;
+				savings.textContent = 'Valeur séparée : ' + sum.toLocaleString( 'fr-DZ' ) +
+					' — économie pour le client : ' + eco.toLocaleString( 'fr-DZ' );
+				savings.removeAttribute( 'hidden' );
+			} else {
+				savings.setAttribute( 'hidden', 'hidden' );
+				savings.textContent = '';
+			}
+		}
+
+		updateSavings();
 	}
 
 	/* Libellé de l'axe de variante : met à jour l'en-tête de colonne en direct */
