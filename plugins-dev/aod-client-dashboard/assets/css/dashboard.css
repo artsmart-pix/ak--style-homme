@@ -350,3 +350,47 @@ body.aod-cd{
 }
 .aod-cd-preset{background:#eef2ff;border-color:#c7d2fe;color:#3730a3}
 .aod-cd-preset:hover{background:#e0e7ff;border-color:#a5b4fc}
+.aod-cd-opt-preset{background:#eef2ff;border-color:#c7d2fe;color:#3730a3}
+.aod-cd-opt-preset:hover{background:#e0e7ff;border-color:#a5b4fc}
+
+/* ---- Sections d'options (Taille, Couleur, Pointure…) ---- */
+.aod-cd-options{margin-top:22px;border-top:1px solid var(--cd-line);padding-top:18px}
+.aod-cd-opt-sections{display:flex;flex-direction:column;gap:14px;margin-bottom:12px}
+.aod-cd-opt-section{
+	border:1px solid var(--cd-line);border-radius:12px;padding:14px;background:#fcfcfd;
+}
+.aod-cd-opt-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:12px}
+.aod-cd-opt-label{
+	flex:1 1 200px;min-width:160px;padding:9px 11px;border:1px solid var(--cd-line);
+	border-radius:9px;font-size:14px;font-weight:600;
+}
+.aod-cd-opt-visual{
+	display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#4b5563;
+	white-space:nowrap;cursor:pointer;
+}
+.aod-cd-opt-visual input{margin:0}
+.aod-cd-opt-values{display:flex;flex-direction:column;gap:10px}
+.aod-cd-opt-value{
+	display:grid;grid-template-columns:1.6fr auto 1fr 32px;gap:10px;align-items:center;
+}
+/* Section « avec photos » : on montre la vignette en première colonne. */
+.aod-cd-opt-values.is-visual .aod-cd-opt-value{grid-template-columns:52px 1.6fr auto 1fr 32px}
+.aod-cd-opt-imgbox{display:none}
+.aod-cd-opt-values.is-visual .aod-cd-opt-imgbox{
+	position:relative;width:52px;height:52px;border:1px dashed var(--cd-line);border-radius:10px;
+	overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#f9fafb;
+}
+.aod-cd-opt-imgbox img{width:100%;height:100%;object-fit:cover}
+.aod-cd-opt-imgempty{font-size:18px;opacity:.5}
+.aod-cd-opt-imgfile{position:absolute;inset:0;opacity:0;cursor:pointer}
+.aod-cd-opt-value input[type=text],.aod-cd-opt-value input[type=number]{
+	width:100%;padding:9px 10px;border:1px solid var(--cd-line);border-radius:9px;font-size:14px;
+}
+.aod-cd-opt-plus{color:#9ca3af;font-weight:700;text-align:center}
+.aod-cd-opt-price{max-width:140px}
+.aod-cd-opt-val-add{margin-top:4px;align-self:flex-start}
+@media(max-width:680px){
+	.aod-cd-opt-value{grid-template-columns:1fr auto 32px}
+	.aod-cd-opt-values.is-visual .aod-cd-opt-value{grid-template-columns:44px 1fr 32px}
+	.aod-cd-opt-plus,.aod-cd-opt-price{grid-column:span 1}
+}

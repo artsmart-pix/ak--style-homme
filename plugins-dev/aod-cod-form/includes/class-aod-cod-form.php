@@ -112,6 +112,7 @@ class AOD_COD_Form {
 				'choose_wilaya'  => __( 'Choisir une wilaya', 'aod-cod-form' ),
 				'choose_commune' => __( 'Choisir une commune', 'aod-cod-form' ),
 				'choose_color'   => __( 'Veuillez choisir une couleur.', 'aod-cod-form' ),
+				'choose_option'  => __( 'Veuillez sélectionner toutes les options.', 'aod-cod-form' ),
 				'sending'        => __( 'Envoi en cours…', 'aod-cod-form' ),
 				'delivery'       => __( 'Livraison', 'aod-cod-form' ),
 				'total'          => __( 'Total', 'aod-cod-form' ),
@@ -155,6 +156,86 @@ class AOD_COD_Form {
 	}
 
 	/**
+	 * Sections d'options d'un produit pour l'affichage (Taille, Couleur…).
+	 *
+	 * Lit la méta `_aod_options` ; à défaut, migre un ancien produit variable
+	 * mono-axe (variations couleur) vers une section visuelle unique.
+	 *
+	 * @param WC_Product $product
+	 * @return array Liste de [ 'label', 'visual', 'values' => [ ['name','price','img','img_full','srcset'], … ] ].
+	 */
+	protected function get_product_options( $product ) {
+		$raw = $product->get_meta( '_aod_options' );
+		$out = array();
+		if ( is_array( $raw ) && $raw ) {
+			foreach ( $raw as $sec ) {
+				if ( ! is_array( $sec ) ) {
+					continue;
+				}
+				$values = array();
+				$src    = ( isset( $sec['values'] ) && is_array( $sec['values'] ) ) ? $sec['values'] : array();
+				foreach ( $src as $val ) {
+					$name = isset( $val['name'] ) ? (string) $val['name'] : '';
+					if ( '' === $name ) {
+						continue;
+					}
+					$img_id   = isset( $val['image_id'] ) ? (int) $val['image_id'] : 0;
+					$values[] = array(
+						'name'     => $name,
+						'price'    => ( isset( $val['price'] ) && '' !== $val['price'] ) ? (float) $val['price'] : 0.0,
+						'img'      => $img_id ? wp_get_attachment_image_url( $img_id, 'woocommerce_thumbnail' ) : '',
+						'img_full' => $img_id ? wp_get_attachment_image_url( $img_id, 'woocommerce_single' ) : '',
+						'srcset'   => $img_id ? (string) wp_get_attachment_image_srcset( $img_id, 'woocommerce_single' ) : '',
+					);
+				}
+				if ( ! $values ) {
+					continue;
+				}
+				$out[] = array(
+					'label'  => isset( $sec['label'] ) ? (string) $sec['label'] : '',
+					'visual' => ! empty( $sec['visual'] ),
+					'values' => $values,
+				);
+			}
+			if ( $out ) {
+				return $out;
+			}
+		}
+
+		// Compat : ancien produit variable mono-axe → une section visuelle unique.
+		if ( $product->is_type( 'variable' ) ) {
+			$label = (string) $product->get_meta( '_aod_variant_label' );
+			if ( '' === $label ) {
+				$label = __( 'Couleur', 'aod-cod-form' );
+			}
+			$values = array();
+			foreach ( $product->get_children() as $cid ) {
+				$v = wc_get_product( $cid );
+				if ( ! $v || ! $v->is_purchasable() || ! $v->is_in_stock() ) {
+					continue;
+				}
+				$atts = $v->get_attributes();
+				$name = $atts ? (string) reset( $atts ) : '';
+				if ( '' === $name ) {
+					continue;
+				}
+				$img_id   = $v->get_image_id();
+				$values[] = array(
+					'name'     => $name,
+					'price'    => 0.0,
+					'img'      => $img_id ? wp_get_attachment_image_url( $img_id, 'woocommerce_thumbnail' ) : '',
+					'img_full' => $img_id ? wp_get_attachment_image_url( $img_id, 'woocommerce_single' ) : '',
+					'srcset'   => $img_id ? (string) wp_get_attachment_image_srcset( $img_id, 'woocommerce_single' ) : '',
+				);
+			}
+			if ( $values ) {
+				$out[] = array( 'label' => $label, 'visual' => true, 'values' => $values );
+			}
+		}
+		return $out;
+	}
+
+	/**
 	 * Génère le HTML du formulaire.
 	 *
 	 * @param int $product_id
@@ -169,45 +250,25 @@ class AOD_COD_Form {
 		wp_enqueue_style( 'aod-cod-form' );
 		wp_enqueue_script( 'aod-cod-form' );
 
-		// Produit variable : on liste les variations couleur disponibles.
-		$is_variable = $product->is_type( 'variable' );
-		$variations  = array();
-		if ( $is_variable ) {
+		// Sections d'options (Taille, Couleur, Pointure…) — sélection style Shopify.
+		$options     = $this->get_product_options( $product );
+		$has_options = ! empty( $options );
+
+		$price = (float) wc_get_price_to_display( $product );
+		if ( $price <= 0 && $product->is_type( 'variable' ) ) {
+			// Produit variable migré : le parent n'a pas de prix propre.
 			foreach ( $product->get_children() as $cid ) {
-				$v = wc_get_product( $cid );
-				if ( ! $v || ! $v->is_purchasable() || ! $v->is_in_stock() ) {
-					continue;
+				$cv = wc_get_product( $cid );
+				if ( $cv && $cv->is_purchasable() ) {
+					$price = (float) wc_get_price_to_display( $cv );
+					break;
 				}
-				$atts  = $v->get_attributes();
-				$color = isset( $atts['couleur'] ) ? $atts['couleur'] : ( $atts ? reset( $atts ) : '' );
-				if ( '' === $color ) {
-					continue;
-				}
-				$img_id        = $v->get_image_id();
-				$variations[]  = array(
-					'id'       => $v->get_id(),
-					'color'    => $color,
-					'price'    => (float) wc_get_price_to_display( $v ),
-					'img'      => $img_id ? wp_get_attachment_image_url( $img_id, 'woocommerce_thumbnail' ) : '',
-					'img_full' => $img_id ? wp_get_attachment_image_url( $img_id, 'woocommerce_single' ) : '',
-					'srcset'   => $img_id ? (string) wp_get_attachment_image_srcset( $img_id, 'woocommerce_single' ) : '',
-				);
 			}
 		}
 
-		$price = ( $is_variable && $variations )
-			? (float) $variations[0]['price']
-			: (float) wc_get_price_to_display( $product );
-
-		// Libellé générique de l'axe de variante (Couleur, Taille, Modèle…).
-		$variant_label = (string) $product->get_meta( '_aod_variant_label' );
-		if ( '' === $variant_label ) {
-			$variant_label = __( 'Couleur', 'aod-cod-form' );
-		}
-
-		// Paliers de prix par quantité (packs) — produits simples uniquement.
+		// Paliers de prix par quantité (packs) — produits sans options uniquement.
 		$tiers = array();
-		if ( ! $is_variable ) {
+		if ( ! $has_options ) {
 			$raw = $product->get_meta( '_aod_qty_tiers' );
 			if ( is_array( $raw ) ) {
 				foreach ( $raw as $t ) {
@@ -262,32 +323,30 @@ class AOD_COD_Form {
 				</div>
 			<?php endif; ?>
 			<form class="aod-cod__form" novalidate>
-				<?php if ( $is_variable && $variations ) : ?>
-					<div class="aod-cod__field aod-cod__colors">
-						<label><?php echo esc_html( $variant_label ); ?> <span>*</span></label>
-						<p class="aod-cod__colors-hint"><?php esc_html_e( 'Indiquez la quantité par variante (cliquez une variante pour voir sa photo).', 'aod-cod-form' ); ?></p>
-						<div class="aod-cod__color-list">
-							<?php foreach ( $variations as $vi => $v ) : ?>
-								<div class="aod-cod__color" data-id="<?php echo esc_attr( $v['id'] ); ?>" data-price="<?php echo esc_attr( $v['price'] ); ?>" data-img="<?php echo esc_url( $v['img'] ); ?>" data-img-full="<?php echo esc_url( $v['img_full'] ); ?>" data-srcset="<?php echo esc_attr( $v['srcset'] ); ?>">
-									<span class="aod-cod__color-pick">
-										<?php if ( $v['img'] ) : ?>
-											<span class="aod-cod__color-thumb" style="background-image:url('<?php echo esc_url( $v['img'] ); ?>')"></span>
+				<?php foreach ( $options as $si => $sec ) : ?>
+					<div class="aod-cod__field aod-cod__optsec<?php echo $sec['visual'] ? ' is-visual' : ''; ?>" data-si="<?php echo esc_attr( $si ); ?>">
+						<label class="aod-cod__optlabel"><?php echo esc_html( $sec['label'] ); ?> <span>*</span></label>
+						<div class="aod-cod__opts">
+							<?php
+							foreach ( $sec['values'] as $vi => $val ) :
+								$oid = 'aod-cod-opt-' . (int) $product_id . '-' . (int) $si . '-' . (int) $vi;
+								?>
+								<label class="aod-cod__opt<?php echo $sec['visual'] ? ' aod-cod__opt--visual' : ''; ?>" for="<?php echo esc_attr( $oid ); ?>">
+									<input type="radio" id="<?php echo esc_attr( $oid ); ?>" name="opt[<?php echo esc_attr( $si ); ?>]" value="<?php echo esc_attr( $val['name'] ); ?>" data-price="<?php echo esc_attr( $val['price'] ); ?>" data-img="<?php echo esc_url( $val['img'] ); ?>" data-img-full="<?php echo esc_url( $val['img_full'] ); ?>" data-srcset="<?php echo esc_attr( $val['srcset'] ); ?>">
+									<span class="aod-cod__opt-card">
+										<?php if ( $sec['visual'] && $val['img'] ) : ?>
+											<span class="aod-cod__opt-thumb" style="background-image:url('<?php echo esc_url( $val['img'] ); ?>')"></span>
 										<?php endif; ?>
-										<span class="aod-cod__color-info">
-											<span class="aod-cod__color-name"><?php echo esc_html( $v['color'] ); ?></span>
-											<span class="aod-cod__color-price"><?php echo wp_strip_all_tags( wc_price( $v['price'] ) ); ?></span>
-										</span>
+										<span class="aod-cod__opt-name"><?php echo esc_html( $val['name'] ); ?></span>
+										<?php if ( $val['price'] > 0 ) : ?>
+											<span class="aod-cod__opt-plus">+<?php echo wp_strip_all_tags( wc_price( $val['price'] ) ); ?></span>
+										<?php endif; ?>
 									</span>
-									<span class="aod-cod__color-qty">
-										<button type="button" class="aod-cod__qstep" data-step="-1" aria-label="<?php esc_attr_e( 'Diminuer', 'aod-cod-form' ); ?>">&minus;</button>
-										<input type="number" class="aod-cod__color-qtyinput" name="color_qty[<?php echo esc_attr( $v['id'] ); ?>]" value="0" min="0" step="1" inputmode="numeric" aria-label="<?php echo esc_attr( sprintf( /* translators: %s couleur */ __( 'Quantité %s', 'aod-cod-form' ), $v['color'] ) ); ?>">
-										<button type="button" class="aod-cod__qstep" data-step="1" aria-label="<?php esc_attr_e( 'Augmenter', 'aod-cod-form' ); ?>">+</button>
-									</span>
-								</div>
+								</label>
 							<?php endforeach; ?>
 						</div>
 					</div>
-				<?php endif; ?>
+				<?php endforeach; ?>
 				<div class="aod-cod__field aod-cod__float">
 					<input type="text" id="aod-cod-name" name="name" autocomplete="name" placeholder=" " required>
 					<label for="aod-cod-name"><?php esc_html_e( 'Nom complet', 'aod-cod-form' ); ?> <span>*</span></label>
@@ -345,7 +404,6 @@ class AOD_COD_Form {
 					<input type="text" id="aod-cod-address" name="address" autocomplete="street-address" placeholder=" ">
 					<label for="aod-cod-address"><?php esc_html_e( 'Adresse', 'aod-cod-form' ); ?></label>
 				</div>
-				<?php if ( ! ( $is_variable && $variations ) ) : ?>
 				<div class="aod-cod__field aod-cod__qty aod-cod__float">
 					<input type="number" id="aod-cod-qty" name="qty" value="1" min="1" step="1" placeholder=" ">
 					<label for="aod-cod-qty"><?php esc_html_e( 'Quantité', 'aod-cod-form' ); ?></label>
@@ -366,7 +424,6 @@ class AOD_COD_Form {
 						</ul>
 					<?php endif; ?>
 				</div>
-				<?php endif; ?>
 
 				<div class="aod-cod__summary">
 					<div><span><?php esc_html_e( 'Sous-total', 'aod-cod-form' ); ?></span> <strong class="aod-cod__subtotal"></strong></div>
@@ -402,8 +459,8 @@ class AOD_COD_Form {
 		$address    = isset( $_POST['address'] ) ? sanitize_text_field( wp_unslash( $_POST['address'] ) ) : '';
 		$delivery   = ( isset( $_POST['delivery'] ) && 'desk' === $_POST['delivery'] ) ? 'desk' : 'home';
 		$qty        = isset( $_POST['qty'] ) ? max( 1, absint( $_POST['qty'] ) ) : 1;
-		// Produit variable : quantité par couleur, ex. color_qty[37]=2&color_qty[39]=1.
-		$color_qty  = ( isset( $_POST['color_qty'] ) && is_array( $_POST['color_qty'] ) ) ? wp_unslash( $_POST['color_qty'] ) : array();
+		// Sélection des options : une valeur par section, ex. opt[0]=L&opt[1]=Rouge.
+		$opt_sel    = ( isset( $_POST['opt'] ) && is_array( $_POST['opt'] ) ) ? wp_unslash( $_POST['opt'] ) : array();
 
 		// Normalise le téléphone DZ : 9 ou 10 chiffres commençant par 0.
 		$phone = preg_replace( '/\D+/', '', $phone_raw );
@@ -427,40 +484,30 @@ class AOD_COD_Form {
 			$errors[] = __( 'Produit indisponible.', 'aod-cod-form' );
 		}
 
-		// Lignes à commander : [ ['product'=>WC_Product, 'qty'=>int], ... ].
-		// Produit variable = une ligne par couleur dont la quantité est > 0.
-		// Produit simple   = une seule ligne avec la quantité globale.
-		$lines = array();
-		if ( $product && $product->is_type( 'variable' ) ) {
-			foreach ( $color_qty as $vid => $vqty ) {
-				$vid  = absint( $vid );
-				$vqty = absint( $vqty );
-				if ( $vqty < 1 ) {
-					continue;
-				}
-				$variation = wc_get_product( $vid );
-				if ( ! $variation || ! $variation->is_type( 'variation' )
-					|| (int) $variation->get_parent_id() !== (int) $product->get_id()
-					|| ! $variation->is_purchasable() ) {
-					continue; // Couleur inconnue ou indisponible : ignorée.
-				}
-				// Contrôle de stock par couleur.
-				if ( $variation->managing_stock() && ! $variation->backorders_allowed() ) {
-					$avail = $variation->get_stock_quantity();
-					if ( null !== $avail && $vqty > $avail ) {
-						$atts  = $variation->get_attributes();
-						$label = isset( $atts['couleur'] ) ? $atts['couleur'] : ( $atts ? reset( $atts ) : '' );
-						/* translators: 1: couleur, 2: stock restant */
-						$errors[] = sprintf( __( 'Stock insuffisant pour « %1$s » (il en reste %2$d).', 'aod-cod-form' ), $label, (int) $avail );
-						continue;
+		// Sélection des options (Taille=L, Couleur=Rouge…) : une valeur par section.
+		// Une seule ligne de commande (produit + quantité), suppléments cumulés au prix.
+		$option_meta = array();   // label => valeur, visible sur la commande.
+		$supplement  = 0.0;       // somme des suppléments de prix des options choisies.
+		$lines       = array();
+		if ( $product ) {
+			$sections = $this->get_product_options( $product );
+			foreach ( $sections as $si => $sec ) {
+				$chosen = isset( $opt_sel[ $si ] ) ? sanitize_text_field( (string) $opt_sel[ $si ] ) : '';
+				$match  = null;
+				foreach ( $sec['values'] as $val ) {
+					if ( $val['name'] === $chosen ) {
+						$match = $val;
+						break;
 					}
 				}
-				$lines[] = array( 'product' => $variation, 'qty' => $vqty );
+				if ( null === $match ) {
+					/* translators: %s : nom de la section (Taille, Couleur…) */
+					$errors[] = sprintf( __( 'Veuillez choisir : %s.', 'aod-cod-form' ), $sec['label'] );
+					continue;
+				}
+				$option_meta[ $sec['label'] ] = $match['name'];
+				$supplement                  += (float) $match['price'];
 			}
-			if ( ! $lines && ! $errors ) {
-				$errors[] = __( 'Veuillez choisir au moins une couleur et sa quantité.', 'aod-cod-form' );
-			}
-		} elseif ( $product ) {
 			$lines[] = array( 'product' => $product, 'qty' => $qty );
 		}
 
@@ -473,8 +520,8 @@ class AOD_COD_Form {
 			$order    = wc_create_order();
 			$subtotal = 0;
 			foreach ( $lines as $line ) {
-				// Prix unitaire éventuellement réduit par un palier quantité (produit simple).
-				$unit       = $this->tier_unit_price( $line['product'], $line['qty'] );
+				// Prix unitaire : palier quantité (produit simple) + suppléments des options.
+				$unit       = $this->tier_unit_price( $line['product'], $line['qty'] ) + $supplement;
 				$line_total = $unit * $line['qty'];
 				$item_id    = $order->add_product( $line['product'], $line['qty'] );
 				if ( $item_id ) {
@@ -482,6 +529,10 @@ class AOD_COD_Form {
 					if ( $item ) {
 						$item->set_subtotal( $line_total );
 						$item->set_total( $line_total );
+						// Choix de variantes visibles sur la commande (Taille : L, Couleur : Rouge…).
+						foreach ( $option_meta as $olabel => $oval ) {
+							$item->add_meta_data( $olabel, $oval, true );
+						}
 						$item->save();
 					}
 				}

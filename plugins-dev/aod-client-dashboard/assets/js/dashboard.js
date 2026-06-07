@@ -86,20 +86,14 @@
 			} );
 		}
 
-		// Couleurs / variantes : ajout, suppression, aperçu photo par ligne.
-		bindColorRows();
-
-		// Tailles prédéfinies : ajout en un clic de plusieurs variantes.
-		bindSizePresets();
+		// Sections d'options (Taille, Couleur…) : ajout/suppression de sections et valeurs.
+		bindOptions();
 
 		// Paliers de prix par quantité (packs) : ajout / suppression de lignes.
 		bindTierRows();
 
 		// Pack assortiment : toggle, lignes de composants, calcul d'économie.
 		bindPackRows();
-
-		// Libellé de l'axe de variante : synchronise l'en-tête de colonne en direct.
-		bindVariantLabel();
 
 		// Enregistrement du produit (formulaire multipart via FormData).
 		var form = document.getElementById( 'aod-cd-product-form' );
@@ -162,94 +156,123 @@
 		} );
 	}
 
-	/* Couleurs / variantes du produit (lignes ajoutables) */
-	function bindColorRows() {
-		var wrap = document.getElementById( 'aod-cd-colors' );
+	/* Sections d'options (Taille, Couleur, Pointure…) : sections + valeurs ajoutables */
+	function bindOptions() {
+		var wrap = document.getElementById( 'aod-cd-options' );
 		if ( ! wrap ) { return; }
-		var rows = wrap.querySelector( '.aod-cd-color-rows' );
-		var tpl  = document.getElementById( 'aod-cd-color-tpl' );
-		var addBtn = wrap.querySelector( '.aod-cd-color-add' );
+		var sectionsBox = wrap.querySelector( '.aod-cd-opt-sections' );
+		var addSecBtn   = wrap.querySelector( '.aod-cd-opt-add' );
+		var secTpl      = document.getElementById( 'aod-cd-opt-section-tpl' );
+		if ( ! sectionsBox || ! addSecBtn || ! secTpl ) { return; }
 
-		// Ajout d'une couleur.
-		if ( addBtn && tpl && rows ) {
-			addBtn.addEventListener( 'click', function () {
-				var next = parseInt( addBtn.dataset.next, 10 ) || 0;
-				var html = tpl.innerHTML.replace( /__i__/g, String( next ) );
-				var tmp  = document.createElement( 'div' );
-				tmp.innerHTML = html.trim();
-				var node = tmp.firstChild;
-				rows.appendChild( node );
-				addBtn.dataset.next = String( next + 1 );
-				var nameInput = node.querySelector( '.aod-cd-color-name' );
-				if ( nameInput ) { nameInput.focus(); }
-			} );
+		function makeSection() {
+			var si   = parseInt( addSecBtn.dataset.next, 10 ) || 0;
+			addSecBtn.dataset.next = String( si + 1 );
+			var html = secTpl.innerHTML.replace( /\{SI\}/g, String( si ) );
+			var tmp  = document.createElement( 'div' );
+			tmp.innerHTML = html.trim();
+			var node = tmp.firstElementChild;
+			sectionsBox.appendChild( node );
+			return node;
 		}
 
-		// Suppression + aperçu photo (délégation).
-		wrap.addEventListener( 'click', function ( e ) {
-			var del = e.target.closest( '.aod-cd-color-del' );
-			if ( del ) {
-				var row = del.closest( '.aod-cd-color-row' );
-				if ( row ) { row.remove(); }
+		function addValue( section, value ) {
+			var valuesBox = section.querySelector( '.aod-cd-opt-values' );
+			var addBtn    = section.querySelector( '.aod-cd-opt-val-add' );
+			var tpl       = section.querySelector( '.aod-cd-opt-val-tpl' );
+			if ( ! valuesBox || ! addBtn || ! tpl ) { return null; }
+			var vi   = parseInt( addBtn.dataset.next, 10 ) || 0;
+			addBtn.dataset.next = String( vi + 1 );
+			var html = tpl.innerHTML.replace( /\{VI\}/g, String( vi ) );
+			var tmp  = document.createElement( 'div' );
+			tmp.innerHTML = html.trim();
+			var node = tmp.firstElementChild;
+			valuesBox.appendChild( node );
+			if ( value != null ) {
+				var nameInput = node.querySelector( '.aod-cd-opt-name' );
+				if ( nameInput ) { nameInput.value = value; }
 			}
-		} );
-		wrap.addEventListener( 'change', function ( e ) {
-			var file = e.target.closest( '.aod-cd-color-imgfile' );
-			if ( ! file || ! file.files || ! file.files[0] ) { return; }
-			var box   = file.closest( '.aod-cd-color-imgbox' );
-			var prev  = box ? box.querySelector( '.aod-cd-color-imgprev' ) : null;
-			var empty = box ? box.querySelector( '.aod-cd-color-imgempty' ) : null;
-			var url   = URL.createObjectURL( file.files[0] );
-			if ( prev )  { prev.src = url; prev.style.display = ''; }
-			if ( empty ) { empty.style.display = 'none'; }
-		} );
-	}
+			return node;
+		}
 
-	/* Tailles prédéfinies : crée plusieurs lignes de variantes en un clic */
-	function bindSizePresets() {
-		var wrap = document.getElementById( 'aod-cd-colors' );
-		if ( ! wrap ) { return; }
-		var rows   = wrap.querySelector( '.aod-cd-color-rows' );
-		var tpl    = document.getElementById( 'aod-cd-color-tpl' );
-		var addBtn = wrap.querySelector( '.aod-cd-color-add' );
-		if ( ! rows || ! tpl || ! addBtn ) { return; }
-		var labelInput = document.getElementById( 'aod-cd-variant-label' );
-		var colName    = document.querySelector( '.aod-cd-variant-colname' );
+		function setVisual( section, on ) {
+			var cb        = section.querySelector( '.aod-cd-opt-visual-cb' );
+			var valuesBox = section.querySelector( '.aod-cd-opt-values' );
+			if ( cb ) { cb.checked = !! on; }
+			if ( valuesBox ) { valuesBox.classList.toggle( 'is-visual', !! on ); }
+		}
 
-		wrap.querySelectorAll( '.aod-cd-preset' ).forEach( function ( btn ) {
+		// + Ajouter une section (vide, avec une valeur vierge).
+		addSecBtn.addEventListener( 'click', function () {
+			var section = makeSection();
+			var label   = section.querySelector( '.aod-cd-opt-label' );
+			if ( label ) { label.focus(); }
+		} );
+
+		// Sections rapides (presets) : crée une section pré-remplie.
+		wrap.querySelectorAll( '.aod-cd-opt-preset' ).forEach( function ( btn ) {
 			btn.addEventListener( 'click', function () {
-				var sizes = ( btn.dataset.sizes || '' ).split( ',' ).map( function ( s ) {
+				var section = makeSection();
+				var label   = section.querySelector( '.aod-cd-opt-label' );
+				if ( label ) { label.value = btn.dataset.label || ''; }
+				var visual = btn.dataset.visual === '1';
+				setVisual( section, visual );
+				var values = ( btn.dataset.values || '' ).split( ',' ).map( function ( s ) {
 					return s.trim();
 				} ).filter( Boolean );
-				if ( ! sizes.length ) { return; }
-
-				// Renseigne le libellé de l'axe si pertinent (Taille, Pointure…).
-				var label = btn.dataset.label || '';
-				if ( label && labelInput ) {
-					labelInput.value = label;
-					if ( colName ) { colName.textContent = label; }
+				// La section neuve possède déjà une valeur vierge : on la garnit puis on complète.
+				if ( values.length ) {
+					var firstEmpty = section.querySelector( '.aod-cd-opt-name' );
+					if ( firstEmpty ) { firstEmpty.value = values.shift(); }
+					values.forEach( function ( v ) { addValue( section, v ); } );
 				}
-
-				// Évite les doublons : on saute une taille déjà présente.
-				var existing = {};
-				rows.querySelectorAll( '.aod-cd-color-name' ).forEach( function ( inp ) {
-					existing[ inp.value.trim().toLowerCase() ] = true;
-				} );
-
-				sizes.forEach( function ( sz ) {
-					if ( existing[ sz.toLowerCase() ] ) { return; }
-					var next = parseInt( addBtn.dataset.next, 10 ) || 0;
-					var html = tpl.innerHTML.replace( /__i__/g, String( next ) );
-					var tmp  = document.createElement( 'div' );
-					tmp.innerHTML = html.trim();
-					var node = tmp.firstChild;
-					rows.appendChild( node );
-					addBtn.dataset.next = String( next + 1 );
-					var nameInput = node.querySelector( '.aod-cd-color-name' );
-					if ( nameInput ) { nameInput.value = sz; }
-					existing[ sz.toLowerCase() ] = true;
-				} );
+				if ( label ) { label.focus(); }
 			} );
+		} );
+
+		// Délégation : ajout de valeur, suppressions de valeur/section.
+		wrap.addEventListener( 'click', function ( e ) {
+			var addVal = e.target.closest( '.aod-cd-opt-val-add' );
+			if ( addVal ) {
+				var sec  = addVal.closest( '.aod-cd-opt-section' );
+				var node = sec ? addValue( sec, null ) : null;
+				if ( node ) {
+					var n = node.querySelector( '.aod-cd-opt-name' );
+					if ( n ) { n.focus(); }
+				}
+				return;
+			}
+			var valDel = e.target.closest( '.aod-cd-opt-val-del' );
+			if ( valDel ) {
+				var row = valDel.closest( '.aod-cd-opt-value' );
+				if ( row ) { row.remove(); }
+				return;
+			}
+			var secDel = e.target.closest( '.aod-cd-opt-sec-del' );
+			if ( secDel ) {
+				var s = secDel.closest( '.aod-cd-opt-section' );
+				if ( s ) { s.remove(); }
+			}
+		} );
+
+		// Délégation : toggle « avec photos » + aperçu des photos de valeurs.
+		wrap.addEventListener( 'change', function ( e ) {
+			var cb = e.target.closest( '.aod-cd-opt-visual-cb' );
+			if ( cb ) {
+				var sec       = cb.closest( '.aod-cd-opt-section' );
+				var valuesBox = sec ? sec.querySelector( '.aod-cd-opt-values' ) : null;
+				if ( valuesBox ) { valuesBox.classList.toggle( 'is-visual', cb.checked ); }
+				return;
+			}
+			var file = e.target.closest( '.aod-cd-opt-imgfile' );
+			if ( file && file.files && file.files[0] ) {
+				var box   = file.closest( '.aod-cd-opt-imgbox' );
+				var prev  = box ? box.querySelector( '.aod-cd-opt-imgprev' ) : null;
+				var empty = box ? box.querySelector( '.aod-cd-opt-imgempty' ) : null;
+				var url   = URL.createObjectURL( file.files[0] );
+				if ( prev )  { prev.src = url; prev.style.display = ''; }
+				if ( empty ) { empty.style.display = 'none'; }
+			}
 		} );
 	}
 
@@ -351,17 +374,6 @@
 		}
 
 		updateSavings();
-	}
-
-	/* Libellé de l'axe de variante : met à jour l'en-tête de colonne en direct */
-	function bindVariantLabel() {
-		var input = document.getElementById( 'aod-cd-variant-label' );
-		if ( ! input ) { return; }
-		var head = document.querySelector( '.aod-cd-variant-colname' );
-		if ( ! head ) { return; }
-		input.addEventListener( 'input', function () {
-			head.textContent = input.value.trim() || 'Couleur';
-		} );
 	}
 
 	/* Formulaires de réglages génériques (Livraison, Pixels, WhatsApp…) */

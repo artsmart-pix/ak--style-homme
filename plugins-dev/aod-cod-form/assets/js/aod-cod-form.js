@@ -37,27 +37,26 @@
 			var $commune  = $form.find( 'select[name="commune"]' );
 			var $qty      = $form.find( 'input[name="qty"]' );
 			var $msg      = $box.find( '.aod-cod__msg' );
-			// Produit variable : une ligne quantité par couleur (.aod-cod__color).
-			var $colorRows = $form.find( '.aod-cod__color' );
-			var isVariable = $colorRows.length > 0;
+			// Sections d'options (Taille, Couleur…) : une valeur à choisir par section.
+			var $optSecs   = $form.find( '.aod-cod__optsec' );
+			var hasOptions = $optSecs.length > 0;
 
 			var $hint = $box.find( '.aod-cod__free-hint' );
 
-			// Sous-total produits : somme (prix × quantité) par couleur, sinon prix × quantité globale.
+			// Somme des suppléments de prix des options sélectionnées.
+			function optionSupplement() {
+				var supp = 0;
+				$optSecs.each( function () {
+					var $sel = $( this ).find( 'input[type="radio"]:checked' );
+					if ( $sel.length ) { supp += parseFloat( $sel.attr( 'data-price' ) ) || 0; }
+				} );
+				return supp;
+			}
+
+			// Sous-total produits : (prix de base palier + suppléments) × quantité.
 			function productsSubtotal() {
-				if ( isVariable ) {
-					var sum = 0;
-					$colorRows.each( function () {
-						var $row = $( this );
-						var q    = parseInt( $row.find( '.aod-cod__color-qtyinput' ).val(), 10 ) || 0;
-						if ( q > 0 ) {
-							sum += ( parseFloat( $row.data( 'price' ) ) || 0 ) * q;
-						}
-					} );
-					return sum;
-				}
 				var qty = Math.max( 1, parseInt( $qty.val(), 10 ) || 1 );
-				return tierUnit( qty ) * qty;
+				return ( tierUnit( qty ) + optionSupplement() ) * qty;
 			}
 
 			// Met en évidence le palier actif selon la quantité courante.
@@ -75,16 +74,9 @@
 				} );
 			}
 
-			// Quantité totale (toutes couleurs) — utile pour le lead.
+			// Quantité totale — utile pour le lead.
 			function totalQty() {
-				if ( ! isVariable ) {
-					return Math.max( 1, parseInt( $qty.val(), 10 ) || 1 );
-				}
-				var t = 0;
-				$colorRows.each( function () {
-					t += parseInt( $( this ).find( '.aod-cod__color-qtyinput' ).val(), 10 ) || 0;
-				} );
-				return t;
+				return Math.max( 1, parseInt( $qty.val(), 10 ) || 1 );
 			}
 
 			// Remplace la grande photo de la galerie WooCommerce par celle de la couleur choisie.
@@ -131,7 +123,7 @@
 				render();
 			} );
 
-			$form.on( 'change input', 'select[name="commune"], input[name="qty"], input[name="delivery"], .aod-cod__color-qtyinput', render );
+			$form.on( 'change input', 'select[name="commune"], input[name="qty"], input[name="delivery"], .aod-cod__optsec input[type="radio"]', render );
 
 			// Tarif de base d'un mode de livraison pour la wilaya sélectionnée.
 			function baseShip( type ) {
@@ -184,33 +176,19 @@
 
 			render();
 
-			if ( isVariable ) {
-				// Cliquer une couleur (vignette/nom) montre sa grande photo.
-				$form.on( 'click', '.aod-cod__color-pick', function () {
-					swapGallery( $( this ).closest( '.aod-cod__color' ) );
+			if ( hasOptions ) {
+				// Sélectionner une valeur « avec photo » change la grande image + marque la carte.
+				$form.on( 'change', '.aod-cod__optsec input[type="radio"]', function () {
+					var $sec = $( this ).closest( '.aod-cod__optsec' );
+					$sec.find( '.aod-cod__opt' ).removeClass( 'is-selected' );
+					$( this ).closest( '.aod-cod__opt' ).addClass( 'is-selected' );
+					if ( $sec.hasClass( 'is-visual' ) ) {
+						swapGallery( $( this ) );
+					}
 				} );
-				// Éditer la quantité d'une couleur montre aussi sa photo.
-				$form.on( 'focus', '.aod-cod__color-qtyinput', function () {
-					swapGallery( $( this ).closest( '.aod-cod__color' ) );
-				} );
-				// Boutons +/- de quantité.
-				$form.on( 'click', '.aod-cod__qstep', function () {
-					var $row   = $( this ).closest( '.aod-cod__color' );
-					var $input = $row.find( '.aod-cod__color-qtyinput' );
-					var step   = parseInt( $( this ).data( 'step' ), 10 ) || 0;
-					var val    = Math.max( 0, ( parseInt( $input.val(), 10 ) || 0 ) + step );
-					$input.val( val ).trigger( 'change' );
-					$row.toggleClass( 'is-selected', val > 0 );
-					swapGallery( $row );
-				} );
-				// Garde-fou : pas de quantité négative + marque la ligne active.
-				$form.on( 'input change', '.aod-cod__color-qtyinput', function () {
-					var v = parseInt( $( this ).val(), 10 ) || 0;
-					if ( v < 0 ) { v = 0; $( this ).val( 0 ); }
-					$( this ).closest( '.aod-cod__color' ).toggleClass( 'is-selected', v > 0 );
-				} );
-				// Photo initiale = première couleur.
-				swapGallery( $colorRows.first() );
+				// Photo initiale = première valeur visuelle pré-cochée, le cas échéant.
+				var $firstVisual = $form.find( '.aod-cod__optsec.is-visual input[type="radio"]:checked' ).first();
+				if ( $firstVisual.length ) { swapGallery( $firstVisual ); }
 			}
 
 			/* ---- Capture « panier abandonné » (prospect à rappeler) ---- */
@@ -248,7 +226,7 @@
 			// Enregistre dès que le téléphone perd le focus…
 			$form.find( 'input[name="phone"]' ).on( 'blur', pushLead );
 			// …puis à chaque modification une fois la saisie engagée.
-			$form.on( 'input change', 'input[name="name"], input[name="phone"], input[name="qty"], .aod-cod__color-qtyinput, select[name="wilaya"], select[name="commune"], input[name="delivery"]', function () {
+			$form.on( 'input change', 'input[name="name"], input[name="phone"], input[name="qty"], .aod-cod__optsec input[type="radio"], select[name="wilaya"], select[name="commune"], input[name="delivery"]', function () {
 				if ( leadStarted ) {
 					scheduleLead();
 				} else {
@@ -267,21 +245,21 @@
 				var wilaya  = $wilaya.val();
 				var commune = $commune.val();
 
-				// Quantités par couleur (produit variable).
-				var colorQty = {};
-				if ( isVariable ) {
-					$colorRows.each( function () {
-						var $row = $( this );
-						var q    = parseInt( $row.find( '.aod-cod__color-qtyinput' ).val(), 10 ) || 0;
-						if ( q > 0 ) { colorQty[ $row.data( 'id' ) ] = q; }
-					} );
-				}
+				// Sélection des options : une valeur par section.
+				var optSel     = {};
+				var optMissing = false;
+				$optSecs.each( function () {
+					var si   = $( this ).data( 'si' );
+					var $sel = $( this ).find( 'input[type="radio"]:checked' );
+					if ( $sel.length ) { optSel[ si ] = $sel.val(); }
+					else { optMissing = true; }
+				} );
 
 				if ( ! name || ! wilaya || ! commune ) {
 					return showError( AOD_COD.i18n.required );
 				}
-				if ( isVariable && ! Object.keys( colorQty ).length ) {
-					return showError( AOD_COD.i18n.choose_color || AOD_COD.i18n.required );
+				if ( hasOptions && optMissing ) {
+					return showError( AOD_COD.i18n.choose_option || AOD_COD.i18n.required );
 				}
 				if ( ! /^0[5-7][0-9]{8}$/.test( phone ) ) {
 					return showError( AOD_COD.i18n.phone_invalid );
@@ -302,16 +280,13 @@
 					commune: commune,
 					address: $form.find( 'input[name="address"]' ).val(),
 					delivery: $form.find( 'input[name="delivery"]:checked' ).val(),
+					qty: $qty.val(),
 					lead_token: leadToken
 				};
-				if ( isVariable ) {
-					// Envoie color_qty[ID]=quantité pour chaque couleur choisie.
-					$.each( colorQty, function ( id, q ) {
-						postData[ 'color_qty[' + id + ']' ] = q;
-					} );
-				} else {
-					postData.qty = $qty.val();
-				}
+				// Envoie opt[section]=valeur pour chaque section choisie.
+				$.each( optSel, function ( si, v ) {
+					postData[ 'opt[' + si + ']' ] = v;
+				} );
 
 				$.post( AOD_COD.ajax_url, postData ).done( function ( res ) {
 					if ( res && res.success ) {

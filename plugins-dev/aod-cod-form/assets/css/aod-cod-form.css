@@ -286,37 +286,30 @@
 }
 .aod-cod__tiers li.is-active{background:#eef0f1;border-color:var(--sh-line-strong);color:var(--sh-text)}
 
-/* ---- Sélecteur de variante avec quantité (produit variable) ---- */
-.aod-cod__colors-hint{margin:0 0 10px;font-size:12.5px;color:var(--sh-text-2)}
-.aod-cod__color-list{display:flex;flex-direction:column;gap:8px}
-.aod-cod__color{
-	display:flex;align-items:center;justify-content:space-between;gap:10px;
-	border:1px solid var(--sh-line);border-radius:var(--sh-radius-sm);padding:9px 11px;background:#fff;transition:.12s;
+/* ---- Sections d'options (Taille, Couleur, Pointure…) — style Shopify ---- */
+.aod-cod__optsec{margin-bottom:16px}
+.aod-cod__optlabel{display:block;font-size:13px;font-weight:600;color:var(--sh-text);margin:0 0 8px}
+.aod-cod__optlabel span{color:var(--sh-error)}
+.aod-cod__opts{display:flex;flex-wrap:wrap;gap:8px}
+/* La case radio reste accessible mais invisible (la carte fait le rendu). */
+.aod-cod__opt{position:relative;display:inline-flex;margin:0;cursor:pointer}
+.aod-cod__opt input{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+.aod-cod__opt-card{
+	display:flex;align-items:center;justify-content:center;gap:6px;
+	min-width:48px;min-height:44px;padding:8px 14px;
+	border:1px solid var(--sh-line);border-radius:var(--sh-radius-sm);background:#fff;
+	font-size:14px;font-weight:500;color:var(--sh-text);text-align:center;transition:.12s;
 }
-.aod-cod__color.is-selected{
-	border-color:var(--sh-accent);box-shadow:0 0 0 1px var(--sh-accent);
+.aod-cod__opt:hover .aod-cod__opt-card{border-color:var(--sh-line-strong)}
+.aod-cod__opt input:checked + .aod-cod__opt-card{
+	border-color:var(--sh-accent);box-shadow:0 0 0 1px var(--sh-accent);background:var(--sh-bg-sub);
 }
-.aod-cod__color-pick{display:flex;align-items:center;gap:10px;cursor:pointer;min-width:0;flex:1}
-.aod-cod__color-thumb{
-	width:42px;height:42px;border-radius:6px;background-size:cover;background-position:center;
-	flex:none;border:1px solid var(--sh-line);
+.aod-cod__opt input:focus-visible + .aod-cod__opt-card{box-shadow:0 0 0 2px rgba(0,128,96,.25)}
+.aod-cod__opt-name{line-height:1.2}
+.aod-cod__opt-plus{font-size:12px;color:var(--sh-accent);font-weight:600}
+/* Valeurs « avec photo » : pastille verticale (vignette + nom). */
+.aod-cod__opt--visual .aod-cod__opt-card{flex-direction:column;gap:6px;min-width:84px;padding:8px}
+.aod-cod__opt-thumb{
+	width:72px;height:72px;border-radius:6px;background-size:cover;background-position:center;
+	border:1px solid var(--sh-line);
 }
-.aod-cod__color-info{display:flex;flex-direction:column;min-width:0}
-.aod-cod__color-name{font-weight:500;font-size:14px;line-height:1.2;color:var(--sh-text)}
-.aod-cod__color-price{font-size:13px;color:var(--sh-text-2)}
-/* Stepper quantité */
-.aod-cod__color-qty{display:flex;align-items:center;gap:0;flex:none}
-.aod-cod__qstep{
-	width:34px;height:34px;border:1px solid var(--sh-line);background:#fff;cursor:pointer;
-	font-size:18px;line-height:1;color:var(--sh-text);display:flex;align-items:center;justify-content:center;
-	-webkit-appearance:none;appearance:none;padding:0;
-}
-.aod-cod__qstep:first-child{border-radius:6px 0 0 6px}
-.aod-cod__qstep:last-child{border-radius:0 6px 6px 0}
-.aod-cod__qstep:hover{background:var(--sh-bg-sub);border-color:var(--sh-line-strong)}
-.aod-cod__color-qtyinput{
-	width:46px;height:34px;text-align:center;border:1px solid var(--sh-line);border-left:0;border-right:0;
-	font-size:14px;font-weight:600;padding:0;border-radius:0;-moz-appearance:textfield;appearance:textfield;
-}
-.aod-cod__color-qtyinput::-webkit-outer-spin-button,
-.aod-cod__color-qtyinput::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}

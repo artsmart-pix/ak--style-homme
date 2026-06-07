@@ -973,35 +973,10 @@ class AOD_CD_Dashboard {
 		$img_url    = ( $product && $product->get_image_id() ) ? wp_get_attachment_image_url( $product->get_image_id(), 'thumbnail' ) : '';
 		$currency   = get_woocommerce_currency_symbol();
 
-		// Variations couleur existantes (produit variable).
-		$color_rows = array();
-		if ( $product && $product->is_type( 'variable' ) ) {
-			foreach ( $product->get_children() as $child_id ) {
-				$v = wc_get_product( $child_id );
-				if ( ! $v ) {
-					continue;
-				}
-				$atts  = $v->get_attributes();
-				$color = isset( $atts['couleur'] ) ? $atts['couleur'] : ( $atts ? reset( $atts ) : '' );
-				$color_rows[] = array(
-					'varid' => $child_id,
-					'name'  => $color,
-					'price' => $v->get_regular_price(),
-					'sale'  => $v->get_sale_price(),
-					'stock' => $v->managing_stock() ? (string) $v->get_stock_quantity() : '',
-					'sku'   => $v->get_sku(),
-					'img'   => $v->get_image_id() ? wp_get_attachment_image_url( $v->get_image_id(), 'thumbnail' ) : '',
-				);
-			}
-		}
+		// Sections d'options (Taille, Couleur, Pointure…) — modèle multi-sections.
+		$options = $this->get_product_options( $product );
 
 		$categories = get_terms( array( 'taxonomy' => 'product_cat', 'hide_empty' => false ) );
-
-		// Libellé de l'axe de variante (générique : Couleur, Taille, Modèle…).
-		$variant_label = $product ? (string) $product->get_meta( '_aod_variant_label' ) : '';
-		if ( '' === $variant_label ) {
-			$variant_label = __( 'Couleur', 'aod-client-dashboard' );
-		}
 
 		// Paliers de prix par quantité (packs « 2 pour X ») — produits simples.
 		$tiers = array();
@@ -1203,46 +1178,29 @@ class AOD_CD_Dashboard {
 			<details class="aod-cd-acc">
 				<summary class="aod-cd-acc-sum"><span class="aod-cd-acc-ic">🎨</span> <?php esc_html_e( 'Variantes', 'aod-client-dashboard' ); ?> <span class="aod-cd-acc-sub"><?php esc_html_e( 'Taille, Couleur, Pointure… (optionnel)', 'aod-client-dashboard' ); ?></span></summary>
 				<div class="aod-cd-acc-body">
-					<div class="aod-cd-colors" id="aod-cd-colors">
-						<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Laissez vide pour un produit simple. Ajoutez une ligne par variante : chacune peut avoir son prix, son stock et sa photo. Le client choisira la variante sur la page produit.', 'aod-client-dashboard' ); ?></p>
-
-						<label class="aod-cd-field" style="max-width:280px">
-							<span class="aod-cd-label"><?php esc_html_e( 'Nom de la variante', 'aod-client-dashboard' ); ?></span>
-							<input type="text" name="variant_label" id="aod-cd-variant-label" value="<?php echo esc_attr( $variant_label ); ?>" placeholder="<?php esc_attr_e( 'ex : Couleur, Taille, Modèle…', 'aod-client-dashboard' ); ?>">
-							<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Le mot affiché au client pour choisir (Couleur, Taille, Pointure, Grammage…).', 'aod-client-dashboard' ); ?></span>
-						</label>
+					<div class="aod-cd-options" id="aod-cd-options">
+						<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Crée une section par caractéristique (Taille, Pointure, Couleur…). Pour chaque section, ajoute les valeurs que le client pourra choisir. Une section « avec photos » affiche des pastilles cliquables (couleurs, modèles…) ; chaque valeur peut ajouter un supplément de prix. Laisse vide pour un produit simple.', 'aod-client-dashboard' ); ?></p>
 
 						<div class="aod-cd-size-presets">
-							<span class="aod-cd-label" style="margin:0"><?php esc_html_e( 'Ajout rapide :', 'aod-client-dashboard' ); ?></span>
-							<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-preset" data-label="<?php esc_attr_e( 'Taille', 'aod-client-dashboard' ); ?>" data-sizes="S,M,L,XL,XXL"><?php esc_html_e( 'Vêtement S–XXL', 'aod-client-dashboard' ); ?></button>
-							<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-preset" data-label="<?php esc_attr_e( 'Pointure', 'aod-client-dashboard' ); ?>" data-sizes="35,36,37,38,39,40,41,42,43,44,45,46"><?php esc_html_e( 'Pointures 35–46', 'aod-client-dashboard' ); ?></button>
-							<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-preset" data-label="<?php esc_attr_e( 'Quantité', 'aod-client-dashboard' ); ?>" data-sizes="1,2,3,4,5,6,7,8,9,10"><?php esc_html_e( 'Chiffres 1–10', 'aod-client-dashboard' ); ?></button>
+							<span class="aod-cd-label" style="margin:0"><?php esc_html_e( 'Sections rapides :', 'aod-client-dashboard' ); ?></span>
+							<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-opt-preset" data-label="<?php esc_attr_e( 'Taille', 'aod-client-dashboard' ); ?>" data-visual="0" data-values="S,M,L,XL,XXL"><?php esc_html_e( 'Tailles S–XXL', 'aod-client-dashboard' ); ?></button>
+							<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-opt-preset" data-label="<?php esc_attr_e( 'Pointure', 'aod-client-dashboard' ); ?>" data-visual="0" data-values="35,36,37,38,39,40,41,42,43,44,45,46"><?php esc_html_e( 'Pointures 35–46', 'aod-client-dashboard' ); ?></button>
+							<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-opt-preset" data-label="<?php esc_attr_e( 'Couleur', 'aod-client-dashboard' ); ?>" data-visual="1" data-values=""><?php esc_html_e( 'Couleur (avec photos)', 'aod-client-dashboard' ); ?></button>
 						</div>
 
-						<div class="aod-cd-color-head">
-							<span></span>
-							<span class="aod-cd-variant-colname"><?php echo esc_html( $variant_label ); ?></span>
-							<span><?php printf( esc_html__( 'Prix (%s)', 'aod-client-dashboard' ), esc_html( $currency ) ); ?></span>
-							<span><?php esc_html_e( 'Promo', 'aod-client-dashboard' ); ?></span>
-							<span><?php esc_html_e( 'Stock', 'aod-client-dashboard' ); ?></span>
-							<span></span>
-						</div>
-
-						<div class="aod-cd-color-rows">
+						<div class="aod-cd-opt-sections">
 							<?php
-							$ri = 0;
-							foreach ( $color_rows as $row ) {
-								$this->render_color_row( $ri, $row );
-								$ri++;
+							$si = 0;
+							foreach ( $options as $section ) {
+								$this->render_option_section( $si, $section );
+								$si++;
 							}
 							?>
 						</div>
 
-						<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-color-add" data-next="<?php echo esc_attr( (string) $ri ); ?>">+ <?php esc_html_e( 'Ajouter une variante', 'aod-client-dashboard' ); ?></button>
+						<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-opt-add" data-next="<?php echo esc_attr( (string) $si ); ?>">+ <?php esc_html_e( 'Ajouter une section', 'aod-client-dashboard' ); ?></button>
 
-						<template id="aod-cd-color-tpl">
-							<?php $this->render_color_row( '__i__', array() ); ?>
-						</template>
+						<template id="aod-cd-opt-section-tpl"><?php $this->render_option_section( '{SI}', array( 'values' => array( array() ) ) ); ?></template>
 					</div>
 				</div>
 			</details>
@@ -1332,27 +1290,145 @@ class AOD_CD_Dashboard {
 	}
 
 	/**
-	 * Une ligne de variante couleur (édition produit).
+	 * Normalise les sections d'options d'un produit pour l'édition.
 	 *
-	 * @param int|string $i   Index de la ligne (ou « __i__ » pour le gabarit JS).
-	 * @param array      $row varid, name, price, sale, stock, sku, img.
+	 * Lit la méta `_aod_options` ; à défaut, migre un ancien produit variable
+	 * mono-axe (variations couleur) vers une section visuelle unique.
+	 *
+	 * @param WC_Product|null $product
+	 * @return array Liste de [ 'label', 'visual', 'values' => [ ['name','price','image_id','img'], … ] ].
 	 */
-	protected function render_color_row( $i, $row ) {
-		$row = wp_parse_args( $row, array( 'varid' => 0, 'name' => '', 'price' => '', 'sale' => '', 'stock' => '', 'sku' => '', 'img' => '' ) );
-		$idx = esc_attr( (string) $i );
+	protected function get_product_options( $product ) {
+		if ( ! $product ) {
+			return array();
+		}
+		$raw = $product->get_meta( '_aod_options' );
+		$out = array();
+		if ( is_array( $raw ) && $raw ) {
+			foreach ( $raw as $sec ) {
+				if ( ! is_array( $sec ) ) {
+					continue;
+				}
+				$values = array();
+				$src    = ( isset( $sec['values'] ) && is_array( $sec['values'] ) ) ? $sec['values'] : array();
+				foreach ( $src as $val ) {
+					$name = isset( $val['name'] ) ? (string) $val['name'] : '';
+					if ( '' === $name ) {
+						continue;
+					}
+					$img_id   = isset( $val['image_id'] ) ? (int) $val['image_id'] : 0;
+					$values[] = array(
+						'name'     => $name,
+						'price'    => ( isset( $val['price'] ) && '' !== $val['price'] ) ? (string) $val['price'] : '',
+						'image_id' => $img_id,
+						'img'      => $img_id ? wp_get_attachment_image_url( $img_id, 'thumbnail' ) : '',
+					);
+				}
+				if ( ! $values ) {
+					continue;
+				}
+				$out[] = array(
+					'label'  => isset( $sec['label'] ) ? (string) $sec['label'] : '',
+					'visual' => ! empty( $sec['visual'] ),
+					'values' => $values,
+				);
+			}
+			if ( $out ) {
+				return $out;
+			}
+		}
+
+		// Compat : ancien produit variable mono-axe → une section visuelle unique.
+		if ( $product->is_type( 'variable' ) ) {
+			$label = (string) $product->get_meta( '_aod_variant_label' );
+			if ( '' === $label ) {
+				$label = __( 'Couleur', 'aod-client-dashboard' );
+			}
+			$values = array();
+			foreach ( $product->get_children() as $cid ) {
+				$v = wc_get_product( $cid );
+				if ( ! $v ) {
+					continue;
+				}
+				$atts = $v->get_attributes();
+				$name = $atts ? (string) reset( $atts ) : '';
+				if ( '' === $name ) {
+					continue;
+				}
+				$img_id   = (int) $v->get_image_id();
+				$values[] = array(
+					'name'     => $name,
+					'price'    => '',
+					'image_id' => $img_id,
+					'img'      => $img_id ? wp_get_attachment_image_url( $img_id, 'thumbnail' ) : '',
+				);
+			}
+			if ( $values ) {
+				$out[] = array( 'label' => $label, 'visual' => true, 'values' => $values );
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * Une section d'options (Taille, Couleur…) dans l'éditeur de produit.
+	 *
+	 * @param int|string $si      Index de section (ou « {SI} » pour le gabarit JS).
+	 * @param array      $section label, visual, values[].
+	 */
+	protected function render_option_section( $si, $section ) {
+		$section = wp_parse_args( $section, array( 'label' => '', 'visual' => false, 'values' => array() ) );
+		$s       = esc_attr( (string) $si );
+		$visual  = ! empty( $section['visual'] );
+		$values  = is_array( $section['values'] ) ? $section['values'] : array();
 		?>
-		<div class="aod-cd-color-row" data-row="<?php echo $idx; ?>">
-			<input type="hidden" name="color_varid[<?php echo $idx; ?>]" value="<?php echo esc_attr( (string) $row['varid'] ); ?>">
-			<label class="aod-cd-color-imgbox">
-				<img class="aod-cd-color-imgprev" src="<?php echo esc_url( $row['img'] ); ?>" alt="" <?php echo $row['img'] ? '' : 'style="display:none"'; ?>>
-				<span class="aod-cd-color-imgempty" <?php echo $row['img'] ? 'style="display:none"' : ''; ?>>📷</span>
-				<input type="file" name="color_image_<?php echo $idx; ?>" accept="image/*" class="aod-cd-color-imgfile">
+		<div class="aod-cd-opt-section" data-si="<?php echo $s; ?>">
+			<div class="aod-cd-opt-head">
+				<input type="text" name="opt_label[<?php echo $s; ?>]" class="aod-cd-opt-label" value="<?php echo esc_attr( $section['label'] ); ?>" placeholder="<?php esc_attr_e( 'ex : Taille, Couleur, Pointure…', 'aod-client-dashboard' ); ?>">
+				<label class="aod-cd-opt-visual">
+					<input type="checkbox" name="opt_visual[<?php echo $s; ?>]" value="1" class="aod-cd-opt-visual-cb" <?php checked( $visual ); ?>>
+					<?php esc_html_e( 'Avec photos', 'aod-client-dashboard' ); ?>
+				</label>
+				<button type="button" class="aod-cd-color-del aod-cd-opt-sec-del" aria-label="<?php esc_attr_e( 'Supprimer cette section', 'aod-client-dashboard' ); ?>">&times;</button>
+			</div>
+			<div class="aod-cd-opt-values<?php echo $visual ? ' is-visual' : ''; ?>">
+				<?php
+				$vi = 0;
+				foreach ( $values as $val ) {
+					$this->render_option_value( $si, $vi, $val );
+					$vi++;
+				}
+				?>
+			</div>
+			<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-opt-val-add" data-next="<?php echo esc_attr( (string) $vi ); ?>">+ <?php esc_html_e( 'Ajouter une valeur', 'aod-client-dashboard' ); ?></button>
+			<template class="aod-cd-opt-val-tpl"><?php $this->render_option_value( $si, '{VI}', array() ); ?></template>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Une valeur d'option (Rouge, L, 42…) avec photo et supplément de prix optionnels.
+	 *
+	 * @param int|string $si  Index de section.
+	 * @param int|string $vi  Index de valeur (ou « {VI} » pour le gabarit JS).
+	 * @param array      $val name, price, image_id, img.
+	 */
+	protected function render_option_value( $si, $vi, $val ) {
+		$val = wp_parse_args( $val, array( 'name' => '', 'price' => '', 'image_id' => 0, 'img' => '' ) );
+		$s   = esc_attr( (string) $si );
+		$v   = esc_attr( (string) $vi );
+		?>
+		<div class="aod-cd-opt-value" data-vi="<?php echo $v; ?>">
+			<label class="aod-cd-opt-imgbox">
+				<img class="aod-cd-opt-imgprev" src="<?php echo esc_url( $val['img'] ); ?>" alt="" <?php echo $val['img'] ? '' : 'style="display:none"'; ?>>
+				<span class="aod-cd-opt-imgempty" <?php echo $val['img'] ? 'style="display:none"' : ''; ?>>📷</span>
+				<input type="hidden" name="opt_value_imgid[<?php echo $s; ?>][<?php echo $v; ?>]" value="<?php echo esc_attr( (string) $val['image_id'] ); ?>">
+				<input type="file" name="opt_img[<?php echo $s; ?>][<?php echo $v; ?>]" accept="image/*" class="aod-cd-opt-imgfile">
 			</label>
-			<input type="text" name="color_name[<?php echo $idx; ?>]" class="aod-cd-color-name" value="<?php echo esc_attr( $row['name'] ); ?>" placeholder="<?php esc_attr_e( 'ex : Rouge', 'aod-client-dashboard' ); ?>">
-			<input type="number" step="0.01" min="0" name="color_price[<?php echo $idx; ?>]" value="<?php echo esc_attr( $row['price'] ); ?>" placeholder="<?php esc_attr_e( 'défaut', 'aod-client-dashboard' ); ?>">
-			<input type="number" step="0.01" min="0" name="color_sale[<?php echo $idx; ?>]" value="<?php echo esc_attr( $row['sale'] ); ?>" placeholder="—">
-			<input type="number" min="0" name="color_stock[<?php echo $idx; ?>]" value="<?php echo esc_attr( $row['stock'] ); ?>" placeholder="<?php esc_attr_e( '∞', 'aod-client-dashboard' ); ?>">
-			<button type="button" class="aod-cd-color-del" aria-label="<?php esc_attr_e( 'Supprimer cette couleur', 'aod-client-dashboard' ); ?>">&times;</button>
+			<input type="text" name="opt_value_name[<?php echo $s; ?>][<?php echo $v; ?>]" class="aod-cd-opt-name" value="<?php echo esc_attr( $val['name'] ); ?>" placeholder="<?php esc_attr_e( 'ex : Rouge, L, 42…', 'aod-client-dashboard' ); ?>">
+			<span class="aod-cd-opt-plus" aria-hidden="true">+</span>
+			<input type="number" step="0.01" min="0" name="opt_value_price[<?php echo $s; ?>][<?php echo $v; ?>]" class="aod-cd-opt-price" value="<?php echo esc_attr( $val['price'] ); ?>" placeholder="<?php esc_attr_e( 'supplément', 'aod-client-dashboard' ); ?>">
+			<button type="button" class="aod-cd-color-del aod-cd-opt-val-del" aria-label="<?php esc_attr_e( 'Supprimer cette valeur', 'aod-client-dashboard' ); ?>">&times;</button>
 		</div>
 		<?php
 	}
@@ -1432,8 +1508,8 @@ class AOD_CD_Dashboard {
 			wp_send_json_error( array( 'message' => __( 'Le nom du produit est obligatoire.', 'aod-client-dashboard' ) ), 400 );
 		}
 
-		// Couleurs envoyées ? (au moins une ligne avec un nom non vide → produit variable.)
-		$colors = $this->collect_color_rows();
+		// Sections d'options (Taille, Couleur…) postées. Au moins une section valide → variantes.
+		$options = $this->collect_options();
 
 		$product = $pid ? wc_get_product( $pid ) : new WC_Product_Simple();
 		if ( ! $product ) {
@@ -1449,12 +1525,6 @@ class AOD_CD_Dashboard {
 		// Garde-fou : le prix promo ne peut pas dépasser le prix normal.
 		if ( '' !== $sale && '' !== $reg && (float) $sale > (float) $reg ) {
 			wp_send_json_error( array( 'message' => __( 'Le prix promo doit être inférieur ou égal au prix normal.', 'aod-client-dashboard' ) ), 400 );
-		}
-
-		// Libellé générique de l'axe de variante (Couleur, Taille, Modèle…).
-		$axis_label = isset( $_POST['variant_label'] ) ? sanitize_text_field( wp_unslash( $_POST['variant_label'] ) ) : '';
-		if ( '' === $axis_label ) {
-			$axis_label = __( 'Couleur', 'aod-client-dashboard' );
 		}
 
 		// SKU (peut lever une exception si doublon).
@@ -1523,41 +1593,39 @@ class AOD_CD_Dashboard {
 		$product->set_date_on_sale_from( ! empty( $_POST['sale_from'] ) ? sanitize_text_field( wp_unslash( $_POST['sale_from'] ) ) : '' );
 		$product->set_date_on_sale_to( ! empty( $_POST['sale_to'] ) ? sanitize_text_field( wp_unslash( $_POST['sale_to'] ) ) : '' );
 
-		if ( $colors ) {
-			// Produit variable : le parent n'a ni stock ni prix propres ; le prix
-			// principal sert de prix par défaut pour les variantes sans prix.
-			$product->set_regular_price( $reg );
-			$product->set_sale_price( '' !== $sale ? $sale : '' );
-			$product->set_manage_stock( false );
-			// Libellé de l'axe conservé ; paliers/packs ne s'appliquent pas aux variables.
-			$product->update_meta_data( '_aod_variant_label', $axis_label );
+		// Produit toujours simple désormais : prix + stock classiques.
+		$product->set_regular_price( $reg );
+		$product->set_sale_price( '' !== $sale ? $sale : '' );
+		$manage = ! empty( $_POST['manage_stock'] );
+		$product->set_manage_stock( $manage );
+		if ( $manage ) {
+			$qty = isset( $_POST['stock_quantity'] ) ? wc_stock_amount( wp_unslash( $_POST['stock_quantity'] ) ) : 0;
+			$product->set_stock_quantity( $qty );
+			$product->set_stock_status( $qty > 0 ? 'instock' : 'outofstock' );
+			$low = isset( $_POST['low_stock_amount'] ) ? trim( (string) wp_unslash( $_POST['low_stock_amount'] ) ) : '';
+			$product->set_low_stock_amount( '' !== $low ? wc_stock_amount( $low ) : '' );
+		} else {
+			$product->set_low_stock_amount( '' );
+		}
+
+		// Libellé d'axe mono-variante : obsolète (remplacé par les sections d'options).
+		$product->delete_meta_data( '_aod_variant_label' );
+
+		if ( $options ) {
+			// Avec des sections d'options : pas de paliers quantité ni de pack (incompatibles).
 			$product->delete_meta_data( '_aod_qty_tiers' );
 			$product->delete_meta_data( '_aod_is_pack' );
 			$product->delete_meta_data( '_aod_pack_items' );
 		} else {
-			// Produit simple : prix + stock classiques.
-			$product->set_regular_price( $reg );
-			$product->set_sale_price( '' !== $sale ? $sale : '' );
-			$manage = ! empty( $_POST['manage_stock'] );
-			$product->set_manage_stock( $manage );
-			if ( $manage ) {
-				$qty = isset( $_POST['stock_quantity'] ) ? wc_stock_amount( wp_unslash( $_POST['stock_quantity'] ) ) : 0;
-				$product->set_stock_quantity( $qty );
-				$product->set_stock_status( $qty > 0 ? 'instock' : 'outofstock' );
-				$low = isset( $_POST['low_stock_amount'] ) ? trim( (string) wp_unslash( $_POST['low_stock_amount'] ) ) : '';
-				$product->set_low_stock_amount( '' !== $low ? wc_stock_amount( $low ) : '' );
-			} else {
-				$product->set_low_stock_amount( '' );
-			}
+			$product->delete_meta_data( '_aod_options' );
 			// Paliers de prix par quantité (prix unitaire de référence = promo sinon normal).
-			$base   = ( '' !== $sale ) ? (float) $sale : (float) $reg;
-			$tiers  = $this->collect_qty_tiers( $base );
+			$base  = ( '' !== $sale ) ? (float) $sale : (float) $reg;
+			$tiers = $this->collect_qty_tiers( $base );
 			if ( $tiers ) {
 				$product->update_meta_data( '_aod_qty_tiers', $tiers );
 			} else {
 				$product->delete_meta_data( '_aod_qty_tiers' );
 			}
-			$product->delete_meta_data( '_aod_variant_label' );
 
 			// Pack assortiment (produits inclus).
 			$pack_items = ! empty( $_POST['is_pack'] ) ? $this->collect_pack_items( $pid ) : array();
@@ -1573,10 +1641,18 @@ class AOD_CD_Dashboard {
 		$product->save();
 		$new_id = $product->get_id();
 
-		// Bascule du type de produit si nécessaire (simple <-> variable), puis ré-instanciation.
-		$want_type = $colors ? 'variable' : 'simple';
-		if ( ! $product->is_type( $want_type ) ) {
-			wp_set_object_terms( $new_id, $want_type, 'product_type' );
+		// Produit toujours simple désormais : on convertit d'anciens produits variables
+		// (suppression des variations + attributs) avant de basculer le type.
+		if ( ! $product->is_type( 'simple' ) ) {
+			foreach ( $product->get_children() as $cid ) {
+				$old = wc_get_product( $cid );
+				if ( $old ) {
+					$old->delete( true );
+				}
+			}
+			$product->set_attributes( array() );
+			$product->save();
+			wp_set_object_terms( $new_id, 'simple', 'product_type' );
 			$product = wc_get_product( $new_id );
 		}
 
@@ -1595,9 +1671,11 @@ class AOD_CD_Dashboard {
 		// Galerie : retrait des photos cochées + ajout des nouvelles.
 		$this->save_gallery( $product, $new_id );
 
-		// Variations.
-		if ( $colors ) {
-			$this->save_color_variations( $product, $colors, '' !== $reg ? $reg : '', $axis_label );
+		// Sections d'options : upload des photos de valeurs puis enregistrement de la méta.
+		if ( $options ) {
+			$options = $this->upload_option_images( $options, $new_id );
+			$product->update_meta_data( '_aod_options', $this->normalize_options( $options ) );
+			$product->save();
 		}
 
 		wp_send_json_success( array(
@@ -1607,32 +1685,126 @@ class AOD_CD_Dashboard {
 	}
 
 	/**
-	 * Rassemble les lignes de couleur postées (uniquement celles avec un nom).
+	 * Rassemble les sections d'options postées (sections et valeurs valides uniquement).
 	 *
-	 * @return array Liste de [ index, name, price, sale, stock, sku ].
+	 * Conserve les index postés (clés associatives) afin que l'upload des photos
+	 * puisse retrouver le bon champ fichier opt_img[si][vi]. La normalisation en
+	 * liste séquentielle est faite plus tard par normalize_options().
+	 *
+	 * @return array
 	 */
-	protected function collect_color_rows() {
-		if ( empty( $_POST['color_name'] ) || ! is_array( $_POST['color_name'] ) ) {
+	protected function collect_options() {
+		if ( empty( $_POST['opt_label'] ) || ! is_array( $_POST['opt_label'] ) ) {
 			return array();
 		}
-		$names = wp_unslash( $_POST['color_name'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-		$rows  = array();
-		foreach ( $names as $i => $raw ) {
-			$label = sanitize_text_field( trim( (string) $raw ) );
-			if ( '' === $label ) {
+		$labels = wp_unslash( $_POST['opt_label'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$out    = array();
+		foreach ( $labels as $si => $raw_label ) {
+			$label  = sanitize_text_field( trim( (string) $raw_label ) );
+			$visual = ! empty( $_POST['opt_visual'][ $si ] );
+			$names  = ( isset( $_POST['opt_value_name'][ $si ] ) && is_array( $_POST['opt_value_name'][ $si ] ) )
+				? wp_unslash( $_POST['opt_value_name'][ $si ] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+				: array();
+			$values = array();
+			foreach ( $names as $vi => $raw_name ) {
+				$name = sanitize_text_field( trim( (string) $raw_name ) );
+				if ( '' === $name ) {
+					continue;
+				}
+				$price = isset( $_POST['opt_value_price'][ $si ][ $vi ] ) ? wc_format_decimal( wp_unslash( $_POST['opt_value_price'][ $si ][ $vi ] ) ) : '';
+				if ( '' !== $price && (float) $price <= 0 ) {
+					$price = '';
+				}
+				$imgid = ( $visual && isset( $_POST['opt_value_imgid'][ $si ][ $vi ] ) ) ? absint( $_POST['opt_value_imgid'][ $si ][ $vi ] ) : 0;
+				$values[ $vi ] = array(
+					'name'     => $name,
+					'price'    => $price,
+					'image_id' => $imgid,
+				);
+			}
+			if ( '' === $label || ! $values ) {
 				continue;
 			}
-			$rows[] = array(
-				'index' => $i,
-				'name'  => $label,
-				'varid' => isset( $_POST['color_varid'][ $i ] ) ? absint( $_POST['color_varid'][ $i ] ) : 0,
-				'price' => isset( $_POST['color_price'][ $i ] ) ? trim( (string) wp_unslash( $_POST['color_price'][ $i ] ) ) : '',
-				'sale'  => isset( $_POST['color_sale'][ $i ] ) ? trim( (string) wp_unslash( $_POST['color_sale'][ $i ] ) ) : '',
-				'stock' => isset( $_POST['color_stock'][ $i ] ) ? trim( (string) wp_unslash( $_POST['color_stock'][ $i ] ) ) : '',
-				'sku'   => isset( $_POST['color_sku'][ $i ] ) ? sanitize_text_field( wp_unslash( $_POST['color_sku'][ $i ] ) ) : '',
+			$out[ $si ] = array(
+				'label'  => $label,
+				'visual' => $visual,
+				'values' => $values,
 			);
 		}
-		return $rows;
+		return $out;
+	}
+
+	/**
+	 * Upload des photos de valeurs (champ fichier opt_img[si][vi]) et fusion des
+	 * identifiants d'attachement dans les sections. Conserve l'image existante si
+	 * aucun nouveau fichier n'est fourni.
+	 *
+	 * @param array $options Sections issues de collect_options() (clés postées).
+	 * @param int   $pid     Produit parent (pour rattacher les médias).
+	 * @return array
+	 */
+	protected function upload_option_images( $options, $pid ) {
+		if ( empty( $_FILES['opt_img']['name'] ) || ! is_array( $_FILES['opt_img']['name'] ) ) {
+			return $options;
+		}
+		require_once ABSPATH . 'wp-admin/includes/image.php';
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		require_once ABSPATH . 'wp-admin/includes/media.php';
+
+		$files = $_FILES['opt_img'];
+		foreach ( $options as $si => $section ) {
+			if ( empty( $section['visual'] ) ) {
+				continue;
+			}
+			foreach ( $section['values'] as $vi => $value ) {
+				if ( empty( $files['name'][ $si ][ $vi ] ) ) {
+					continue;
+				}
+				$_FILES['opt_img_single'] = array(
+					'name'     => $files['name'][ $si ][ $vi ],
+					'type'     => $files['type'][ $si ][ $vi ],
+					'tmp_name' => $files['tmp_name'][ $si ][ $vi ],
+					'error'    => $files['error'][ $si ][ $vi ],
+					'size'     => $files['size'][ $si ][ $vi ],
+				);
+				$att = media_handle_upload( 'opt_img_single', $pid );
+				if ( ! is_wp_error( $att ) ) {
+					$options[ $si ]['values'][ $vi ]['image_id'] = (int) $att;
+				}
+			}
+		}
+		unset( $_FILES['opt_img_single'] );
+		return $options;
+	}
+
+	/**
+	 * Réindexe les sections/valeurs en listes séquentielles et nettoie les champs
+	 * pour le stockage en méta `_aod_options`.
+	 *
+	 * @param array $options
+	 * @return array
+	 */
+	protected function normalize_options( $options ) {
+		$out = array();
+		foreach ( $options as $section ) {
+			$values = array();
+			foreach ( $section['values'] as $value ) {
+				$values[] = array(
+					'name'     => (string) $value['name'],
+					'price'    => ( isset( $value['price'] ) && '' !== $value['price'] ) ? (string) $value['price'] : '',
+					'image_id' => isset( $value['image_id'] ) ? (int) $value['image_id'] : 0,
+				);
+			}
+			if ( ! $values ) {
+				continue;
+			}
+			$out[] = array(
+				'label'  => (string) $section['label'],
+				'visual' => ! empty( $section['visual'] ),
+				'values' => $values,
+			);
+		}
+		return $out;
 	}
 
 	/**
@@ -1756,128 +1928,6 @@ class AOD_CD_Dashboard {
 
 		$product->set_gallery_image_ids( array_values( array_unique( array_filter( $gallery ) ) ) );
 		$product->save();
-	}
-
-	/**
-	 * Crée / met à jour les variations d'un produit variable et supprime
-	 * celles qui ne sont plus présentes.
-	 *
-	 * @param WC_Product_Variable $product
-	 * @param array               $colors        Lignes issues de collect_color_rows().
-	 * @param string              $default_price Prix par défaut (prix principal).
-	 * @param string              $axis_label    Libellé de l'axe (Couleur, Taille…).
-	 */
-	protected function save_color_variations( $product, $colors, $default_price, $axis_label = 'Couleur' ) {
-		$pid = $product->get_id();
-
-		// 1) Attribut de variante (local) : libellé configurable, slug dérivé.
-		$axis_label = '' !== trim( (string) $axis_label ) ? $axis_label : 'Couleur';
-		$axis_slug  = sanitize_title( $axis_label );
-		$attribute  = new WC_Product_Attribute();
-		$attribute->set_id( 0 );
-		$attribute->set_name( $axis_label );
-		$attribute->set_options( wp_list_pluck( $colors, 'name' ) );
-		$attribute->set_position( 0 );
-		$attribute->set_visible( true );
-		$attribute->set_variation( true );
-		$product->set_attributes( array( $attribute ) );
-		$product->save();
-
-		require_once ABSPATH . 'wp-admin/includes/image.php';
-		require_once ABSPATH . 'wp-admin/includes/file.php';
-		require_once ABSPATH . 'wp-admin/includes/media.php';
-
-		// 2) Index des variations existantes : varid + couleur => id.
-		$existing_by_id    = array();
-		$existing_by_color = array();
-		foreach ( $product->get_children() as $cid ) {
-			$existing_by_id[ (int) $cid ] = true;
-			$cv = wc_get_product( $cid );
-			if ( $cv ) {
-				$a = $cv->get_attributes();
-				$c = isset( $a['couleur'] ) ? $a['couleur'] : ( $a ? reset( $a ) : '' );
-				if ( '' !== $c ) {
-					$existing_by_color[ $c ] = (int) $cid;
-				}
-			}
-		}
-
-		$kept = array();
-		foreach ( $colors as $row ) {
-			$label = $row['name'];
-
-			// Retrouver la variation : par varid posté, sinon par couleur, sinon nouvelle.
-			$variation = null;
-			if ( $row['varid'] && isset( $existing_by_id[ $row['varid'] ] ) ) {
-				$variation = wc_get_product( $row['varid'] );
-			}
-			if ( ( ! $variation || ! $variation->is_type( 'variation' ) ) && isset( $existing_by_color[ $label ] ) ) {
-				$variation = wc_get_product( $existing_by_color[ $label ] );
-			}
-			if ( ! $variation || ! $variation->is_type( 'variation' ) ) {
-				$variation = new WC_Product_Variation();
-				$variation->set_parent_id( $pid );
-			}
-
-			$variation->set_attributes( array( $axis_slug => $label ) );
-
-			$price = ( '' !== $row['price'] ) ? wc_format_decimal( $row['price'] ) : $default_price;
-			$variation->set_regular_price( $price );
-			$sale = ( '' !== $row['sale'] ) ? wc_format_decimal( $row['sale'] ) : '';
-			// Garde-fou : une promo supérieure au prix de la variante est ignorée.
-			if ( '' !== $sale && '' !== (string) $price && (float) $sale > (float) $price ) {
-				$sale = '';
-			}
-			$variation->set_sale_price( '' !== $sale ? $sale : '' );
-
-			if ( '' !== $row['stock'] ) {
-				$q = wc_stock_amount( $row['stock'] );
-				$variation->set_manage_stock( true );
-				$variation->set_stock_quantity( $q );
-				$variation->set_stock_status( $q > 0 ? 'instock' : 'outofstock' );
-			} else {
-				$variation->set_manage_stock( false );
-				$variation->set_stock_status( 'instock' );
-			}
-
-			if ( '' !== $row['sku'] ) {
-				try {
-					$variation->set_sku( $row['sku'] );
-				} catch ( Exception $e ) {
-					// SKU en doublon : on ignore pour ne pas bloquer l'enregistrement.
-				}
-			}
-
-			$variation->set_status( 'publish' );
-			$vid = $variation->save();
-
-			// Photo de la couleur (champ fichier color_image_<index>).
-			$file_key = 'color_image_' . $row['index'];
-			if ( ! empty( $_FILES[ $file_key ]['name'] ) ) {
-				$att = media_handle_upload( $file_key, $pid );
-				if ( ! is_wp_error( $att ) ) {
-					$variation->set_image_id( $att );
-					$variation->save();
-				}
-			}
-
-			$kept[] = (int) $vid;
-		}
-
-		// 3) Supprimer les variations retirées.
-		foreach ( $product->get_children() as $cid ) {
-			if ( ! in_array( (int) $cid, $kept, true ) ) {
-				$old = wc_get_product( $cid );
-				if ( $old ) {
-					$old->delete( true );
-				}
-			}
-		}
-
-		// 4) Resynchroniser le produit variable (fourchette de prix, stock global).
-		if ( class_exists( 'WC_Product_Variable' ) ) {
-			WC_Product_Variable::sync( $pid );
-		}
 	}
 
 	/* ============================================================
