@@ -425,8 +425,17 @@ class AOD_COD_Form {
 								<?php
 								$has_hex   = ! empty( $val['hex'] );
 								$is_visual = $sec['visual'] || $has_hex;
+								// Pastille couleur sans photo : rendu compact (point + nom).
+								$is_color  = $has_hex && empty( $val['img'] );
+								$opt_class = 'aod-cod__opt';
+								if ( $is_visual ) {
+									$opt_class .= ' aod-cod__opt--visual';
+								}
+								if ( $is_color ) {
+									$opt_class .= ' aod-cod__opt--color';
+								}
 								?>
-								<label class="aod-cod__opt<?php echo $is_visual ? ' aod-cod__opt--visual' : ''; ?>" for="<?php echo esc_attr( $oid ); ?>">
+								<label class="<?php echo esc_attr( $opt_class ); ?>" for="<?php echo esc_attr( $oid ); ?>">
 									<input type="radio" id="<?php echo esc_attr( $oid ); ?>" name="opt[<?php echo esc_attr( $si ); ?>]" value="<?php echo esc_attr( $val['name'] ); ?>" data-price="<?php echo esc_attr( $val['price'] ); ?>" data-img="<?php echo esc_url( $val['img'] ); ?>" data-img-id="<?php echo esc_attr( $val['img_id'] ); ?>" data-img-full="<?php echo esc_url( $val['img_full'] ); ?>" data-img-w="<?php echo esc_attr( $val['img_w'] ); ?>" data-img-h="<?php echo esc_attr( $val['img_h'] ); ?>" data-srcset="<?php echo esc_attr( $val['srcset'] ); ?>">
 									<span class="aod-cod__opt-card">
 										<?php if ( $is_visual && $val['img'] ) : ?>

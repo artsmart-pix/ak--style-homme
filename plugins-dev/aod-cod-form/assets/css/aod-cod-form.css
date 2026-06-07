@@ -372,6 +372,10 @@
 }
 /* Pastille de couleur prédéfinie (pas de photo) : on affiche la vraie couleur. */
 .aod-cod__opt-thumb--color{box-shadow:inset 0 0 0 2px #fff;border-color:rgba(0,0,0,.18)}
+/* Couleur sans photo : carte compacte en ligne (petit point rond + nom),
+   au lieu de la grande vignette verticale des valeurs avec photo. */
+.aod-cod__opt--color .aod-cod__opt-card{flex-direction:row;min-width:0;padding:8px 12px;gap:8px}
+.aod-cod__opt--color .aod-cod__opt-thumb{width:20px;height:20px;border-radius:50%}
 
 /* ---- Flèches de navigation ‹ › superposées sur la galerie produit ---- */
 .woocommerce-product-gallery .aod-gallery-nav{
