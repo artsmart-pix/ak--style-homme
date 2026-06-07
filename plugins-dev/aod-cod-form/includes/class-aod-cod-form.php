@@ -501,9 +501,13 @@ class AOD_COD_Form {
 					<input type="text" id="aod-cod-address" name="address" autocomplete="street-address" placeholder=" ">
 					<label for="aod-cod-address"><?php esc_html_e( 'Adresse', 'aod-cod-form' ); ?></label>
 				</div>
-				<div class="aod-cod__field aod-cod__qty aod-cod__float">
-					<input type="number" id="aod-cod-qty" name="qty" value="1" min="1" step="1" placeholder=" ">
+				<div class="aod-cod__field aod-cod__qty">
 					<label for="aod-cod-qty"><?php esc_html_e( 'Quantité', 'aod-cod-form' ); ?></label>
+					<div class="aod-cod__stepper">
+						<button type="button" class="aod-cod__step aod-cod__step--minus" data-step="-1" aria-label="<?php esc_attr_e( 'Diminuer la quantité', 'aod-cod-form' ); ?>">&minus;</button>
+						<input type="number" id="aod-cod-qty" name="qty" value="1" min="1" step="1" inputmode="numeric">
+						<button type="button" class="aod-cod__step aod-cod__step--plus" data-step="1" aria-label="<?php esc_attr_e( 'Augmenter la quantité', 'aod-cod-form' ); ?>">+</button>
+					</div>
 					<?php if ( $tiers ) : ?>
 						<ul class="aod-cod__tiers">
 							<?php foreach ( $tiers as $t ) : ?>

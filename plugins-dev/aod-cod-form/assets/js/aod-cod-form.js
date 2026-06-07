@@ -126,6 +126,17 @@
 
 			$form.on( 'change input', 'select[name="commune"], input[name="qty"], input[name="delivery"], .aod-cod__optsec input[type="radio"]', render );
 
+			// Stepper quantité : boutons − / +. On respecte le minimum et on
+			// déclenche `change` pour que le prix et le lead se recalculent.
+			$form.on( 'click', '.aod-cod__step', function () {
+				var step = parseInt( $( this ).attr( 'data-step' ), 10 ) || 0;
+				var min  = parseInt( $qty.attr( 'min' ), 10 );
+				if ( isNaN( min ) ) { min = 1; }
+				var cur  = parseInt( $qty.val(), 10 );
+				if ( isNaN( cur ) ) { cur = min; }
+				$qty.val( Math.max( min, cur + step ) ).trigger( 'change' );
+			} );
+
 			// Tarif de base d'un mode de livraison pour la wilaya sélectionnée.
 			function baseShip( type ) {
 				var code = parseInt( $wilaya.val(), 10 );
