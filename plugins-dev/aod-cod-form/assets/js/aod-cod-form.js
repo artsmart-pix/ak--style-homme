@@ -79,48 +79,26 @@
 				return Math.max( 1, parseInt( $qty.val(), 10 ) || 1 );
 			}
 
-			// Remplace la grande photo de la galerie WooCommerce par celle de la couleur choisie.
+			// Place la galerie WooCommerce sur la photo de la couleur choisie.
+			// Les photos d'options sont injectées comme de VRAIES diapos du carrousel
+			// côté PHP (chaque diapo porte `data-aod-attachment="<ID média>"`). On se
+			// contente donc de naviguer vers la bonne diapo : on n'écrase plus aucune
+			// image, et toutes les photos restent accessibles via les flèches.
 			function swapGallery( $radio ) {
-				var full = $radio.attr( 'data-img-full' ) || $radio.attr( 'data-img' );
-				if ( ! full ) { return; }
-				var srcset  = $radio.attr( 'data-srcset' ) || '';
-				var w       = $radio.attr( 'data-img-w' ) || '';
-				var h       = $radio.attr( 'data-img-h' ) || '';
+				var imgId = parseInt( $radio.attr( 'data-img-id' ), 10 ) || 0;
+				if ( ! imgId ) { return; }
 				var $gallery = $( '.woocommerce-product-gallery' );
 				if ( ! $gallery.length ) { return; }
-				// Image principale = première de la galerie (gère flexslider/photoswipe).
-				var $cell = $gallery.find( '.woocommerce-product-gallery__image' ).first();
-				if ( ! $cell.length ) { $cell = $gallery; }
-				// `.not( '.zoomImg' )` : ignorer le calque de zoom injecté par jquery.zoom.
-				var $img = $cell.find( 'img' ).not( '.zoomImg' ).first();
-				if ( ! $img.length ) { return; }
-				$img.attr( 'src', full );
-				if ( srcset ) { $img.attr( 'srcset', srcset ); } else { $img.removeAttr( 'srcset' ); }
-				$img.removeAttr( 'data-src' ).removeAttr( 'sizes' );
-				$img.attr( 'data-large_image', full );
-				// Dimensions lues par PhotoSwipe : sans ça la lightbox garde le ratio
-				// de l'image d'origine et déforme la nouvelle photo.
-				if ( w ) { $img.attr( 'data-large_image_width', w ); }
-				if ( h ) { $img.attr( 'data-large_image_height', h ); }
-				// Lien (lightbox/PhotoSwipe) + miniature de la cellule.
-				$cell.attr( 'data-thumb', full );
-				$cell.find( 'a' ).first().attr( 'href', full );
-				// La galerie est un carrousel (flexslider) : on vient de remplacer la 1re
-				// diapo, mais la diapo affichée peut être une autre → l'utilisateur resterait
-				// sur l'image précédente. On force WooCommerce à revenir sur la 1re diapo.
-				$gallery.trigger( 'woocommerce_gallery_reset_slide_position' );
-				// Ré-initialise le zoom au survol : WooCommerce mémorise la grande image au
-				// premier rendu, donc sans ça le zoom afficherait toujours la photo d'origine.
-				if ( $.fn.zoom ) {
-					$cell.trigger( 'zoom.destroy' );
-					// jquery.zoom charge sa grande image de façon asynchrone et superpose
-					// un calque `.zoomImg` (opacity 0) sur la photo. Entre deux changements,
-					// l'ancien calque peut survivre au `zoom.destroy` et rester superposé :
-					// au survol/zoom il réapparaît → on voit la couleur précédente. On le
-					// retire explicitement avant de recréer le zoom sur la nouvelle photo.
-					$cell.find( '.zoomImg' ).remove();
-					$cell.zoom( { url: full, touch: false } );
-				}
+				var $slides = $gallery.find( '.woocommerce-product-gallery__image' ).not( '.clone' );
+				var index = -1;
+				$slides.each( function ( i ) {
+					if ( parseInt( $( this ).attr( 'data-aod-attachment' ), 10 ) === imgId ) {
+						index = i;
+						return false;
+					}
+				} );
+				if ( index < 0 ) { return; } // Photo absente de la galerie.
+				goToSlide( $gallery, index );
 			}
 
 			// Seuil de livraison gratuite (0 = désactivé).
@@ -339,6 +317,22 @@
 		initGalleryNav();
 	} );
 
+	// Pilote la galerie WooCommerce (flexslider) : direction ('prev'/'next') ou
+	// index de diapo (nombre). On privilégie l'API flexslider ; à défaut on simule
+	// un clic sur la navigation/les miniatures natives.
+	function goToSlide( $gallery, target ) {
+		if ( $.fn.flexslider && $gallery.find( '.flex-viewport' ).length ) {
+			try { $gallery.flexslider( target ); return; } catch ( e ) {}
+		}
+		if ( typeof target === 'number' ) {
+			var $thumb = $gallery.find( '.flex-control-nav li' ).eq( target ).find( 'a, img' ).first();
+			if ( $thumb.length ) { $thumb.trigger( 'click' ); }
+			return;
+		}
+		var $link = $gallery.find( '.flex-direction-nav .flex-' + target + ' a' );
+		if ( $link.length ) { $link.trigger( 'click' ); }
+	}
+
 	// Boutons précédent/suivant sur la galerie WooCommerce (flexslider).
 	function initGalleryNav() {
 		var $gallery = $( '.woocommerce-product-gallery' );
@@ -356,19 +350,8 @@
 		var $prev = $( '<button type="button" class="aod-gallery-nav aod-gallery-nav--prev" aria-label="' + prevLabel + '">‹</button>' );
 		var $next = $( '<button type="button" class="aod-gallery-nav aod-gallery-nav--next" aria-label="' + nextLabel + '">›</button>' );
 
-		// Navigation : on privilégie l'API flexslider ; sinon on simule un clic sur
-		// la navigation native ; en dernier recours on ne fait rien.
-		function go( dir ) {
-			// flexslider est initialisé dès qu'il a enveloppé la galerie dans .flex-viewport.
-			if ( $.fn.flexslider && $gallery.find( '.flex-viewport' ).length ) {
-				try { $gallery.flexslider( dir ); return; } catch ( e ) {}
-			}
-			var $link = $gallery.find( '.flex-direction-nav .flex-' + dir + ' a' );
-			if ( $link.length ) { $link.trigger( 'click' ); }
-		}
-
-		$prev.on( 'click', function ( e ) { e.preventDefault(); go( 'prev' ); } );
-		$next.on( 'click', function ( e ) { e.preventDefault(); go( 'next' ); } );
+		$prev.on( 'click', function ( e ) { e.preventDefault(); goToSlide( $gallery, 'prev' ); } );
+		$next.on( 'click', function ( e ) { e.preventDefault(); goToSlide( $gallery, 'next' ); } );
 
 		$gallery.append( $prev, $next );
 	}

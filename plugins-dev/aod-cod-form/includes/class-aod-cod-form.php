@@ -33,6 +33,12 @@ class AOD_COD_Form {
 		add_action( 'woocommerce_single_product_summary', array( $this, 'strip_native_add_to_cart' ), 1 );
 		add_filter( 'astra_woo_single_product_structure', array( $this, 'remove_astra_add_to_cart' ) );
 
+		// Galerie produit : on injecte les photos des options (couleurs…) comme de vraies
+		// diapos du carrousel WooCommerce, et on tague chaque diapo avec son ID de média
+		// pour que le JS puisse sauter à la bonne photo quand une couleur est choisie.
+		add_filter( 'woocommerce_product_get_gallery_image_ids', array( $this, 'inject_option_images_into_gallery' ), 10, 2 );
+		add_filter( 'woocommerce_single_product_image_thumbnail_html', array( $this, 'tag_gallery_slide_attachment' ), 10, 2 );
+
 		// Shortcode : [aod_cod_form product_id="123"]
 		add_shortcode( 'aod_cod_form', array( $this, 'shortcode' ) );
 
@@ -187,6 +193,7 @@ class AOD_COD_Form {
 					$values[] = array(
 						'name'     => $name,
 						'price'    => ( isset( $val['price'] ) && '' !== $val['price'] ) ? (float) $val['price'] : 0.0,
+						'img_id'   => $img_id,
 						'img'      => $img_id ? wp_get_attachment_image_url( $img_id, 'woocommerce_thumbnail' ) : '',
 						'img_full' => $single ? $single[0] : '',
 						'img_w'    => $single ? (int) $single[1] : 0,
@@ -231,6 +238,7 @@ class AOD_COD_Form {
 				$values[] = array(
 					'name'     => $name,
 					'price'    => 0.0,
+					'img_id'   => $img_id,
 					'img'      => $img_id ? wp_get_attachment_image_url( $img_id, 'woocommerce_thumbnail' ) : '',
 					'img_full' => $single ? $single[0] : '',
 					'img_w'    => $single ? (int) $single[1] : 0,
@@ -244,6 +252,80 @@ class AOD_COD_Form {
 			}
 		}
 		return $out;
+	}
+
+	/**
+	 * IDs des médias attachés aux options (couleurs…) d'un produit, dans l'ordre
+	 * d'affichage et sans doublon. Sert à intégrer ces photos à la galerie.
+	 *
+	 * @param WC_Product $product
+	 * @return int[]
+	 */
+	protected function get_option_image_ids( $product ) {
+		$ids = array();
+		foreach ( $this->get_product_options( $product ) as $sec ) {
+			foreach ( $sec['values'] as $val ) {
+				$id = isset( $val['img_id'] ) ? (int) $val['img_id'] : 0;
+				if ( $id > 0 && ! in_array( $id, $ids, true ) ) {
+					$ids[] = $id;
+				}
+			}
+		}
+		return $ids;
+	}
+
+	/**
+	 * Ajoute les photos des options (couleurs…) comme vraies diapos de la galerie
+	 * WooCommerce du produit affiché. On les insère juste après la photo principale
+	 * et avant les photos supplémentaires, en évitant tout doublon (image déjà
+	 * principale ou déjà dans la galerie).
+	 *
+	 * @param int[]      $value   IDs de la galerie d'origine.
+	 * @param WC_Product $product Produit concerné par le getter.
+	 * @return int[]
+	 */
+	public function inject_option_images_into_gallery( $value, $product ) {
+		// Uniquement la galerie du produit réellement consulté (pas les produits liés,
+		// le panier, etc.) pour ne pas polluer les autres contextes.
+		if ( ! function_exists( 'is_product' ) || ! is_product() ) {
+			return $value;
+		}
+		if ( ! ( $product instanceof WC_Product ) || $product->get_id() !== get_queried_object_id() ) {
+			return $value;
+		}
+
+		$existing = is_array( $value ) ? array_map( 'intval', $value ) : array();
+		$featured = (int) $product->get_image_id();
+		$add      = array();
+		foreach ( $this->get_option_image_ids( $product ) as $id ) {
+			if ( $id === $featured || in_array( $id, $existing, true ) || in_array( $id, $add, true ) ) {
+				continue; // Déjà présent comme diapo : le JS la retrouvera par son ID.
+			}
+			$add[] = $id;
+		}
+		return array_merge( $add, $existing );
+	}
+
+	/**
+	 * Tague chaque diapo de la galerie avec l'ID du média qu'elle contient, pour
+	 * que le JS puisse cibler la bonne photo (`[data-aod-attachment="ID"]`) au lieu
+	 * de comparer des URL fragiles.
+	 *
+	 * @param string $html          HTML de la diapo.
+	 * @param int    $attachment_id ID du média.
+	 * @return string
+	 */
+	public function tag_gallery_slide_attachment( $html, $attachment_id ) {
+		$attachment_id = (int) $attachment_id;
+		if ( ! $attachment_id || false === strpos( $html, '<div' ) ) {
+			return $html;
+		}
+		return preg_replace(
+			'/<div /',
+			'<div data-aod-attachment="' . esc_attr( $attachment_id ) . '" ',
+			$html,
+			1
+		);
 	}
 
 	/**
@@ -345,7 +427,7 @@ class AOD_COD_Form {
 								$is_visual = $sec['visual'] || $has_hex;
 								?>
 								<label class="aod-cod__opt<?php echo $is_visual ? ' aod-cod__opt--visual' : ''; ?>" for="<?php echo esc_attr( $oid ); ?>">
-									<input type="radio" id="<?php echo esc_attr( $oid ); ?>" name="opt[<?php echo esc_attr( $si ); ?>]" value="<?php echo esc_attr( $val['name'] ); ?>" data-price="<?php echo esc_attr( $val['price'] ); ?>" data-img="<?php echo esc_url( $val['img'] ); ?>" data-img-full="<?php echo esc_url( $val['img_full'] ); ?>" data-img-w="<?php echo esc_attr( $val['img_w'] ); ?>" data-img-h="<?php echo esc_attr( $val['img_h'] ); ?>" data-srcset="<?php echo esc_attr( $val['srcset'] ); ?>">
+									<input type="radio" id="<?php echo esc_attr( $oid ); ?>" name="opt[<?php echo esc_attr( $si ); ?>]" value="<?php echo esc_attr( $val['name'] ); ?>" data-price="<?php echo esc_attr( $val['price'] ); ?>" data-img="<?php echo esc_url( $val['img'] ); ?>" data-img-id="<?php echo esc_attr( $val['img_id'] ); ?>" data-img-full="<?php echo esc_url( $val['img_full'] ); ?>" data-img-w="<?php echo esc_attr( $val['img_w'] ); ?>" data-img-h="<?php echo esc_attr( $val['img_h'] ); ?>" data-srcset="<?php echo esc_attr( $val['srcset'] ); ?>">
 									<span class="aod-cod__opt-card">
 										<?php if ( $is_visual && $val['img'] ) : ?>
 											<span class="aod-cod__opt-thumb" style="background-image:url('<?php echo esc_url( $val['img'] ); ?>')"></span>
