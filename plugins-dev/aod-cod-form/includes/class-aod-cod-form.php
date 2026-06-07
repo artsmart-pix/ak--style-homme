@@ -266,17 +266,15 @@ class AOD_COD_Form {
 			}
 		}
 
-		// Paliers de prix par quantité (packs) — produits sans options uniquement.
+		// Paliers de prix par quantité (« 2 pour X ») — cumulables avec les sections d'options.
 		$tiers = array();
-		if ( ! $has_options ) {
-			$raw = $product->get_meta( '_aod_qty_tiers' );
-			if ( is_array( $raw ) ) {
-				foreach ( $raw as $t ) {
-					$min = isset( $t['min'] ) ? (int) $t['min'] : 0;
-					$tp  = isset( $t['price'] ) ? (float) $t['price'] : 0;
-					if ( $min >= 2 && $tp > 0 ) {
-						$tiers[] = array( 'min' => $min, 'price' => $tp );
-					}
+		$raw   = $product->get_meta( '_aod_qty_tiers' );
+		if ( is_array( $raw ) ) {
+			foreach ( $raw as $t ) {
+				$min = isset( $t['min'] ) ? (int) $t['min'] : 0;
+				$tp  = isset( $t['price'] ) ? (float) $t['price'] : 0;
+				if ( $min >= 2 && $tp > 0 ) {
+					$tiers[] = array( 'min' => $min, 'price' => $tp );
 				}
 			}
 		}

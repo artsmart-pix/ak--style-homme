@@ -1210,7 +1210,7 @@ class AOD_CD_Dashboard {
 				<summary class="aod-cd-acc-sum"><span class="aod-cd-acc-ic">🏷️</span> <?php esc_html_e( 'Prix par quantité', 'aod-client-dashboard' ); ?> <span class="aod-cd-acc-sub"><?php esc_html_e( 'packs « 2 pour X » (optionnel)', 'aod-client-dashboard' ); ?></span></summary>
 				<div class="aod-cd-acc-body">
 					<div class="aod-cd-tiers" id="aod-cd-tiers">
-						<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Offrez un prix dégressif par lot (« 2 pour … », « 3 pour … »). Indiquez le prix unitaire appliqué à partir d’une certaine quantité. Laissez vide pour un prix unique. (Produits simples uniquement — sans variantes.)', 'aod-client-dashboard' ); ?></p>
+						<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Offrez un prix dégressif par lot (« 2 pour … », « 3 pour … »). Indiquez le prix unitaire appliqué à partir d’une certaine quantité. Laissez vide pour un prix unique. (Cumulable avec les sections d’options ci-dessus ; les suppléments des options s’ajoutent au prix du palier.)', 'aod-client-dashboard' ); ?></p>
 
 						<div class="aod-cd-tier-head">
 							<span><?php esc_html_e( 'À partir de (qté)', 'aod-client-dashboard' ); ?></span>
@@ -1612,20 +1612,11 @@ class AOD_CD_Dashboard {
 		$product->delete_meta_data( '_aod_variant_label' );
 
 		if ( $options ) {
-			// Avec des sections d'options : pas de paliers quantité ni de pack (incompatibles).
-			$product->delete_meta_data( '_aod_qty_tiers' );
+			// Un pack (assortiment de plusieurs produits) n'a pas de sens avec des sections d'options.
 			$product->delete_meta_data( '_aod_is_pack' );
 			$product->delete_meta_data( '_aod_pack_items' );
 		} else {
 			$product->delete_meta_data( '_aod_options' );
-			// Paliers de prix par quantité (prix unitaire de référence = promo sinon normal).
-			$base  = ( '' !== $sale ) ? (float) $sale : (float) $reg;
-			$tiers = $this->collect_qty_tiers( $base );
-			if ( $tiers ) {
-				$product->update_meta_data( '_aod_qty_tiers', $tiers );
-			} else {
-				$product->delete_meta_data( '_aod_qty_tiers' );
-			}
 
 			// Pack assortiment (produits inclus).
 			$pack_items = ! empty( $_POST['is_pack'] ) ? $this->collect_pack_items( $pid ) : array();
@@ -1636,6 +1627,17 @@ class AOD_CD_Dashboard {
 				$product->delete_meta_data( '_aod_is_pack' );
 				$product->delete_meta_data( '_aod_pack_items' );
 			}
+		}
+
+		// Paliers de prix par quantité (« 2 pour X ») — compatibles avec les sections d'options.
+		// Prix unitaire de référence = promo sinon prix normal.
+		$base          = ( '' !== $sale ) ? (float) $sale : (float) $reg;
+		$dropped_tiers = 0;
+		$tiers         = $this->collect_qty_tiers( $base, $dropped_tiers );
+		if ( $tiers ) {
+			$product->update_meta_data( '_aod_qty_tiers', $tiers );
+		} else {
+			$product->delete_meta_data( '_aod_qty_tiers' );
 		}
 
 		$product->save();
@@ -1678,10 +1680,23 @@ class AOD_CD_Dashboard {
 			$product->save();
 		}
 
-		wp_send_json_success( array(
+		$data = array(
 			'message'  => $pid ? __( 'Produit mis à jour.', 'aod-client-dashboard' ) : __( 'Produit créé.', 'aod-client-dashboard' ),
 			'redirect' => $this->products_url(),
-		) );
+		);
+		if ( $dropped_tiers > 0 ) {
+			$data['warning'] = sprintf(
+				/* translators: %d: nombre de paliers ignorés */
+				_n(
+					'%d palier « prix par quantité » a été ignoré : le prix par pièce doit être INFÉRIEUR au prix normal. Saisissez le prix d’UNE pièce dans le lot (pas le total du lot).',
+					'%d paliers « prix par quantité » ont été ignorés : le prix par pièce doit être INFÉRIEUR au prix normal. Saisissez le prix d’UNE pièce dans le lot (pas le total du lot).',
+					$dropped_tiers,
+					'aod-client-dashboard'
+				),
+				$dropped_tiers
+			);
+		}
+		wp_send_json_success( $data );
 	}
 
 	/**
@@ -1817,7 +1832,8 @@ class AOD_CD_Dashboard {
 	 * @param float $base_price Prix unitaire de référence (promo sinon normal).
 	 * @return array Liste de [ 'min' => int, 'price' => float ].
 	 */
-	protected function collect_qty_tiers( $base_price ) {
+	protected function collect_qty_tiers( $base_price, &$dropped = 0 ) {
+		$dropped = 0; // Nb de paliers renseignés mais écartés faute de réduction réelle.
 		if ( empty( $_POST['tier_min'] ) || ! is_array( $_POST['tier_min'] ) ) {
 			return array();
 		}
@@ -1829,10 +1845,11 @@ class AOD_CD_Dashboard {
 			$min   = absint( $raw_min );
 			$price = isset( $prices[ $i ] ) ? (float) wc_format_decimal( $prices[ $i ] ) : 0;
 			if ( $min < 2 || $price <= 0 ) {
-				continue;
+				continue; // Ligne vide ou incomplète : on l'ignore sans alerter.
 			}
 			if ( $base_price > 0 && $price >= $base_price ) {
-				continue; // Palier sans réduction réelle : ignoré.
+				$dropped++; // Palier renseigné mais sans réduction réelle : ignoré + alerte.
+				continue;
 			}
 			if ( isset( $seen[ $min ] ) ) {
 				continue; // Doublon de quantité : on garde le premier.

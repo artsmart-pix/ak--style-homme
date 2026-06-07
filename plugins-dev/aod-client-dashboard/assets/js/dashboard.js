@@ -113,8 +113,14 @@
 					.then( function ( r ) { return r.json(); } )
 					.then( function ( res ) {
 						if ( res && res.success ) {
-							toast( res.data.message || 'OK', false );
-							setTimeout( function () { window.location.href = res.data.redirect || CD.base; }, 700 );
+							// Un avertissement (ex. palier ignoré) reste affiché plus longtemps avant la redirection.
+							if ( res.data && res.data.warning ) {
+								toast( res.data.warning, true );
+								setTimeout( function () { window.location.href = res.data.redirect || CD.base; }, 4000 );
+							} else {
+								toast( res.data.message || 'OK', false );
+								setTimeout( function () { window.location.href = res.data.redirect || CD.base; }, 700 );
+							}
 						} else {
 							btn.disabled = false;
 							var m = ( res && res.data && res.data.message ) || 'Erreur.';
