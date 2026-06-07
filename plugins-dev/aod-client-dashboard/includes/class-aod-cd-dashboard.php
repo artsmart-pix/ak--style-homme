@@ -1210,11 +1210,11 @@ class AOD_CD_Dashboard {
 				<summary class="aod-cd-acc-sum"><span class="aod-cd-acc-ic">🏷️</span> <?php esc_html_e( 'Prix par quantité', 'aod-client-dashboard' ); ?> <span class="aod-cd-acc-sub"><?php esc_html_e( 'packs « 2 pour X » (optionnel)', 'aod-client-dashboard' ); ?></span></summary>
 				<div class="aod-cd-acc-body">
 					<div class="aod-cd-tiers" id="aod-cd-tiers">
-						<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Offrez un prix dégressif par lot (« 2 pour … », « 3 pour … »). Indiquez le prix unitaire appliqué à partir d’une certaine quantité. Laissez vide pour un prix unique. (Cumulable avec les sections d’options ci-dessus ; les suppléments des options s’ajoutent au prix du palier.)', 'aod-client-dashboard' ); ?></p>
+						<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Offrez un prix de lot avantageux (« 2 pour … », « 3 pour … »). Indiquez la quantité et le PRIX TOTAL du lot (ex. : 2 → 2500). Ce total doit être inférieur au prix normal multiplié par la quantité, sinon le lot n’offre aucune réduction et sera ignoré. Laissez vide pour un prix unique. (Cumulable avec les sections d’options ci-dessus ; les suppléments des options s’ajoutent.)', 'aod-client-dashboard' ); ?></p>
 
 						<div class="aod-cd-tier-head">
 							<span><?php esc_html_e( 'À partir de (qté)', 'aod-client-dashboard' ); ?></span>
-							<span><?php printf( esc_html__( 'Prix unitaire (%s)', 'aod-client-dashboard' ), esc_html( $currency ) ); ?></span>
+							<span><?php printf( esc_html__( 'Prix total du lot (%s)', 'aod-client-dashboard' ), esc_html( $currency ) ); ?></span>
 							<span></span>
 						</div>
 
@@ -1442,10 +1442,16 @@ class AOD_CD_Dashboard {
 	protected function render_tier_row( $i, $row ) {
 		$row = wp_parse_args( $row, array( 'min' => '', 'price' => '' ) );
 		$idx = esc_attr( (string) $i );
+		// Le meta stocke un prix par pièce ; le champ affiche le PRIX TOTAL DU LOT
+		// (= prix/pièce × quantité), plus intuitif pour le marchand (« 2 pour X »).
+		$min_val   = ( '' !== $row['min'] && null !== $row['min'] ) ? (int) $row['min'] : '';
+		$lot_total = ( '' !== $row['price'] && null !== $row['price'] && '' !== $min_val )
+			? (string) ( (float) $row['price'] * $min_val )
+			: '';
 		?>
 		<div class="aod-cd-tier-row" data-row="<?php echo $idx; ?>">
 			<input type="number" min="2" step="1" name="tier_min[<?php echo $idx; ?>]" value="<?php echo esc_attr( (string) $row['min'] ); ?>" placeholder="<?php esc_attr_e( 'ex : 2', 'aod-client-dashboard' ); ?>">
-			<input type="number" min="0" step="0.01" name="tier_price[<?php echo $idx; ?>]" value="<?php echo esc_attr( (string) $row['price'] ); ?>" placeholder="<?php esc_attr_e( 'prix / pièce', 'aod-client-dashboard' ); ?>">
+			<input type="number" min="0" step="0.01" name="tier_price[<?php echo $idx; ?>]" value="<?php echo esc_attr( $lot_total ); ?>" placeholder="<?php esc_attr_e( 'ex : 2500 (pour 2)', 'aod-client-dashboard' ); ?>">
 			<button type="button" class="aod-cd-color-del aod-cd-tier-del" aria-label="<?php esc_attr_e( 'Supprimer ce palier', 'aod-client-dashboard' ); ?>">&times;</button>
 		</div>
 		<?php
@@ -1688,8 +1694,8 @@ class AOD_CD_Dashboard {
 			$data['warning'] = sprintf(
 				/* translators: %d: nombre de paliers ignorés */
 				_n(
-					'%d palier « prix par quantité » a été ignoré : le prix par pièce doit être INFÉRIEUR au prix normal. Saisissez le prix d’UNE pièce dans le lot (pas le total du lot).',
-					'%d paliers « prix par quantité » ont été ignorés : le prix par pièce doit être INFÉRIEUR au prix normal. Saisissez le prix d’UNE pièce dans le lot (pas le total du lot).',
+					'%d palier « prix par quantité » a été ignoré : le prix total du lot doit être INFÉRIEUR au prix normal multiplié par la quantité (sinon le lot n’offre aucune réduction).',
+					'%d paliers « prix par quantité » ont été ignorés : le prix total du lot doit être INFÉRIEUR au prix normal multiplié par la quantité (sinon le lot n’offre aucune réduction).',
 					$dropped_tiers,
 					'aod-client-dashboard'
 				),
@@ -1843,12 +1849,14 @@ class AOD_CD_Dashboard {
 		$seen   = array();
 		foreach ( $mins as $i => $raw_min ) {
 			$min   = absint( $raw_min );
-			$price = isset( $prices[ $i ] ) ? (float) wc_format_decimal( $prices[ $i ] ) : 0;
-			if ( $min < 2 || $price <= 0 ) {
+			// Le champ contient le PRIX TOTAL DU LOT ; on stocke un prix par pièce.
+			$total = isset( $prices[ $i ] ) ? (float) wc_format_decimal( $prices[ $i ] ) : 0;
+			if ( $min < 2 || $total <= 0 ) {
 				continue; // Ligne vide ou incomplète : on l'ignore sans alerter.
 			}
+			$price = $total / $min;
 			if ( $base_price > 0 && $price >= $base_price ) {
-				$dropped++; // Palier renseigné mais sans réduction réelle : ignoré + alerte.
+				$dropped++; // Lot pas plus avantageux que l'achat à l'unité : ignoré + alerte.
 				continue;
 			}
 			if ( isset( $seen[ $min ] ) ) {
