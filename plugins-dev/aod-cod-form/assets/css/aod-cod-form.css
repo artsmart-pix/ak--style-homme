@@ -131,17 +131,23 @@
 .aod-cod__row .aod-cod__field { width: 100%; }
 
 /* ---- Mode de livraison : lignes de sélection style Shopify ---- */
-.aod-cod__radios { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--sh-line); border-radius: var(--sh-radius-sm); overflow: hidden; }
-.aod-cod__radio { cursor: pointer; margin: 0; }
-.aod-cod__radio + .aod-cod__radio .aod-cod__radio-card { border-top: 1px solid var(--sh-line); }
+.aod-cod__radios { display: flex; flex-direction: row; gap: 0; border: 1px solid var(--sh-line); border-radius: var(--sh-radius-sm); overflow: hidden; }
+.aod-cod__radio { cursor: pointer; margin: 0; flex: 1 1 0; min-width: 0; }
+.aod-cod__radio + .aod-cod__radio .aod-cod__radio-card { border-inline-start: 1px solid var(--sh-line); }
 .aod-cod__radio input { position: absolute; opacity: 0; width: 0; height: 0; }
 .aod-cod__radio-card {
 	display: flex;
 	align-items: center;
-	gap: 12px;
-	padding: 14px 14px;
+	gap: 10px;
+	padding: 14px 12px;
+	height: 100%;
 	background: #fff;
 	transition: background .12s;
+}
+/* Très petits écrans : on repasse les deux modes l'un sous l'autre. */
+@media (max-width: 360px) {
+	.aod-cod__radios { flex-direction: column; }
+	.aod-cod__radio + .aod-cod__radio .aod-cod__radio-card { border-inline-start: 0; border-top: 1px solid var(--sh-line); }
 }
 /* Pastille radio dessinée (à gauche) */
 .aod-cod__radio-card::before {
