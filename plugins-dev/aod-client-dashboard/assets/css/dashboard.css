@@ -88,18 +88,51 @@ body.aod-cd{
 .aod-cd-status.is-ok{border-color:var(--cd-ok);box-shadow:0 0 0 2px rgba(26,127,55,.12)}
 
 /* ---- Cartes stats ---- */
-.aod-cd-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
-.aod-cd-card{background:#fff;border:1px solid var(--cd-line);border-radius:var(--cd-radius);padding:20px}
-.aod-cd-card-val{font-size:26px;font-weight:800;color:var(--cd-accent)}
-.aod-cd-card-lab{margin-top:6px;color:#6b7280;font-size:13px}
+.aod-cd-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.aod-cd-card{
+	position:relative;background:#fff;border:1px solid var(--cd-line);border-radius:var(--cd-radius);
+	padding:18px;display:flex;flex-direction:column;gap:14px;
+	transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;
+}
+.aod-cd-card:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(17,24,39,.09);border-color:#d8dce3}
+.aod-cd-card-ico{
+	width:40px;height:40px;border-radius:11px;display:inline-flex;align-items:center;justify-content:center;
+	font-size:19px;line-height:1;background:#eef2ff;color:#4338ca;
+}
+.aod-cd-card-ico.t-blue{background:#dbeafe;color:#1d4ed8}
+.aod-cd-card-ico.t-indigo{background:#e0e7ff;color:#4338ca}
+.aod-cd-card-ico.t-teal{background:#cffafe;color:#0e7490}
+.aod-cd-card-ico.t-green{background:#dcfce7;color:#15803d}
+.aod-cd-card-ico.t-amber{background:#fef3c7;color:#b45309}
+.aod-cd-card-ico.t-red{background:#fee2e2;color:#b91c1c}
+.aod-cd-card-ico.t-slate{background:#f1f5f9;color:#475569}
+.aod-cd-card-val{font-size:25px;font-weight:800;color:var(--cd-accent);line-height:1.1;letter-spacing:-.4px}
+.aod-cd-card-lab{margin-top:5px;color:#6b7280;font-size:13px;font-weight:500}
 
-/* ---- Graphe CA (barres CSS, sans JS) ---- */
-.aod-cd-chart{display:flex;align-items:flex-end;gap:6px;height:200px;margin-top:14px;padding:14px 14px 0;background:#fff;border:1px solid var(--cd-line);border-radius:var(--cd-radius);overflow-x:auto}
-.aod-cd-chart-col{flex:1 0 18px;display:flex;flex-direction:column;align-items:center;height:100%}
-.aod-cd-chart-barwrap{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;min-height:0}
-.aod-cd-chart-bar{display:block;width:70%;max-width:34px;min-height:2px;background:var(--cd-accent);border-radius:6px 6px 0 0;transition:opacity .15s}
-.aod-cd-chart-col:hover .aod-cd-chart-bar{opacity:.82}
-.aod-cd-chart-lab{margin-top:6px;font-size:11px;color:#6b7280;white-space:nowrap}
+/* ---- Graphe CA (courbe SVG, sans librairie) ---- */
+.aod-cd-chartcard{background:#fff;border:1px solid var(--cd-line);border-radius:var(--cd-radius);padding:20px 22px;margin-top:24px}
+.aod-cd-chart-head{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:8px}
+.aod-cd-chart-title{margin:0;font-size:15px;font-weight:800}
+.aod-cd-chart-total{font-size:13px;color:#6b7280;font-weight:600}
+.aod-cd-chart-total b{color:var(--cd-accent);font-size:15px;font-weight:800;margin-inline-start:4px}
+.aod-cd-linechart{position:relative;width:100%;margin-top:4px}
+.aod-cd-linechart svg{display:block;width:100%;height:auto;overflow:visible}
+.aod-cd-grid-line{stroke:#eef0f3;stroke-width:1}
+.aod-cd-axis-lbl{fill:#9ca3af}
+.aod-cd-x-lbl{fill:#6b7280}
+.aod-cd-axis-lbl,.aod-cd-x-lbl{font-size:11px;font-family:inherit}
+.aod-cd-area{fill:url(#aodAreaGrad)}
+.aod-cd-line{fill:none;stroke:var(--cd-accent-2);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
+.aod-cd-dot{fill:#fff;stroke:var(--cd-accent-2);stroke-width:2;transition:r .12s ease}
+.aod-cd-guide{stroke:var(--cd-accent-2);stroke-width:1;stroke-dasharray:4 4;opacity:0;transition:opacity .12s}
+.aod-cd-tip{
+	position:absolute;pointer-events:none;left:0;top:0;background:var(--cd-accent);color:#fff;
+	padding:7px 11px;border-radius:9px;font-size:12px;line-height:1.45;white-space:nowrap;
+	opacity:0;transform:translate(-50%,calc(-100% - 12px));transition:opacity .12s;
+	box-shadow:0 8px 20px rgba(0,0,0,.2);z-index:2;
+}
+.aod-cd-tip b{display:block;font-size:13px;font-weight:800}
+.aod-cd-tip.show{opacity:1}
 
 /* ---- Boutons & barre d'action ---- */
 .aod-cd-bar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}

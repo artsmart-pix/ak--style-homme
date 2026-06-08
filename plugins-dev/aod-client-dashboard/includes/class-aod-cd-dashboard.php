@@ -693,20 +693,24 @@ class AOD_CD_Dashboard {
 		$nb_cancel  = $this->count_orders( 'cancelled', $date_arg );
 		$nb_prod    = (int) wp_count_posts( 'product' )->publish;
 
+		// Chaque carte : libellé, valeur (HTML autorisé), icône, tonalité de couleur.
 		$cards = array(
-			array( __( 'Chiffre d’affaires', 'aod-client-dashboard' ), wp_kses_post( wc_price( $revenue ) ) ),
-			array( __( 'Commandes encaissées', 'aod-client-dashboard' ), (string) $nb_paid ),
-			array( __( 'Panier moyen', 'aod-client-dashboard' ), wp_kses_post( wc_price( $avg ) ) ),
-			array( __( 'Marge estimée', 'aod-client-dashboard' ), wp_kses_post( wc_price( $margin ) ) ),
-			array( __( 'Taux de marge', 'aod-client-dashboard' ), esc_html( number_format_i18n( $margin_rate, 1 ) . ' %' ) ),
-			array( __( 'En attente (en cours)', 'aod-client-dashboard' ), (string) $nb_pending ),
-			array( __( 'Annulées', 'aod-client-dashboard' ), (string) $nb_cancel ),
-			array( __( 'Produits en ligne', 'aod-client-dashboard' ), (string) $nb_prod ),
+			array( __( 'Chiffre d’affaires', 'aod-client-dashboard' ), wp_kses_post( wc_price( $revenue ) ), '💰', 'blue' ),
+			array( __( 'Commandes encaissées', 'aod-client-dashboard' ), (string) $nb_paid, '🧾', 'indigo' ),
+			array( __( 'Panier moyen', 'aod-client-dashboard' ), wp_kses_post( wc_price( $avg ) ), '🛒', 'teal' ),
+			array( __( 'Marge estimée', 'aod-client-dashboard' ), wp_kses_post( wc_price( $margin ) ), '📈', 'green' ),
+			array( __( 'Taux de marge', 'aod-client-dashboard' ), esc_html( number_format_i18n( $margin_rate, 1 ) . ' %' ), '💹', 'green' ),
+			array( __( 'En attente (en cours)', 'aod-client-dashboard' ), (string) $nb_pending, '⏳', 'amber' ),
+			array( __( 'Annulées', 'aod-client-dashboard' ), (string) $nb_cancel, '✖', 'red' ),
+			array( __( 'Produits en ligne', 'aod-client-dashboard' ), (string) $nb_prod, '📦', 'slate' ),
 		);
 
 		echo '<div class="aod-cd-cards">';
 		foreach ( $cards as $c ) {
-			echo '<div class="aod-cd-card"><div class="aod-cd-card-val">' . wp_kses_post( $c[1] ) . '</div><div class="aod-cd-card-lab">' . esc_html( $c[0] ) . '</div></div>';
+			echo '<div class="aod-cd-card">';
+			echo '<span class="aod-cd-card-ico t-' . esc_attr( $c[3] ) . '" aria-hidden="true">' . esc_html( $c[2] ) . '</span>';
+			echo '<div class="aod-cd-card-body"><div class="aod-cd-card-val">' . wp_kses_post( $c[1] ) . '</div><div class="aod-cd-card-lab">' . esc_html( $c[0] ) . '</div></div>';
+			echo '</div>';
 		}
 		echo '</div>';
 
@@ -833,7 +837,10 @@ class AOD_CD_Dashboard {
 	}
 
 	/**
-	 * Affiche un graphe en barres (CSS pur, sans JS) du CA par bac.
+	 * Affiche un graphe à courbe (SVG lissé, sans librairie externe) du CA par bac.
+	 *
+	 * Le tracé est calculé côté serveur en unités viewBox ; un léger script
+	 * (bindCharts) ajoute une infobulle interactive au survol. Aucune dépendance.
 	 *
 	 * @param array $bins Bacs renvoyés par stats_bins() et alimentés en CA.
 	 */
@@ -842,32 +849,128 @@ class AOD_CD_Dashboard {
 			return; // Période « tout » : pas de fenêtre fixe à représenter.
 		}
 
-		$max = 0.0;
+		$total = 0.0;
+		$max   = 0.0;
 		foreach ( $bins as $b ) {
-			if ( $b['val'] > $max ) {
-				$max = $b['val'];
+			$total += (float) $b['val'];
+			if ( (float) $b['val'] > $max ) {
+				$max = (float) $b['val'];
 			}
 		}
 
-		echo '<h2 class="aod-cd-form-subtitle" style="margin-top:26px">' . esc_html__( 'Évolution du chiffre d’affaires', 'aod-client-dashboard' ) . '</h2>';
+		echo '<div class="aod-cd-chartcard">';
+		echo '<div class="aod-cd-chart-head">';
+		echo '<h2 class="aod-cd-chart-title">' . esc_html__( 'Évolution du chiffre d’affaires', 'aod-client-dashboard' ) . '</h2>';
+		echo '<span class="aod-cd-chart-total">' . esc_html__( 'Total', 'aod-client-dashboard' ) . ' <b>' . wp_kses_post( wc_price( $total ) ) . '</b></span>';
+		echo '</div>';
 
 		if ( $max <= 0 ) {
 			echo '<p class="aod-cd-empty">' . esc_html__( 'Aucune vente sur cette période.', 'aod-client-dashboard' ) . '</p>';
+			echo '</div>';
 			return;
 		}
 
-		echo '<div class="aod-cd-chart" role="img" aria-label="' . esc_attr__( 'Chiffre d’affaires sur la période', 'aod-client-dashboard' ) . '">';
+		// Géométrie du tracé (unités viewBox ; le SVG est mis à l'échelle en CSS).
+		$vw = 820;
+		$vh = 300;
+		$pl = 58;  // marge gauche (étiquettes Y)
+		$pr = 18;
+		$pt = 18;
+		$pb = 36;  // marge basse (étiquettes X)
+		$pw = $vw - $pl - $pr;
+		$ph = $vh - $pt - $pb;
+		$base_y = $pt + $ph;
+		$n = count( $bins );
+
+		// Points (x,y) + données pour l'infobulle JS.
+		$pts  = array();
+		$data = array();
+		$i    = 0;
 		foreach ( $bins as $b ) {
-			$h      = ( $b['val'] > 0 ) ? max( 2, (int) round( $b['val'] / $max * 100 ) ) : 0;
-			$amount = wp_strip_all_tags( wc_price( $b['val'] ) ); // wc_price renvoie du HTML.
-			echo '<div class="aod-cd-chart-col">';
-			echo '<div class="aod-cd-chart-barwrap" title="' . esc_attr( $b['full'] . ' — ' . $amount ) . '">';
-			echo '<span class="aod-cd-chart-bar" style="height:' . (int) $h . '%"></span>';
-			echo '</div>';
-			echo '<span class="aod-cd-chart-lab">' . ( ! empty( $b['show'] ) ? esc_html( $b['label'] ) : '&nbsp;' ) . '</span>';
-			echo '</div>';
+			$x = ( $n <= 1 ) ? ( $pl + $pw / 2 ) : ( $pl + $i * $pw / ( $n - 1 ) );
+			$y = $base_y - ( (float) $b['val'] / $max ) * $ph;
+			$pts[] = array( $x, $y );
+			$data[] = array(
+				'x'      => round( $x, 1 ),
+				'y'      => round( $y, 1 ),
+				'label'  => $b['full'],
+				'amount' => wp_strip_all_tags( wc_price( (float) $b['val'] ) ),
+			);
+			$i++;
 		}
-		echo '</div>';
+
+		// Courbe lissée : spline Catmull-Rom convertie en Béziers cubiques.
+		$r    = function ( $v ) { return round( $v, 1 ); };
+		$line = 'M' . $r( $pts[0][0] ) . ' ' . $r( $pts[0][1] );
+		for ( $k = 1; $k < $n; $k++ ) {
+			$p0  = $pts[ max( 0, $k - 2 ) ];
+			$p1  = $pts[ $k - 1 ];
+			$p2  = $pts[ $k ];
+			$p3  = $pts[ min( $n - 1, $k + 1 ) ];
+			$c1x = $p1[0] + ( $p2[0] - $p0[0] ) / 6;
+			$c1y = $p1[1] + ( $p2[1] - $p0[1] ) / 6;
+			$c2x = $p2[0] - ( $p3[0] - $p1[0] ) / 6;
+			$c2y = $p2[1] - ( $p3[1] - $p1[1] ) / 6;
+			$line .= ' C' . $r( $c1x ) . ' ' . $r( $c1y ) . ' ' . $r( $c2x ) . ' ' . $r( $c2y ) . ' ' . $r( $p2[0] ) . ' ' . $r( $p2[1] );
+		}
+		$area = $line . ' L' . $r( $pts[ $n - 1 ][0] ) . ' ' . $r( $base_y ) . ' L' . $r( $pts[0][0] ) . ' ' . $r( $base_y ) . ' Z';
+
+		echo '<div class="aod-cd-linechart" data-vw="' . (int) $vw . '" data-points="' . esc_attr( wp_json_encode( $data ) ) . '">';
+		echo '<svg viewBox="0 0 ' . (int) $vw . ' ' . (int) $vh . '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="' . esc_attr__( 'Chiffre d’affaires sur la période', 'aod-client-dashboard' ) . '">';
+		echo '<defs><linearGradient id="aodAreaGrad" x1="0" y1="0" x2="0" y2="1">'
+			. '<stop offset="0%" stop-color="#2563eb" stop-opacity="0.18"/>'
+			. '<stop offset="100%" stop-color="#2563eb" stop-opacity="0"/>'
+			. '</linearGradient></defs>';
+
+		// Grille horizontale + étiquettes de l'axe Y.
+		for ( $g = 0; $g <= 4; $g++ ) {
+			$frac = $g / 4;
+			$gy   = $base_y - $frac * $ph;
+			$gv   = $max * $frac;
+			echo '<line class="aod-cd-grid-line" x1="' . (int) $pl . '" y1="' . esc_attr( $r( $gy ) ) . '" x2="' . (int) ( $vw - $pr ) . '" y2="' . esc_attr( $r( $gy ) ) . '"/>';
+			echo '<text class="aod-cd-axis-lbl" x="' . (int) ( $pl - 10 ) . '" y="' . esc_attr( $r( $gy + 3.5 ) ) . '" text-anchor="end">' . esc_html( $this->stats_compact_amount( $gv ) ) . '</text>';
+		}
+
+		// Aire dégradée + courbe.
+		echo '<path class="aod-cd-area" d="' . esc_attr( $area ) . '"/>';
+		echo '<path class="aod-cd-line" d="' . esc_attr( $line ) . '"/>';
+
+		// Repère vertical (déplacé par le JS au survol).
+		echo '<line class="aod-cd-guide" x1="' . (int) $pl . '" y1="' . (int) $pt . '" x2="' . (int) $pl . '" y2="' . esc_attr( $r( $base_y ) ) . '"/>';
+
+		// Étiquettes X + points.
+		$i = 0;
+		foreach ( $bins as $b ) {
+			$x = $pts[ $i ][0];
+			$y = $pts[ $i ][1];
+			if ( ! empty( $b['show'] ) ) {
+				echo '<text class="aod-cd-x-lbl" x="' . esc_attr( $r( $x ) ) . '" y="' . (int) ( $vh - 13 ) . '" text-anchor="middle">' . esc_html( $b['label'] ) . '</text>';
+			}
+			echo '<circle class="aod-cd-dot" cx="' . esc_attr( $r( $x ) ) . '" cy="' . esc_attr( $r( $y ) ) . '" r="3.5"/>';
+			$i++;
+		}
+
+		echo '</svg>';
+		echo '<div class="aod-cd-tip" aria-hidden="true"></div>';
+		echo '</div>'; // .aod-cd-linechart
+		echo '</div>'; // .aod-cd-chartcard
+	}
+
+	/**
+	 * Formate un montant de façon compacte pour les étiquettes d'axe (12,5k, 1,2M).
+	 *
+	 * @param float $n Montant.
+	 * @return string
+	 */
+	protected function stats_compact_amount( $n ) {
+		$n = (float) $n;
+		if ( $n >= 1000000 ) {
+			return number_format_i18n( $n / 1000000, ( $n < 10000000 ) ? 1 : 0 ) . 'M';
+		}
+		if ( $n >= 1000 ) {
+			return number_format_i18n( $n / 1000, ( $n < 10000 ) ? 1 : 0 ) . 'k';
+		}
+		return number_format_i18n( $n );
 	}
 
 	/* ============================================================

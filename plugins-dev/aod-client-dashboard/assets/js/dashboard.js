@@ -776,11 +776,73 @@
 		} );
 	}
 
+	/* Graphe à courbe : infobulle + repère vertical au survol (stats) */
+	function bindCharts() {
+		document.querySelectorAll( '.aod-cd-linechart' ).forEach( function ( box ) {
+			var pts;
+			try { pts = JSON.parse( box.dataset.points || '[]' ); } catch ( e ) { return; }
+			if ( ! pts.length ) { return; }
+
+			var vw    = parseFloat( box.dataset.vw ) || 820;
+			var guide = box.querySelector( '.aod-cd-guide' );
+			var tip   = box.querySelector( '.aod-cd-tip' );
+			var dots  = box.querySelectorAll( '.aod-cd-dot' );
+
+			function scale() { return box.clientWidth / vw; }
+
+			function show( i ) {
+				var s = scale();
+				var p = pts[ i ];
+				if ( guide ) {
+					guide.setAttribute( 'x1', p.x );
+					guide.setAttribute( 'x2', p.x );
+					guide.style.opacity = '1';
+				}
+				dots.forEach( function ( d, j ) {
+					d.setAttribute( 'r', j === i ? '5.5' : '3.5' );
+				} );
+				if ( tip ) {
+					tip.innerHTML = '<b>' + p.amount + '</b>' + p.label;
+					tip.style.left = ( p.x * s ) + 'px';
+					tip.style.top  = ( p.y * s ) + 'px';
+					tip.classList.add( 'show' );
+				}
+			}
+
+			function hide() {
+				if ( guide ) { guide.style.opacity = '0'; }
+				if ( tip ) { tip.classList.remove( 'show' ); }
+				dots.forEach( function ( d ) { d.setAttribute( 'r', '3.5' ); } );
+			}
+
+			function pick( clientX ) {
+				var rect = box.getBoundingClientRect();
+				var mx   = ( clientX - rect.left ) / scale(); // coord. viewBox
+				var best = 0, bd = Infinity;
+				for ( var i = 0; i < pts.length; i++ ) {
+					var d = Math.abs( pts[ i ].x - mx );
+					if ( d < bd ) { bd = d; best = i; }
+				}
+				show( best );
+			}
+
+			box.addEventListener( 'mousemove', function ( e ) { pick( e.clientX ); } );
+			box.addEventListener( 'mouseleave', hide );
+			box.addEventListener( 'touchstart', function ( e ) {
+				if ( e.touches[ 0 ] ) { pick( e.touches[ 0 ].clientX ); }
+			}, { passive: true } );
+			box.addEventListener( 'touchmove', function ( e ) {
+				if ( e.touches[ 0 ] ) { pick( e.touches[ 0 ].clientX ); }
+			}, { passive: true } );
+		} );
+	}
+
 	document.addEventListener( 'DOMContentLoaded', function () {
 		bindStatus();
 		bindProducts();
 		try { bindCategories(); }   catch ( err ) { /* catégories */ }
 		try { bindColorPalette(); } catch ( err ) { /* palette */ }
+		try { bindCharts(); }       catch ( err ) { /* graphe stats */ }
 		bindSettingsForms();
 		bindShippingFree();
 		bindCarrierRows();
