@@ -2249,6 +2249,8 @@ class AOD_CD_Dashboard {
 				$carriers = $shipping->carriers();
 				?>
 				<h2 class="aod-cd-form-title" style="margin-top:26px"><?php esc_html_e( 'Transporteurs', 'aod-client-dashboard' ); ?></h2>
+				<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Cliquez sur un transporteur pour saisir vos identifiants API et le connecter.', 'aod-client-dashboard' ); ?></p>
+
 				<div class="aod-cd-field">
 					<label class="aod-cd-check">
 						<input type="checkbox" name="auto[enabled]" value="1" <?php checked( ! empty( $auto['enabled'] ) ); ?>>
@@ -2266,17 +2268,41 @@ class AOD_CD_Dashboard {
 					</select>
 				</label>
 
-				<?php foreach ( $carriers as $c ) : ?>
-					<div class="aod-cd-carrier">
-						<h3 class="aod-cd-carrier-h">
-							<?php echo esc_html( $c->label() ); ?>
-							<?php if ( $c->is_configured() ) : ?>
-								<span class="aod-cd-ok-badge"><?php esc_html_e( 'Configuré', 'aod-client-dashboard' ); ?></span>
-							<?php endif; ?>
-						</h3>
-						<?php $c->render_settings_fields(); // Réutilise les champs du plugin COD (noms <id>[champ]). ?>
-					</div>
-				<?php endforeach; ?>
+				<div class="aod-cd-scroll">
+					<table class="aod-cd-table aod-cd-carriers">
+						<thead><tr>
+							<th><?php esc_html_e( 'Transporteur', 'aod-client-dashboard' ); ?></th>
+							<th><?php esc_html_e( 'Statut', 'aod-client-dashboard' ); ?></th>
+							<th aria-hidden="true"></th>
+						</tr></thead>
+						<tbody>
+							<?php foreach ( $carriers as $id => $c ) :
+								$ok = $c->is_configured(); ?>
+								<tr class="aod-cd-carrier-row<?php echo $ok ? ' is-on' : ''; ?>" data-carrier="<?php echo esc_attr( $id ); ?>" tabindex="0" role="button" aria-expanded="false">
+									<td class="aod-cd-carrier-name">
+										<?php echo $c->icon_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — HTML sûr (pastille). ?>
+										<span><?php echo esc_html( $c->label() ); ?></span>
+									</td>
+									<td>
+										<?php if ( $ok ) : ?>
+											<span class="aod-cd-ok-badge"><?php esc_html_e( 'Connecté', 'aod-client-dashboard' ); ?></span>
+										<?php else : ?>
+											<span class="aod-cd-off-badge"><?php esc_html_e( 'Non connecté', 'aod-client-dashboard' ); ?></span>
+										<?php endif; ?>
+									</td>
+									<td class="aod-cd-carrier-chev" aria-hidden="true">›</td>
+								</tr>
+								<tr class="aod-cd-carrier-panel" hidden>
+									<td colspan="3">
+										<div class="aod-cd-carrier-fields">
+											<?php $c->render_settings_fields(); // Réutilise les champs du plugin COD (noms <id>[champ]). ?>
+										</div>
+									</td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				</div>
 			<?php endif; ?>
 
 			<div class="aod-cd-form-foot">

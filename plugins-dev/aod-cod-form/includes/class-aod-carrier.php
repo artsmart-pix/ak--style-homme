@@ -62,6 +62,43 @@ abstract class AOD_Carrier {
 	}
 
 	/**
+	 * Couleur de marque (pastille/icône). Surchargée par chaque livreur.
+	 *
+	 * @return string Code couleur hexadécimal (#RRGGBB).
+	 */
+	public function brand_color() {
+		return '#64748b';
+	}
+
+	/**
+	 * Initiales affichées dans la pastille (1 à 3 lettres).
+	 *
+	 * Par défaut : déduites du libellé (ex. « Speed Delivery » → « SD »).
+	 *
+	 * @return string
+	 */
+	public function initials() {
+		$words = preg_split( '/[\s\-]+/', (string) $this->label(), -1, PREG_SPLIT_NO_EMPTY );
+		if ( empty( $words ) ) {
+			return '?';
+		}
+		if ( 1 === count( $words ) ) {
+			return strtoupper( substr( $words[0], 0, 2 ) );
+		}
+		return strtoupper( substr( $words[0], 0, 1 ) . substr( $words[1], 0, 1 ) );
+	}
+
+	/**
+	 * Pastille-icône HTML du livreur (monogramme coloré).
+	 *
+	 * @return string HTML sûr (déjà échappé).
+	 */
+	public function icon_html() {
+		return '<span class="aod-carrier-ic" style="--ic:' . esc_attr( $this->brand_color() ) . '">'
+			. esc_html( $this->initials() ) . '</span>';
+	}
+
+	/**
 	 * Liste des centres/points relais d'une wilaya.
 	 *
 	 * @param int $wilaya_code 1-58.

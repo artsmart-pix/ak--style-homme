@@ -25,8 +25,21 @@ class AOD_Carrier_Yalidine extends AOD_Carrier {
 		return 'Yalidine';
 	}
 
+	public function brand_color() {
+		return '#e63329';
+	}
+
+	public function initials() {
+		return 'YA';
+	}
+
 	public function supports_stopdesk() {
 		return true;
+	}
+
+	/** Base API (surchargeable pour les clones type Yalitec). */
+	protected function api_base() {
+		return self::API_BASE;
 	}
 
 	protected function defaults() {
@@ -128,7 +141,7 @@ class AOD_Carrier_Yalidine extends AOD_Carrier {
 		if ( null !== $body ) {
 			$args['body'] = wp_json_encode( $body );
 		}
-		return $this->remote( $method, self::API_BASE . $endpoint, $args );
+		return $this->remote( $method, $this->api_base() . $endpoint, $args );
 	}
 
 	public function get_centers( $wilaya_code ) {

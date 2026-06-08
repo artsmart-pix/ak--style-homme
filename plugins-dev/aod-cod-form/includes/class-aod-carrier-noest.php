@@ -25,6 +25,14 @@ class AOD_Carrier_Noest extends AOD_Carrier {
 		return 'Noest Express';
 	}
 
+	public function brand_color() {
+		return '#0ea5e9';
+	}
+
+	public function initials() {
+		return 'NE';
+	}
+
 	public function supports_stopdesk() {
 		return true;
 	}

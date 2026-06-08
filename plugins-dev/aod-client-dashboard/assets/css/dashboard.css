@@ -160,19 +160,37 @@ body.aod-cd{
 .aod-cd-pricetable td.aod-cd-free-col input,
 .aod-cd-free-head input{width:18px;height:18px;margin:0;cursor:pointer;accent-color:var(--cd-accent-2)}
 .aod-cd-free-head{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
-.aod-cd-carrier{margin-top:14px;padding:16px 18px;border:1px solid var(--cd-line);border-radius:12px;background:#fafafa}
-.aod-cd-carrier-h{margin:0 0 8px;font-size:15px;font-weight:700;display:flex;align-items:center;gap:10px}
 .aod-cd-ok-badge{font-size:11px;font-weight:700;color:#fff;background:var(--cd-ok);padding:2px 9px;border-radius:20px}
+.aod-cd-off-badge{font-size:11px;font-weight:700;color:#6b7280;background:#eef0f3;padding:2px 9px;border-radius:20px}
+
+/* ---- Tableau des transporteurs (lignes cliquables) ---- */
+.aod-cd-carriers td{padding-top:10px;padding-bottom:10px}
+.aod-cd-carrier-row{cursor:pointer}
+.aod-cd-carrier-row:focus-visible{outline:2px solid var(--cd-accent-2);outline-offset:-2px}
+.aod-cd-carrier-row.is-open td{background:#f6f8ff}
+.aod-cd-carrier-name{display:flex;align-items:center;gap:11px;font-weight:600}
+.aod-carrier-ic{
+	display:inline-flex;align-items:center;justify-content:center;
+	width:30px;height:30px;border-radius:8px;flex:0 0 30px;
+	background:var(--ic,#64748b);color:#fff;font-size:11px;font-weight:800;
+	letter-spacing:.3px;line-height:1;text-transform:uppercase
+}
+.aod-cd-carrier-chev{text-align:end;color:#9aa1ac;font-size:20px;width:34px;
+	transition:transform .18s ease}
+.aod-cd-carrier-row.is-open .aod-cd-carrier-chev{transform:rotate(90deg);color:var(--cd-accent-2)}
+.aod-cd-carrier-panel td{background:#fafafa;padding:4px 14px 16px}
+.aod-cd-carrier-fields{padding-top:6px}
+
 /* Réutilisation des champs admin des transporteurs (.form-table) en contexte front */
-.aod-cd-carrier .form-table{width:100%;border-collapse:collapse}
-.aod-cd-carrier .form-table th{text-align:start;padding:8px 12px 8px 0;font-weight:600;font-size:13px;color:#374151;vertical-align:top;width:180px}
-.aod-cd-carrier .form-table td{padding:8px 0;font-size:14px}
-.aod-cd-carrier .form-table input[type=text],
-.aod-cd-carrier .form-table input[type=number],
-.aod-cd-carrier .form-table select{padding:9px 11px;border:1px solid var(--cd-line);border-radius:9px;font-size:14px;background:#fff}
-.aod-cd-carrier .form-table input.regular-text{width:100%;max-width:340px}
-.aod-cd-carrier .form-table .description{color:#6b7280;font-size:12px;margin:4px 0 0}
-.aod-cd-carrier .form-table label{margin-inline-end:10px}
+.aod-cd-carrier-fields .form-table{width:100%;border-collapse:collapse}
+.aod-cd-carrier-fields .form-table th{text-align:start;padding:8px 12px 8px 0;font-weight:600;font-size:13px;color:#374151;vertical-align:top;width:180px}
+.aod-cd-carrier-fields .form-table td{padding:8px 0;font-size:14px;background:none}
+.aod-cd-carrier-fields .form-table input[type=text],
+.aod-cd-carrier-fields .form-table input[type=number],
+.aod-cd-carrier-fields .form-table select{padding:9px 11px;border:1px solid var(--cd-line);border-radius:9px;font-size:14px;background:#fff}
+.aod-cd-carrier-fields .form-table input.regular-text{width:100%;max-width:340px}
+.aod-cd-carrier-fields .form-table .description{color:#6b7280;font-size:12px;margin:4px 0 0}
+.aod-cd-carrier-fields .form-table label{margin-inline-end:10px}
 
 /* ---- N° de commande cliquable ---- */
 .aod-cd-order-detail{

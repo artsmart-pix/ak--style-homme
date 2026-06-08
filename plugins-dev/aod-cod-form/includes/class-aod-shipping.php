@@ -33,11 +33,28 @@ class AOD_Shipping {
 	private function __construct() {
 		require_once AOD_COD_PATH . 'includes/class-aod-carrier.php';
 		require_once AOD_COD_PATH . 'includes/class-aod-carrier-yalidine.php';
+		require_once AOD_COD_PATH . 'includes/class-aod-carrier-yalitec.php';
 		require_once AOD_COD_PATH . 'includes/class-aod-carrier-noest.php';
+		require_once AOD_COD_PATH . 'includes/class-aod-carrier-procolis.php';
+		require_once AOD_COD_PATH . 'includes/class-aod-carrier-maystro.php';
 		require_once AOD_COD_PATH . 'includes/class-aod-carrier-ecotrack.php';
 
-		foreach ( array( 'AOD_Carrier_Yalidine', 'AOD_Carrier_Noest', 'AOD_Carrier_Ecotrack' ) as $cls ) {
-			$c = new $cls();
+		// Transporteurs « majors » (API propre).
+		foreach ( array(
+			new AOD_Carrier_Yalidine(),
+			new AOD_Carrier_Procolis(),   // ZR Express
+			new AOD_Carrier_Maystro(),
+			new AOD_Carrier_Noest(),
+			new AOD_Carrier_Yalitec(),
+			new AOD_Carrier_Ecotrack(),   // EcoTrack générique (domaine + token manuels)
+		) as $c ) {
+			$this->carriers[ $c->id() ] = $c;
+		}
+
+		// Transporteurs « white-label » EcoTrack : même API, domaine + marque pré-remplis.
+		// Le client n'a qu'à coller son token. Voir la liste CourierDZ.
+		foreach ( $this->ecotrack_whitelabels() as $cfg ) {
+			$c = new AOD_Carrier_Ecotrack( $cfg );
 			$this->carriers[ $c->id() ] = $c;
 		}
 
@@ -69,6 +86,38 @@ class AOD_Shipping {
 			add_filter( $f, array( $this, 'handle_bulk' ), 10, 3 );
 		}
 		add_action( 'admin_notices', array( $this, 'bulk_notice' ) );
+	}
+
+	/**
+	 * Liste des transporteurs « white-label » EcoTrack (même API, domaine + marque).
+	 *
+	 * @return array[] Config : id, label, domain, brand, initials.
+	 */
+	protected function ecotrack_whitelabels() {
+		return array(
+			array( 'id' => 'rex',          'label' => 'Rex Livraison',     'domain' => 'rex.ecotrack.dz',              'brand' => '#db2777', 'initials' => 'REX' ),
+			array( 'id' => 'golivri',      'label' => 'GOLIVRI',           'domain' => 'golivri.ecotrack.dz',          'brand' => '#0d9488', 'initials' => 'GO' ),
+			array( 'id' => 'dhd',          'label' => 'DHD',               'domain' => 'dhd.ecotrack.dz',              'brand' => '#b45309', 'initials' => 'DHD' ),
+			array( 'id' => 'anderson',     'label' => 'Anderson Delivery', 'domain' => 'anderson.ecotrack.dz',         'brand' => '#4f46e5', 'initials' => 'AN' ),
+			array( 'id' => 'areex',        'label' => 'Areex',             'domain' => 'areex.ecotrack.dz',            'brand' => '#0891b2', 'initials' => 'AR' ),
+			array( 'id' => 'bacexpress',   'label' => 'BAC Express',       'domain' => 'bacexpress.ecotrack.dz',       'brand' => '#9333ea', 'initials' => 'BAC' ),
+			array( 'id' => 'conexlog',     'label' => 'Conexlog (UPS)',    'domain' => 'app.conexlog-dz.com',          'brand' => '#a16207', 'initials' => 'UPS' ),
+			array( 'id' => 'coyote',       'label' => 'Coyote Express',    'domain' => 'coyoteexpressdz.ecotrack.dz',  'brand' => '#c2410c', 'initials' => 'CY' ),
+			array( 'id' => 'distazero',    'label' => 'Distazero',         'domain' => 'distazero.ecotrack.dz',        'brand' => '#2563eb', 'initials' => 'DZ' ),
+			array( 'id' => 'e48hr',        'label' => '48HR Livraison',    'domain' => '48hr.ecotrack.dz',             'brand' => '#16a34a', 'initials' => '48' ),
+			array( 'id' => 'fretdirect',   'label' => 'Fret Direct',       'domain' => 'fret.ecotrack.dz',             'brand' => '#475569', 'initials' => 'FD' ),
+			array( 'id' => 'monohub',      'label' => 'MonoHub',           'domain' => 'mono.ecotrack.dz',             'brand' => '#7c3aed', 'initials' => 'MH' ),
+			array( 'id' => 'msmgo',        'label' => 'MSM Go',            'domain' => 'msmgo.ecotrack.dz',            'brand' => '#dc2626', 'initials' => 'MSM' ),
+			array( 'id' => 'negmar',       'label' => 'Negmar Express',    'domain' => 'negmar.ecotrack.dz',           'brand' => '#0f766e', 'initials' => 'NG' ),
+			array( 'id' => 'packers',      'label' => 'Packers',           'domain' => 'packers.ecotrack.dz',          'brand' => '#ca8a04', 'initials' => 'PK' ),
+			array( 'id' => 'prest',        'label' => 'Prest',             'domain' => 'prest.ecotrack.dz',            'brand' => '#e11d48', 'initials' => 'PR' ),
+			array( 'id' => 'rblivraison',  'label' => 'RB Livraison',      'domain' => 'rblivraison.ecotrack.dz',      'brand' => '#1d4ed8', 'initials' => 'RB' ),
+			array( 'id' => 'rocket',       'label' => 'Rocket Delivery',   'domain' => 'rocket.ecotrack.dz',           'brand' => '#f59e0b', 'initials' => 'RK' ),
+			array( 'id' => 'salva',        'label' => 'Salva Delivery',    'domain' => 'salvadelivery.ecotrack.dz',    'brand' => '#15803d', 'initials' => 'SV' ),
+			array( 'id' => 'speed',        'label' => 'Speed Delivery',    'domain' => 'speeddelivery.ecotrack.dz',    'brand' => '#ea580c', 'initials' => 'SP' ),
+			array( 'id' => 'tsl',          'label' => 'TSL Express',       'domain' => 'tsl.ecotrack.dz',              'brand' => '#6d28d9', 'initials' => 'TSL' ),
+			array( 'id' => 'worldexpress', 'label' => 'Worldexpress',      'domain' => 'worldexpress.ecotrack.dz',     'brand' => '#0369a1', 'initials' => 'WX' ),
+		);
 	}
 
 	/** @return AOD_Carrier[] */

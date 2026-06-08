@@ -705,6 +705,30 @@
 		syncMaster();
 	}
 
+	// Tableau des transporteurs : ligne cliquable qui déplie le panneau d'identifiants.
+	function bindCarrierRows() {
+		var rows = Array.prototype.slice.call( document.querySelectorAll( '.aod-cd-carrier-row' ) );
+		if ( ! rows.length ) { return; }
+
+		var toggle = function ( row ) {
+			var panel = row.nextElementSibling;
+			if ( ! panel || ! panel.classList.contains( 'aod-cd-carrier-panel' ) ) { return; }
+			var open = row.classList.toggle( 'is-open' );
+			panel.hidden = ! open;
+			row.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
+		};
+
+		rows.forEach( function ( row ) {
+			row.addEventListener( 'click', function () { toggle( row ); } );
+			row.addEventListener( 'keydown', function ( e ) {
+				if ( 'Enter' === e.key || ' ' === e.key ) {
+					e.preventDefault();
+					toggle( row );
+				}
+			} );
+		} );
+	}
+
 	document.addEventListener( 'DOMContentLoaded', function () {
 		bindStatus();
 		bindProducts();
@@ -712,6 +736,7 @@
 		try { bindColorPalette(); } catch ( err ) { /* palette */ }
 		bindSettingsForms();
 		bindShippingFree();
+		bindCarrierRows();
 		bindWhatsappTest();
 		bindOrderDetail();
 		bindOrderNote();
