@@ -151,13 +151,15 @@ body.aod-cd{
 @media(max-width:780px){.aod-cd-grid{grid-template-columns:1fr}}
 
 /* ---- Livraison : tarifs wilayas + transporteurs ---- */
-.aod-cd-search{margin:0 0 10px}
-.aod-cd-search-input{width:100%;max-width:340px;padding:9px 12px;border:1px solid var(--cd-line);border-radius:10px;font-size:14px}
+.aod-cd-search{margin:0 0 12px}
+.aod-cd-search-input{width:100%;max-width:420px;padding:11px 14px;border:1px solid var(--cd-line);border-radius:10px;font-size:15px}
 .aod-cd-search-input:focus{outline:none;border-color:var(--cd-accent-2);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
-.aod-cd-scroll{max-height:420px;overflow-y:auto;border:1px solid var(--cd-line);border-radius:12px}
+/* Sections plus hautes : on exploite la hauteur de l'écran (avec plancher confortable). */
+.aod-cd-scroll{max-height:min(72vh,760px);min-height:460px;overflow-y:auto;border:1px solid var(--cd-line);border-radius:12px}
 .aod-cd-pricetable{min-width:0}
-.aod-cd-pricetable th{position:sticky;top:0;z-index:1}
-.aod-cd-pricetable input{width:120px;padding:7px 9px;border:1px solid var(--cd-line);border-radius:8px;font-size:13px}
+.aod-cd-pricetable th,.aod-cd-pricetable td{padding-top:12px;padding-bottom:12px;font-size:14px}
+.aod-cd-pricetable th{position:sticky;top:0;z-index:1;background:#f8fafc}
+.aod-cd-pricetable input{width:100%;max-width:170px;padding:9px 11px;border:1px solid var(--cd-line);border-radius:8px;font-size:14px}
 .aod-cd-pricetable input:focus{outline:none;border-color:var(--cd-accent-2);box-shadow:0 0 0 2px rgba(37,99,235,.12)}
 .aod-cd-free-col{text-align:center;white-space:nowrap}
 .aod-cd-pricetable td.aod-cd-free-col input,
@@ -167,22 +169,24 @@ body.aod-cd{
 .aod-cd-off-badge{font-size:11px;font-weight:700;color:#6b7280;background:#eef0f3;padding:2px 9px;border-radius:20px}
 
 /* ---- Tableau des transporteurs (lignes cliquables) ---- */
-.aod-cd-carriers td{padding-top:10px;padding-bottom:10px}
-.aod-cd-carrier-row{cursor:pointer}
+.aod-cd-carriers th{position:sticky;top:0;z-index:1;background:#f8fafc}
+.aod-cd-carriers td{padding-top:14px;padding-bottom:14px}
+.aod-cd-carrier-row{cursor:pointer;transition:background .12s ease}
+.aod-cd-carrier-row:hover td{background:#f6f8ff}
 .aod-cd-carrier-row:focus-visible{outline:2px solid var(--cd-accent-2);outline-offset:-2px}
 .aod-cd-carrier-row.is-open td{background:#f6f8ff}
-.aod-cd-carrier-name{display:flex;align-items:center;gap:11px;font-weight:600}
+.aod-cd-carrier-name{display:flex;align-items:center;gap:13px;font-weight:600;font-size:15px}
 .aod-carrier-ic{
 	display:inline-flex;align-items:center;justify-content:center;
-	width:30px;height:30px;border-radius:8px;flex:0 0 30px;
-	background:var(--ic,#64748b);color:#fff;font-size:11px;font-weight:800;
+	width:38px;height:38px;border-radius:10px;flex:0 0 38px;
+	background:var(--ic,#64748b);color:#fff;font-size:13px;font-weight:800;
 	letter-spacing:.3px;line-height:1;text-transform:uppercase
 }
-.aod-cd-carrier-chev{text-align:end;color:#9aa1ac;font-size:20px;width:34px;
+.aod-cd-carrier-chev{text-align:end;color:#9aa1ac;font-size:22px;width:38px;
 	transition:transform .18s ease}
 .aod-cd-carrier-row.is-open .aod-cd-carrier-chev{transform:rotate(90deg);color:var(--cd-accent-2)}
-.aod-cd-carrier-panel td{background:#fafafa;padding:4px 14px 16px}
-.aod-cd-carrier-fields{padding-top:6px}
+.aod-cd-carrier-panel td{background:#fafafa;padding:6px 18px 20px}
+.aod-cd-carrier-fields{padding-top:8px}
 
 /* Réutilisation des champs admin des transporteurs (.form-table) en contexte front */
 .aod-cd-carrier-fields .form-table{width:100%;border-collapse:collapse}
