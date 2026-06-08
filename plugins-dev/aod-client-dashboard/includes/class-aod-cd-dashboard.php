@@ -2217,6 +2217,9 @@ class AOD_CD_Dashboard {
 
 			<h2 class="aod-cd-form-title" style="margin-top:26px"><?php esc_html_e( 'Tarifs par wilaya', 'aod-client-dashboard' ); ?></h2>
 			<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Laissez une wilaya vide pour la rendre non livrable. Domicile = livraison à l’adresse ; Stop-desk = retrait au bureau du livreur.', 'aod-client-dashboard' ); ?></p>
+			<div class="aod-cd-search">
+				<input type="search" class="aod-cd-search-input" data-filter="prices" placeholder="<?php esc_attr_e( 'Rechercher une wilaya…', 'aod-client-dashboard' ); ?>" autocomplete="off">
+			</div>
 			<div class="aod-cd-scroll">
 				<table class="aod-cd-table aod-cd-pricetable">
 					<thead><tr>
@@ -2268,6 +2271,9 @@ class AOD_CD_Dashboard {
 					</select>
 				</label>
 
+				<div class="aod-cd-search">
+					<input type="search" class="aod-cd-search-input" data-filter="carriers" placeholder="<?php esc_attr_e( 'Rechercher un transporteur…', 'aod-client-dashboard' ); ?>" autocomplete="off">
+				</div>
 				<div class="aod-cd-scroll">
 					<table class="aod-cd-table aod-cd-carriers">
 						<thead><tr>

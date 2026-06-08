@@ -729,6 +729,53 @@
 		} );
 	}
 
+	// Champs de recherche : filtre les lignes des tableaux Tarifs / Transporteurs.
+	function bindShippingSearch() {
+		var inputs = Array.prototype.slice.call( document.querySelectorAll( '.aod-cd-search-input' ) );
+		if ( ! inputs.length ) { return; }
+
+		var norm = function ( s ) {
+			return ( s || '' ).toString().toLowerCase()
+				.normalize( 'NFD' ).replace( /[\u0300-\u036f]/g, '' )
+				.trim();
+		};
+
+		var filterPrices = function ( q ) {
+			var table = document.querySelector( '.aod-cd-pricetable' );
+			if ( ! table ) { return; }
+			var rows = Array.prototype.slice.call( table.querySelectorAll( 'tbody > tr' ) );
+			rows.forEach( function ( row ) {
+				var cell = row.querySelector( 'td' );
+				var hit  = ! q || norm( cell ? cell.textContent : '' ).indexOf( q ) !== -1;
+				row.hidden = ! hit;
+			} );
+		};
+
+		var filterCarriers = function ( q ) {
+			var rows = Array.prototype.slice.call( document.querySelectorAll( '.aod-cd-carrier-row' ) );
+			rows.forEach( function ( row ) {
+				var name  = row.querySelector( '.aod-cd-carrier-name' );
+				var hit   = ! q || norm( name ? name.textContent : '' ).indexOf( q ) !== -1;
+				var panel = row.nextElementSibling;
+				row.hidden = ! hit;
+				if ( panel && panel.classList.contains( 'aod-cd-carrier-panel' ) && ! row.classList.contains( 'is-open' ) ) {
+					panel.hidden = true;
+				}
+			} );
+		};
+
+		inputs.forEach( function ( input ) {
+			input.addEventListener( 'input', function () {
+				var q = norm( input.value );
+				if ( 'prices' === input.getAttribute( 'data-filter' ) ) {
+					filterPrices( q );
+				} else {
+					filterCarriers( q );
+				}
+			} );
+		} );
+	}
+
 	document.addEventListener( 'DOMContentLoaded', function () {
 		bindStatus();
 		bindProducts();
@@ -737,6 +784,7 @@
 		bindSettingsForms();
 		bindShippingFree();
 		bindCarrierRows();
+		bindShippingSearch();
 		bindWhatsappTest();
 		bindOrderDetail();
 		bindOrderNote();

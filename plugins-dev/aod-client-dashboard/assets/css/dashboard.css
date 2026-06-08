@@ -151,6 +151,9 @@ body.aod-cd{
 @media(max-width:780px){.aod-cd-grid{grid-template-columns:1fr}}
 
 /* ---- Livraison : tarifs wilayas + transporteurs ---- */
+.aod-cd-search{margin:0 0 10px}
+.aod-cd-search-input{width:100%;max-width:340px;padding:9px 12px;border:1px solid var(--cd-line);border-radius:10px;font-size:14px}
+.aod-cd-search-input:focus{outline:none;border-color:var(--cd-accent-2);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
 .aod-cd-scroll{max-height:420px;overflow-y:auto;border:1px solid var(--cd-line);border-radius:12px}
 .aod-cd-pricetable{min-width:0}
 .aod-cd-pricetable th{position:sticky;top:0;z-index:1}
