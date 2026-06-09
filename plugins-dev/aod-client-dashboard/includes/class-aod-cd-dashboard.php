@@ -693,18 +693,6 @@ class AOD_CD_Dashboard {
 		}
 		$date_arg = $this->stats_date_arg( $period );
 
-		// Onglets de période (réutilise le style des onglets de statut).
-		echo '<div class="aod-cd-tabs">';
-		foreach ( $periods as $slug => $label ) {
-			$active = ( $slug === $period ) ? ' is-active' : '';
-			$url    = ( 'all' === $slug ) ? $this->stats_url() : $this->stats_url( array( 'periode' => $slug ) );
-			printf(
-				'<a class="aod-cd-tab%s" href="%s">%s</a>',
-				esc_attr( $active ), esc_url( $url ), esc_html( $label )
-			);
-		}
-		echo '</div>';
-
 		// Une seule requête : les commandes encaissées de la période servent à la
 		// fois au CA, au panier moyen et au top-produits (évite plusieurs scans).
 		$paid_statuses = array( 'wc-processing', 'wc-aod-confirmed', 'wc-completed' );
@@ -804,7 +792,20 @@ class AOD_CD_Dashboard {
 		}
 		echo '</div>';
 
-		// Graphe du CA dans le temps (barres CSS, sans JS).
+		// Onglets de période, placés juste au-dessus du graphe (ils pilotent
+		// toute la page : cartes, graphe et top-produits).
+		echo '<div class="aod-cd-tabs aod-cd-tabs-chart">';
+		foreach ( $periods as $slug => $label ) {
+			$active = ( $slug === $period ) ? ' is-active' : '';
+			$url    = ( 'all' === $slug ) ? $this->stats_url() : $this->stats_url( array( 'periode' => $slug ) );
+			printf(
+				'<a class="aod-cd-tab%s" href="%s">%s</a>',
+				esc_attr( $active ), esc_url( $url ), esc_html( $label )
+			);
+		}
+		echo '</div>';
+
+		// Graphe du CA dans le temps (courbe SVG).
 		$this->render_stats_chart( $bins );
 
 		// Top-produits de la période (par CA généré).
@@ -961,12 +962,12 @@ class AOD_CD_Dashboard {
 		}
 
 		// Géométrie du tracé (unités viewBox ; le SVG est mis à l'échelle en CSS).
-		$vw = 820;
-		$vh = 300;
-		$pl = 58;  // marge gauche (étiquettes Y)
-		$pr = 18;
-		$pt = 18;
-		$pb = 36;  // marge basse (étiquettes X)
+		$vw = 920;
+		$vh = 215;
+		$pl = 50;  // marge gauche (étiquettes Y)
+		$pr = 16;
+		$pt = 16;
+		$pb = 28;  // marge basse (étiquettes X)
 		$pw = $vw - $pl - $pr;
 		$ph = $vh - $pt - $pb;
 		$base_y = $pt + $ph;
@@ -1008,7 +1009,7 @@ class AOD_CD_Dashboard {
 		echo '<div class="aod-cd-linechart" data-vw="' . (int) $vw . '" data-points="' . esc_attr( wp_json_encode( $data ) ) . '">';
 		echo '<svg viewBox="0 0 ' . (int) $vw . ' ' . (int) $vh . '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="' . esc_attr__( 'Chiffre d’affaires sur la période', 'aod-client-dashboard' ) . '">';
 		echo '<defs><linearGradient id="aodAreaGrad" x1="0" y1="0" x2="0" y2="1">'
-			. '<stop offset="0%" stop-color="#FFE21E" stop-opacity="0.45"/>'
+			. '<stop offset="0%" stop-color="#FFE21E" stop-opacity="0.22"/>'
 			. '<stop offset="100%" stop-color="#FFE21E" stop-opacity="0"/>'
 			. '</linearGradient></defs>';
 
@@ -1036,7 +1037,7 @@ class AOD_CD_Dashboard {
 			if ( ! empty( $b['show'] ) ) {
 				echo '<text class="aod-cd-x-lbl" x="' . esc_attr( $r( $x ) ) . '" y="' . (int) ( $vh - 13 ) . '" text-anchor="middle">' . esc_html( $b['label'] ) . '</text>';
 			}
-			echo '<circle class="aod-cd-dot" cx="' . esc_attr( $r( $x ) ) . '" cy="' . esc_attr( $r( $y ) ) . '" r="3.5"/>';
+			echo '<circle class="aod-cd-dot" cx="' . esc_attr( $r( $x ) ) . '" cy="' . esc_attr( $r( $y ) ) . '" r="2.6"/>';
 			$i++;
 		}
 

@@ -131,43 +131,47 @@ body.aod-cd{
 .aod-cd-card:hover{transform:translateY(-3px);box-shadow:var(--cd-shadow);border-color:#d9d9d9}
 .aod-cd-card:hover::before{transform:scaleY(1)}
 .aod-cd-card-ico{
-	width:44px;height:44px;border-radius:var(--cd-radius-sm);display:inline-flex;align-items:center;justify-content:center;
-	font-size:20px;line-height:1;background:var(--cd-ink);color:var(--cd-yellow);
+	width:46px;height:46px;border-radius:var(--cd-radius-sm);display:inline-flex;align-items:center;justify-content:center;
+	font-size:21px;line-height:1;background:#fff6c2;color:var(--cd-ink);
 }
-.aod-cd-card-ico.t-blue{background:#1e293b;color:#7dd3fc}
-.aod-cd-card-ico.t-indigo{background:#1e1b4b;color:#a5b4fc}
-.aod-cd-card-ico.t-teal{background:#0f2e2e;color:#5eead4}
-.aod-cd-card-ico.t-green{background:#0f2e1a;color:#6ee7a0}
-.aod-cd-card-ico.t-amber{background:var(--cd-ink);color:var(--cd-yellow)}
-.aod-cd-card-ico.t-red{background:#2e1212;color:#fca5a5}
-.aod-cd-card-ico.t-slate{background:#1f2226;color:#cbd5e1}
+.aod-cd-card-ico.t-blue{background:#e6f0ff;color:#1d4ed8}
+.aod-cd-card-ico.t-indigo{background:#ecebff;color:#4338ca}
+.aod-cd-card-ico.t-teal{background:#d9f6f3;color:#0e7490}
+.aod-cd-card-ico.t-green{background:#e1f7e8;color:#15803d}
+.aod-cd-card-ico.t-amber{background:#fff2cc;color:#b45309}
+.aod-cd-card-ico.t-red{background:#fde7e5;color:#b91c1c}
+.aod-cd-card-ico.t-slate{background:#eef1f5;color:#475569}
 .aod-cd-card-val{font-size:28px;font-weight:800;color:var(--cd-ink);line-height:1.05;letter-spacing:-.6px}
-.aod-cd-card-lab{margin-top:5px;color:var(--cd-muted);font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.aod-cd-card-lab{margin-top:6px;color:var(--cd-ink);font-size:15px;font-weight:700;letter-spacing:.1px}
 
 /* ---- Graphe CA (courbe SVG, sans librairie) ---- */
-.aod-cd-chartcard{background:#fff;border:1px solid var(--cd-line);border-radius:var(--cd-radius);padding:22px 24px;margin-top:26px}
-.aod-cd-chart-head{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px}
-.aod-cd-chart-title{margin:0;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--cd-muted)}
+.aod-cd-chartcard{background:#fff;border:1px solid var(--cd-line);border-radius:var(--cd-radius);padding:18px 20px}
+.aod-cd-chart-head{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:6px}
+.aod-cd-chart-title{margin:0;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--cd-muted)}
 .aod-cd-chart-total{font-size:13px;color:var(--cd-muted);font-weight:600}
-.aod-cd-chart-total b{color:var(--cd-ink);font-size:17px;font-weight:800;margin-inline-start:6px}
-.aod-cd-linechart{position:relative;width:100%;margin-top:4px}
-.aod-cd-linechart svg{display:block;width:100%;height:auto;overflow:visible}
+.aod-cd-chart-total b{color:var(--cd-ink);font-size:15px;font-weight:700;margin-inline-start:6px}
+.aod-cd-linechart{position:relative;width:100%;margin-top:2px}
+.aod-cd-linechart svg{display:block;width:100%;height:auto;max-height:270px;overflow:visible}
+/* Onglets de période placés juste au-dessus du graphe */
+.aod-cd-tabs-chart{margin-top:26px;margin-bottom:10px}
 .aod-cd-grid-line{stroke:#f0f0f0;stroke-width:1}
 .aod-cd-axis-lbl{fill:var(--cd-soft)}
 .aod-cd-x-lbl{fill:var(--cd-muted)}
 .aod-cd-axis-lbl,.aod-cd-x-lbl{font-size:11px;font-family:inherit}
 .aod-cd-area{fill:url(#aodAreaGrad)}
-.aod-cd-line{fill:none;stroke:var(--cd-ink);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
-.aod-cd-dot{fill:#fff;stroke:var(--cd-ink);stroke-width:2.5;transition:r .12s ease}
+.aod-cd-line{fill:none;stroke:var(--cd-ink);stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+.aod-cd-dot{fill:#fff;stroke:var(--cd-ink);stroke-width:1.8;transition:r .12s ease}
 .aod-cd-guide{stroke:var(--cd-ink);stroke-width:1;stroke-dasharray:4 4;opacity:0;transition:opacity .12s}
 .aod-cd-tip{
-	position:absolute;pointer-events:none;left:0;top:0;background:var(--cd-ink);color:#fff;
-	padding:8px 12px;border-radius:var(--cd-radius-sm);font-size:12px;line-height:1.45;white-space:nowrap;
+	position:absolute;pointer-events:none;left:0;top:0;background:#fff;color:var(--cd-muted);
+	padding:8px 12px;border:1px solid var(--cd-line);border-inline-start:3px solid var(--cd-yellow);
+	border-radius:var(--cd-radius-sm);font-size:12px;line-height:1.45;white-space:nowrap;
 	opacity:0;transform:translate(-50%,calc(-100% - 12px));transition:opacity .12s;
-	box-shadow:0 8px 22px rgba(0,0,0,.25);z-index:2;
+	box-shadow:0 8px 22px rgba(24,24,24,.14);z-index:2;
 }
-.aod-cd-tip b{display:block;font-size:14px;font-weight:800;color:var(--cd-yellow)}
+.aod-cd-tip b{display:block;font-size:14px;font-weight:800;color:var(--cd-ink)}
 .aod-cd-tip.show{opacity:1}
+.aod-cd-tip.is-below{transform:translate(-50%,12px)}
 
 /* ---- Boutons & barre d'action ---- */
 .aod-cd-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}

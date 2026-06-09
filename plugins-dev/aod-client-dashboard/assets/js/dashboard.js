@@ -859,20 +859,31 @@
 					guide.style.opacity = '1';
 				}
 				dots.forEach( function ( d, j ) {
-					d.setAttribute( 'r', j === i ? '5.5' : '3.5' );
+					d.setAttribute( 'r', j === i ? '4.2' : '2.6' );
 				} );
 				if ( tip ) {
 					tip.innerHTML = '<b>' + p.amount + '</b>' + p.label;
-					tip.style.left = ( p.x * s ) + 'px';
-					tip.style.top  = ( p.y * s ) + 'px';
 					tip.classList.add( 'show' );
+					// Maintient l'infobulle dans le cadre du graphe (clamp horizontal),
+					// et la bascule sous le point quand l'espace au-dessus manque.
+					var px    = p.x * s;
+					var py    = p.y * s;
+					var halfW = tip.offsetWidth / 2;
+					var pad   = 6;
+					var minX  = halfW + pad;
+					var maxX  = box.clientWidth - halfW - pad;
+					if ( maxX < minX ) { maxX = minX; }
+					px = Math.max( minX, Math.min( maxX, px ) );
+					tip.classList.toggle( 'is-below', ( py - tip.offsetHeight - 14 ) < 0 );
+					tip.style.left = px + 'px';
+					tip.style.top  = py + 'px';
 				}
 			}
 
 			function hide() {
 				if ( guide ) { guide.style.opacity = '0'; }
 				if ( tip ) { tip.classList.remove( 'show' ); }
-				dots.forEach( function ( d ) { d.setAttribute( 'r', '3.5' ); } );
+				dots.forEach( function ( d ) { d.setAttribute( 'r', '2.6' ); } );
 			}
 
 			function pick( clientX ) {
