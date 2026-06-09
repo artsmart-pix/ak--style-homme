@@ -4,3 +4,6 @@ wordpress/
 library/themes/*.zip
 library/plugins/*.zip
 *.log
+
+# Kit de template Elementor (référence visuelle, non livrable)
+Laste - Real Estate & Property Elementor Template Kit/
