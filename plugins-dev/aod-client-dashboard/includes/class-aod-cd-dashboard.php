@@ -177,6 +177,9 @@ class AOD_CD_Dashboard {
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="robots" content="noindex,nofollow">
 	<title><?php echo esc_html( get_bloginfo( 'name' ) . ' — ' . __( 'Gestion', 'aod-client-dashboard' ) ); ?></title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap">
 	<link rel="stylesheet" href="<?php echo esc_url( AOD_CD_URL . 'assets/css/dashboard.css?v=' . $this->asset_ver( 'assets/css/dashboard.css' ) ); ?>">
 	<script>
 		window.AOD_CD = {
@@ -1005,8 +1008,8 @@ class AOD_CD_Dashboard {
 		echo '<div class="aod-cd-linechart" data-vw="' . (int) $vw . '" data-points="' . esc_attr( wp_json_encode( $data ) ) . '">';
 		echo '<svg viewBox="0 0 ' . (int) $vw . ' ' . (int) $vh . '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="' . esc_attr__( 'Chiffre d’affaires sur la période', 'aod-client-dashboard' ) . '">';
 		echo '<defs><linearGradient id="aodAreaGrad" x1="0" y1="0" x2="0" y2="1">'
-			. '<stop offset="0%" stop-color="#2563eb" stop-opacity="0.18"/>'
-			. '<stop offset="100%" stop-color="#2563eb" stop-opacity="0"/>'
+			. '<stop offset="0%" stop-color="#FFE21E" stop-opacity="0.45"/>'
+			. '<stop offset="100%" stop-color="#FFE21E" stop-opacity="0"/>'
 			. '</linearGradient></defs>';
 
 		// Grille horizontale + étiquettes de l'axe Y.
@@ -2743,7 +2746,7 @@ class AOD_CD_Dashboard {
 	protected function section_account() {
 		$user = wp_get_current_user();
 		?>
-		<form class="aod-cd-form aod-cd-settings-form" data-action="aod_cd_save_account" style="max-width:520px">
+		<form class="aod-cd-form aod-cd-settings-form" data-action="aod_cd_save_account">
 			<h2 class="aod-cd-form-title"><?php esc_html_e( 'Mon compte', 'aod-client-dashboard' ); ?></h2>
 
 			<label class="aod-cd-field">
