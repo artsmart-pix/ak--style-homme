@@ -93,7 +93,10 @@ body.aod-cd{
 }
 .aod-cd-table td{padding:14px 16px;border-bottom:1px solid var(--cd-line-2);vertical-align:middle}
 .aod-cd-table tr:last-child td{border-bottom:0}
-.aod-cd-table tr:hover td{background:#fcfcf6}
+/* Lignes alternées pour distinguer facilement chaque ligne (hors table
+   transporteurs, dont les lignes dépliables casseraient l'alternance). */
+.aod-cd-table:not(.aod-cd-carriers) tbody tr:nth-child(even) td{background:#f4f4f1}
+.aod-cd-table tbody tr:hover td{background:#fdf6d8}
 .aod-cd-table code{background:var(--cd-bg);padding:2px 7px;border-radius:6px;font-size:12px}
 .aod-cd-muted{color:var(--cd-soft)}
 .aod-cd-track{color:var(--cd-ok);font-weight:700}
