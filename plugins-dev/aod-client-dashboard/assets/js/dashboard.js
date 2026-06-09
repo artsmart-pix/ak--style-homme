@@ -643,43 +643,103 @@
 		} );
 	}
 
+	/* Petite modale stylée de saisie (remplace window.prompt) → Promise<string|null> */
+	function textPromptModal( opts ) {
+		opts = opts || {};
+		return new Promise( function ( resolve ) {
+			var esc = function ( s ) {
+				return String( s == null ? '' : s ).replace( /[&<>"]/g, function ( c ) {
+					return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ c ];
+				} );
+			};
+			var overlay = document.createElement( 'div' );
+			overlay.className = 'aod-cd-modal';
+			overlay.innerHTML =
+				'<div class="aod-cd-modal-backdrop" data-cancel></div>' +
+				'<div class="aod-cd-modal-box aod-cd-modal-sm" role="dialog" aria-modal="true">' +
+					'<header class="aod-cd-modal-head">' +
+						'<h2 class="aod-cd-modal-title">' + esc( opts.title ) + '</h2>' +
+						'<button type="button" class="aod-cd-modal-x" data-cancel aria-label="Fermer">&times;</button>' +
+					'</header>' +
+					'<div class="aod-cd-modal-body">' +
+						'<textarea class="aod-cd-textinput" rows="4" placeholder="' + esc( opts.placeholder ) + '"></textarea>' +
+						'<div class="aod-cd-modal-actions">' +
+							'<button type="button" class="aod-cd-btn" data-cancel>' + esc( opts.cancel || 'Annuler' ) + '</button>' +
+							'<button type="button" class="aod-cd-btn aod-cd-btn-primary" data-ok>' + esc( opts.ok || 'Enregistrer' ) + '</button>' +
+						'</div>' +
+					'</div>' +
+				'</div>';
+			document.body.appendChild( overlay );
+			document.body.style.overflow = 'hidden';
+			var ta = overlay.querySelector( '.aod-cd-textinput' );
+			setTimeout( function () { ta.focus(); }, 30 );
+
+			function done( val ) {
+				document.body.removeChild( overlay );
+				document.body.style.overflow = '';
+				document.removeEventListener( 'keydown', onKey );
+				resolve( val );
+			}
+			function onKey( e ) {
+				if ( 'Escape' === e.key ) { done( null ); }
+				else if ( ( e.ctrlKey || e.metaKey ) && 'Enter' === e.key ) { done( ta.value ); }
+			}
+			overlay.querySelectorAll( '[data-cancel]' ).forEach( function ( el ) {
+				el.addEventListener( 'click', function () { done( null ); } );
+			} );
+			overlay.querySelector( '[data-ok]' ).addEventListener( 'click', function () { done( ta.value ); } );
+			document.addEventListener( 'keydown', onKey );
+		} );
+	}
+
 	/* Ajout d'une note à une commande (AJAX) */
 	function bindOrderNote() {
 		document.querySelectorAll( '.aod-cd-note-btn' ).forEach( function ( btn ) {
 			btn.addEventListener( 'click', function () {
-				var note = window.prompt( CD.i18nNotePrompt || 'Note pour cette commande :' );
-				if ( null === note || '' === note.trim() ) { return; }
-				btn.disabled = true;
-
-				var body = new URLSearchParams();
-				body.append( 'action', 'aod_cd_order_note' );
-				body.append( 'nonce', CD.nonce );
-				body.append( 'order_id', btn.dataset.order );
-				body.append( 'note', note );
-
-				fetch( CD.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body } )
-					.then( function ( r ) { return r.json(); } )
-					.then( function ( res ) {
-						btn.disabled = false;
-						if ( res && res.success ) {
-							var badge = btn.querySelector( '.aod-cd-badge' );
-							if ( res.data.count ) {
-								if ( ! badge ) {
-									badge = document.createElement( 'span' );
-									badge.className = 'aod-cd-badge';
-									btn.appendChild( document.createTextNode( ' ' ) );
-									btn.appendChild( badge );
-								}
-								badge.textContent = res.data.count;
-							}
-							toast( res.data.message || 'OK', false );
-						} else {
-							toast( ( res && res.data && res.data.message ) || 'Erreur.', true );
-						}
-					} )
-					.catch( function () { btn.disabled = false; toast( 'Erreur réseau.', true ); } );
+				textPromptModal( {
+					title:       CD.i18nNoteTitle || 'Ajouter une note',
+					placeholder: CD.i18nNotePrompt || 'Note pour cette commande…',
+					ok:          CD.i18nSave || 'Enregistrer',
+					cancel:      CD.i18nCancel || 'Annuler'
+				} ).then( function ( note ) {
+					if ( null === note || '' === note.trim() ) { return; }
+					submitOrderNote( btn, note );
+				} );
 			} );
 		} );
+	}
+
+	/* Envoi AJAX de la note */
+	function submitOrderNote( btn, note ) {
+		btn.disabled = true;
+
+		var body = new URLSearchParams();
+		body.append( 'action', 'aod_cd_order_note' );
+		body.append( 'nonce', CD.nonce );
+		body.append( 'order_id', btn.dataset.order );
+		body.append( 'note', note );
+
+		fetch( CD.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body } )
+			.then( function ( r ) { return r.json(); } )
+			.then( function ( res ) {
+				btn.disabled = false;
+				if ( res && res.success ) {
+					var badge = btn.querySelector( '.aod-cd-badge' );
+					if ( res.data.count ) {
+						if ( ! badge ) {
+							badge = document.createElement( 'span' );
+							badge.className = 'aod-cd-badge';
+							btn.appendChild( document.createTextNode( ' ' ) );
+							btn.appendChild( badge );
+						}
+						badge.textContent = res.data.count;
+					}
+					toast( res.data.message || 'OK', false );
+				} else {
+					toast( ( res && res.data && res.data.message ) || 'Erreur.', true );
+				}
+			} )
+			.catch( function () { btn.disabled = false; toast( 'Erreur réseau.', true ); } );
 	}
 
 	/* Livraison : checkbox « tout cocher » applique la gratuité à toutes les wilayas */

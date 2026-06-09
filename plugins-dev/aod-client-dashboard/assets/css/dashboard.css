@@ -76,6 +76,14 @@ body.aod-cd{
 .aod-cd-table code{background:#f3f4f6;padding:2px 6px;border-radius:6px;font-size:12px}
 .aod-cd-muted{color:#9ca3af}
 .aod-cd-track{color:var(--cd-ok);font-weight:600}
+/* ---- Colonne Articles (produits + variantes) ---- */
+.aod-cd-articles{max-width:260px}
+.aod-cd-articles-list{font-size:12.5px;line-height:1.5}
+.aod-cd-variants{color:#6b7280}
+.aod-cd-qty{font-weight:700;white-space:nowrap}
+/* ---- Colonne Suivi (icône camion) ---- */
+.aod-cd-ship{display:inline-flex;align-items:center;gap:5px}
+.aod-cd-trackcode{font-size:11px}
 .aod-cd-prod{display:flex;align-items:center;gap:10px}
 .aod-cd-prod img{border-radius:8px;display:block}
 
@@ -253,6 +261,10 @@ body.aod-cd{
 .aod-cd-modal-x{background:none;border:0;font-size:28px;line-height:1;cursor:pointer;color:#9ca3af;padding:0 4px}
 .aod-cd-modal-x:hover{color:#111827}
 .aod-cd-modal-body{padding:22px}
+.aod-cd-modal-box.aod-cd-modal-sm{max-width:440px}
+.aod-cd-textinput{width:100%;box-sizing:border-box;border:1px solid var(--cd-line);border-radius:10px;padding:10px 12px;font:inherit;resize:vertical;min-height:90px}
+.aod-cd-textinput:focus{outline:none;border-color:var(--cd-accent);box-shadow:0 0 0 3px rgba(0,0,0,.05)}
+.aod-cd-modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
 
 /* ---- Détail commande ---- */
 .aod-cd-od-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}

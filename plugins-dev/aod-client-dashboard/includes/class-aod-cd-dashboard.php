@@ -177,7 +177,7 @@ class AOD_CD_Dashboard {
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="robots" content="noindex,nofollow">
 	<title><?php echo esc_html( get_bloginfo( 'name' ) . ' — ' . __( 'Gestion', 'aod-client-dashboard' ) ); ?></title>
-	<link rel="stylesheet" href="<?php echo esc_url( AOD_CD_URL . 'assets/css/dashboard.css?v=' . AOD_CD_VERSION ); ?>">
+	<link rel="stylesheet" href="<?php echo esc_url( AOD_CD_URL . 'assets/css/dashboard.css?v=' . $this->asset_ver( 'assets/css/dashboard.css' ) ); ?>">
 	<script>
 		window.AOD_CD = {
 			ajaxUrl: <?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>,
@@ -231,7 +231,7 @@ class AOD_CD_Dashboard {
 		</div>
 	</div>
 
-	<script src="<?php echo esc_url( AOD_CD_URL . 'assets/js/dashboard.js?v=' . AOD_CD_VERSION ); ?>"></script>
+	<script src="<?php echo esc_url( AOD_CD_URL . 'assets/js/dashboard.js?v=' . $this->asset_ver( 'assets/js/dashboard.js' ) ); ?>"></script>
 </body>
 </html>
 		<?php
@@ -342,6 +342,7 @@ class AOD_CD_Dashboard {
 			__( 'Téléphone', 'aod-client-dashboard' ),
 			__( 'Wilaya', 'aod-client-dashboard' ),
 			__( 'Commune', 'aod-client-dashboard' ),
+			__( 'Articles', 'aod-client-dashboard' ),
 			__( 'Prix produit', 'aod-client-dashboard' ),
 			__( 'Prix livraison', 'aod-client-dashboard' ),
 			__( 'Total', 'aod-client-dashboard' ),
@@ -470,12 +471,11 @@ class AOD_CD_Dashboard {
 		echo '<td>' . ( $phone ? '<a href="tel:' . esc_attr( $phone ) . '">' . esc_html( $phone ) . '</a>' : '&mdash;' ) . '</td>';
 		echo '<td>' . esc_html( $wilaya ? $wilaya : '—' ) . '</td>';
 		echo '<td>' . esc_html( $commune ? $commune : '—' ) . '</td>';
+		echo '<td class="aod-cd-articles">' . $this->order_articles_html( $order ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput
 		echo '<td>' . wp_kses_post( wc_price( $products_cost, array( 'currency' => $currency ) ) ) . '</td>';
 		echo '<td>' . wp_kses_post( wc_price( $shipping_cost, array( 'currency' => $currency ) ) ) . '</td>';
 		echo '<td>' . wp_kses_post( $order->get_formatted_order_total() ) . '</td>';
-		echo '<td>' . ( $tracking
-			? '<span class="aod-cd-track">✓ <code>' . esc_html( $tracking ) . '</code></span>'
-			: '<span class="aod-cd-muted">—</span>' ) . '</td>';
+		echo '<td>' . $this->ship_cell_html( $order ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput
 
 		echo '<td><select class="aod-cd-status" data-order="' . esc_attr( $order->get_id() ) . '">';
 		foreach ( $status_options as $key => $label ) {
@@ -491,6 +491,93 @@ class AOD_CD_Dashboard {
 			. ( $note_count ? ' <span class="aod-cd-badge">' . (int) $note_count . '</span>' : '' )
 			. '</button></td>';
 		echo '</tr>';
+	}
+
+	/**
+	 * Version d'un asset pour le cache-busting : date de modif du fichier,
+	 * avec repli sur la version du plugin si le fichier est introuvable.
+	 *
+	 * @param string $rel Chemin relatif au dossier du plugin (ex. 'assets/js/dashboard.js').
+	 * @return string
+	 */
+	protected function asset_ver( $rel ) {
+		$path = AOD_CD_PATH . $rel;
+		$mt   = is_file( $path ) ? filemtime( $path ) : 0;
+		return $mt ? (string) $mt : AOD_CD_VERSION;
+	}
+
+	/**
+	 * Variantes choisies d'une ligne de commande (ex. ['XXL', 'Gris']).
+	 *
+	 * @param WC_Order_Item $item
+	 * @return string[] Valeurs des variantes (sans les libellés de section).
+	 */
+	protected function item_variants( $item ) {
+		$out = array();
+		if ( ! is_callable( array( $item, 'get_formatted_meta_data' ) ) ) {
+			return $out;
+		}
+		foreach ( $item->get_formatted_meta_data() as $m ) {
+			$val = wp_strip_all_tags( $m->display_value );
+			if ( '' !== trim( $val ) ) {
+				$out[] = $val;
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * Colonne « Articles » : produits commandés + variantes + quantité.
+	 *
+	 * @param WC_Order $order
+	 * @return string HTML sûr.
+	 */
+	protected function order_articles_html( $order ) {
+		$items = $order->get_items();
+		if ( empty( $items ) ) {
+			return '<span class="aod-cd-muted">—</span>';
+		}
+		$lines = array();
+		foreach ( $items as $item ) {
+			$txt      = '<strong>' . esc_html( $item->get_name() ) . '</strong>';
+			$variants = $this->item_variants( $item );
+			if ( $variants ) {
+				$txt .= ' <span class="aod-cd-variants">(' . esc_html( implode( ', ', $variants ) ) . ')</span>';
+			}
+			$txt    .= ' <span class="aod-cd-qty">×' . esc_html( $item->get_quantity() ) . '</span>';
+			$lines[] = $txt;
+		}
+		return '<div class="aod-cd-articles-list">' . implode( '<br>', $lines ) . '</div>';
+	}
+
+	/**
+	 * Cellule « Suivi » : icône camion (gris = à envoyer, vert = envoyé, rouge = échec).
+	 *
+	 * Réutilise l'icône du module d'expédition (AOD_Shipping) si disponible.
+	 *
+	 * @param WC_Order $order
+	 * @return string HTML sûr.
+	 */
+	protected function ship_cell_html( $order ) {
+		$tracking = $order->get_meta( '_aod_ship_tracking' );
+
+		if ( class_exists( 'AOD_Shipping' ) ) {
+			$ship   = AOD_Shipping::instance();
+			$status = $ship->ship_status( $order );
+			if ( 'none' === $status ) {
+				return '<span class="aod-cd-muted">—</span>';
+			}
+			$icon  = $ship->status_badge_html( $order, 22, false );
+			$extra = ( 'sent' === $status && $tracking )
+				? ' <code class="aod-cd-trackcode">' . esc_html( $tracking ) . '</code>'
+				: '';
+			return '<span class="aod-cd-ship">' . $icon . $extra . '</span>';
+		}
+
+		// Repli si le module d'expédition n'est pas actif.
+		return $tracking
+			? '<span class="aod-cd-track">✓ <code>' . esc_html( $tracking ) . '</code></span>'
+			: '<span class="aod-cd-muted">—</span>';
 	}
 
 	/**
@@ -2900,7 +2987,14 @@ class AOD_CD_Dashboard {
 		if ( $delivery ) {
 			echo '<li>🚚 ' . esc_html( 'desk' === $delivery ? __( 'Stop-desk (bureau)', 'aod-client-dashboard' ) : __( 'À domicile', 'aod-client-dashboard' ) ) . '</li>';
 		}
-		if ( $tracking ) {
+		if ( class_exists( 'AOD_Shipping' ) ) {
+			$ship  = AOD_Shipping::instance();
+			$badge = $ship->status_badge_html( $order, 22, true );
+			if ( '' !== $badge ) {
+				echo '<li class="aod-cd-ship">' . $badge // phpcs:ignore WordPress.Security.EscapeOutput
+					. ( $tracking ? ' <code>' . esc_html( $tracking ) . '</code>' : '' ) . '</li>';
+			}
+		} elseif ( $tracking ) {
 			echo '<li class="aod-cd-track">✓ ' . esc_html__( 'Suivi', 'aod-client-dashboard' ) . ' : <code>' . esc_html( $tracking ) . '</code></li>';
 		}
 		echo '</ul></div>';
@@ -2914,7 +3008,12 @@ class AOD_CD_Dashboard {
 		echo '</tr></thead><tbody>';
 		foreach ( $order->get_items() as $item ) {
 			echo '<tr>';
-			echo '<td>' . esc_html( $item->get_name() ) . '</td>';
+			echo '<td>' . esc_html( $item->get_name() );
+			$variants = $this->item_variants( $item );
+			if ( $variants ) {
+				echo '<br><span class="aod-cd-variants">' . esc_html( implode( ' · ', $variants ) ) . '</span>';
+			}
+			echo '</td>';
 			echo '<td>' . esc_html( $item->get_quantity() ) . '</td>';
 			echo '<td>' . wp_kses_post( wc_price( $item->get_total(), array( 'currency' => $order->get_currency() ) ) ) . '</td>';
 			echo '</tr>';
