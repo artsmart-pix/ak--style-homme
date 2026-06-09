@@ -131,6 +131,10 @@ class AOD_COD_Form {
 				'required'       => __( 'Veuillez remplir tous les champs obligatoires.', 'aod-cod-form' ),
 				'prev_image'     => __( 'Image précédente', 'aod-cod-form' ),
 				'next_image'     => __( 'Image suivante', 'aod-cod-form' ),
+				'article'        => __( 'Article', 'aod-cod-form' ),
+				'add_item'       => __( 'Ajouter un article', 'aod-cod-form' ),
+				'remove_item'    => __( 'Retirer cet article', 'aod-cod-form' ),
+				'cart_empty'     => __( 'Veuillez ajouter au moins un article.', 'aod-cod-form' ),
 			),
 		) );
 	}
@@ -330,6 +334,63 @@ class AOD_COD_Form {
 	}
 
 	/**
+	 * Sections d'options du configurateur (Taille, Couleur…), en boutons style Shopify.
+	 *
+	 * Ces champs ne sont PAS soumis directement : le JS lit la sélection au clic sur
+	 * « Ajouter », l'ajoute comme ligne au tableau du panier, puis réinitialise le
+	 * configurateur. Les `name` servent uniquement à grouper les radios par section.
+	 * Chaque valeur porte son `data-si` (section), `data-name`, `data-price` et ses
+	 * `data-img*` (échange de la photo de galerie + récap du panier).
+	 *
+	 * @param int   $product_id Produit concerné.
+	 * @param array $options    Sections d'options (voir get_product_options()).
+	 * @return string
+	 */
+	protected function option_sections_html( $product_id, $options ) {
+		ob_start();
+		foreach ( $options as $si => $sec ) :
+			?>
+			<div class="aod-cod__field aod-cod__optsec<?php echo $sec['visual'] ? ' is-visual' : ''; ?>" data-si="<?php echo esc_attr( $si ); ?>" data-label="<?php echo esc_attr( $sec['label'] ); ?>">
+				<label class="aod-cod__optlabel"><?php echo esc_html( $sec['label'] ); ?> <span>*</span></label>
+				<div class="aod-cod__opts">
+					<?php
+					foreach ( $sec['values'] as $vi => $val ) :
+						$oid = 'aod-cod-opt-' . (int) $product_id . '-' . (int) $si . '-' . (int) $vi;
+						$has_hex   = ! empty( $val['hex'] );
+						$is_visual = $sec['visual'] || $has_hex;
+						// Pastille couleur sans photo : rendu compact (point + nom).
+						$is_color  = $has_hex && empty( $val['img'] );
+						$opt_class = 'aod-cod__opt';
+						if ( $is_visual ) {
+							$opt_class .= ' aod-cod__opt--visual';
+						}
+						if ( $is_color ) {
+							$opt_class .= ' aod-cod__opt--color';
+						}
+						?>
+						<label class="<?php echo esc_attr( $opt_class ); ?>" for="<?php echo esc_attr( $oid ); ?>">
+							<input type="radio" id="<?php echo esc_attr( $oid ); ?>" name="aod-cfg-opt-<?php echo (int) $product_id . '-' . (int) $si; ?>" value="<?php echo esc_attr( $val['name'] ); ?>" data-si="<?php echo esc_attr( $si ); ?>" data-name="<?php echo esc_attr( $val['name'] ); ?>" data-price="<?php echo esc_attr( $val['price'] ); ?>" data-img="<?php echo esc_url( $val['img'] ); ?>" data-img-id="<?php echo esc_attr( $val['img_id'] ); ?>" data-img-full="<?php echo esc_url( $val['img_full'] ); ?>" data-img-w="<?php echo esc_attr( $val['img_w'] ); ?>" data-img-h="<?php echo esc_attr( $val['img_h'] ); ?>" data-srcset="<?php echo esc_attr( $val['srcset'] ); ?>">
+							<span class="aod-cod__opt-card">
+								<?php if ( $is_visual && $val['img'] ) : ?>
+									<span class="aod-cod__opt-thumb" style="background-image:url('<?php echo esc_url( $val['img'] ); ?>')"></span>
+								<?php elseif ( $has_hex ) : ?>
+									<span class="aod-cod__opt-thumb aod-cod__opt-thumb--color" style="background-color:<?php echo esc_attr( $val['hex'] ); ?>"></span>
+								<?php endif; ?>
+								<span class="aod-cod__opt-name"><?php echo esc_html( $val['name'] ); ?></span>
+								<?php if ( $val['price'] > 0 ) : ?>
+									<span class="aod-cod__opt-plus">+<?php echo wp_strip_all_tags( wc_price( $val['price'] ) ); ?></span>
+								<?php endif; ?>
+							</span>
+						</label>
+					<?php endforeach; ?>
+				</div>
+			</div>
+			<?php
+		endforeach;
+		return ob_get_clean();
+	}
+
+	/**
 	 * Génère le HTML du formulaire.
 	 *
 	 * @param int $product_id
@@ -415,45 +476,54 @@ class AOD_COD_Form {
 				</div>
 			<?php endif; ?>
 			<form class="aod-cod__form" novalidate>
-				<?php foreach ( $options as $si => $sec ) : ?>
-					<div class="aod-cod__field aod-cod__optsec<?php echo $sec['visual'] ? ' is-visual' : ''; ?>" data-si="<?php echo esc_attr( $si ); ?>">
-						<label class="aod-cod__optlabel"><?php echo esc_html( $sec['label'] ); ?> <span>*</span></label>
-						<div class="aod-cod__opts">
-							<?php
-							foreach ( $sec['values'] as $vi => $val ) :
-								$oid = 'aod-cod-opt-' . (int) $product_id . '-' . (int) $si . '-' . (int) $vi;
-								?>
-								<?php
-								$has_hex   = ! empty( $val['hex'] );
-								$is_visual = $sec['visual'] || $has_hex;
-								// Pastille couleur sans photo : rendu compact (point + nom).
-								$is_color  = $has_hex && empty( $val['img'] );
-								$opt_class = 'aod-cod__opt';
-								if ( $is_visual ) {
-									$opt_class .= ' aod-cod__opt--visual';
-								}
-								if ( $is_color ) {
-									$opt_class .= ' aod-cod__opt--color';
-								}
-								?>
-								<label class="<?php echo esc_attr( $opt_class ); ?>" for="<?php echo esc_attr( $oid ); ?>">
-									<input type="radio" id="<?php echo esc_attr( $oid ); ?>" name="opt[<?php echo esc_attr( $si ); ?>]" value="<?php echo esc_attr( $val['name'] ); ?>" data-price="<?php echo esc_attr( $val['price'] ); ?>" data-img="<?php echo esc_url( $val['img'] ); ?>" data-img-id="<?php echo esc_attr( $val['img_id'] ); ?>" data-img-full="<?php echo esc_url( $val['img_full'] ); ?>" data-img-w="<?php echo esc_attr( $val['img_w'] ); ?>" data-img-h="<?php echo esc_attr( $val['img_h'] ); ?>" data-srcset="<?php echo esc_attr( $val['srcset'] ); ?>">
-									<span class="aod-cod__opt-card">
-										<?php if ( $is_visual && $val['img'] ) : ?>
-											<span class="aod-cod__opt-thumb" style="background-image:url('<?php echo esc_url( $val['img'] ); ?>')"></span>
-										<?php elseif ( $has_hex ) : ?>
-											<span class="aod-cod__opt-thumb aod-cod__opt-thumb--color" style="background-color:<?php echo esc_attr( $val['hex'] ); ?>"></span>
-										<?php endif; ?>
-										<span class="aod-cod__opt-name"><?php echo esc_html( $val['name'] ); ?></span>
-										<?php if ( $val['price'] > 0 ) : ?>
-											<span class="aod-cod__opt-plus">+<?php echo wp_strip_all_tags( wc_price( $val['price'] ) ); ?></span>
-										<?php endif; ?>
-									</span>
-								</label>
-							<?php endforeach; ?>
+				<?php if ( $has_options ) : ?>
+					<?php // Configurateur : on choisit les variantes + la quantité, puis « Ajouter ». ?>
+					<div class="aod-cod__config">
+						<div class="aod-cod__config-head"><?php esc_html_e( 'Configurez votre article', 'aod-cod-form' ); ?></div>
+						<?php echo $this->option_sections_html( $product_id, $options ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						<div class="aod-cod__field aod-cod__qty">
+							<label for="aod-cod-cfg-qty"><?php esc_html_e( 'Quantité', 'aod-cod-form' ); ?></label>
+							<div class="aod-cod__stepper">
+								<button type="button" class="aod-cod__step aod-cod__step--minus" data-step="-1" aria-label="<?php esc_attr_e( 'Diminuer la quantité', 'aod-cod-form' ); ?>">&minus;</button>
+								<input type="number" id="aod-cod-cfg-qty" class="aod-cod__cfg-qty" value="1" min="1" step="1" inputmode="numeric">
+								<button type="button" class="aod-cod__step aod-cod__step--plus" data-step="1" aria-label="<?php esc_attr_e( 'Augmenter la quantité', 'aod-cod-form' ); ?>">+</button>
+							</div>
+						</div>
+						<button type="button" class="aod-cod__additem">+ <?php esc_html_e( 'Ajouter cet article', 'aod-cod-form' ); ?></button>
+						<p class="aod-cod__config-msg" role="alert"></p>
+					</div>
+					<?php // Tableau des articles ajoutés (rempli côté JS). ?>
+					<table class="aod-cod__cart" hidden>
+						<tbody class="aod-cod__cart-body"></tbody>
+					</table>
+					<template class="aod-cod__row-tpl"><tr class="aod-cod__cart-row"><td class="aod-cod__cart-variant"></td><td class="aod-cod__cart-qty"></td><td class="aod-cod__cart-price"></td><td class="aod-cod__cart-act"><button type="button" class="aod-cod__rowremove" aria-label="<?php esc_attr_e( 'Retirer cet article', 'aod-cod-form' ); ?>">&times;</button></td></tr></template>
+				<?php else : ?>
+					<?php // Produit sans variantes : simple quantité (une seule ligne). ?>
+					<div class="aod-cod__field aod-cod__qty">
+						<label for="aod-cod-qty-0"><?php esc_html_e( 'Quantité', 'aod-cod-form' ); ?></label>
+						<div class="aod-cod__stepper">
+							<button type="button" class="aod-cod__step aod-cod__step--minus" data-step="-1" aria-label="<?php esc_attr_e( 'Diminuer la quantité', 'aod-cod-form' ); ?>">&minus;</button>
+							<input type="number" id="aod-cod-qty-0" name="items[0][qty]" value="1" min="1" step="1" inputmode="numeric">
+							<button type="button" class="aod-cod__step aod-cod__step--plus" data-step="1" aria-label="<?php esc_attr_e( 'Augmenter la quantité', 'aod-cod-form' ); ?>">+</button>
 						</div>
 					</div>
-				<?php endforeach; ?>
+				<?php endif; ?>
+				<?php if ( $tiers ) : ?>
+					<ul class="aod-cod__tiers">
+						<?php foreach ( $tiers as $t ) : ?>
+							<li data-min="<?php echo esc_attr( $t['min'] ); ?>">
+								<?php
+								/* translators: 1: quantité, 2: prix total du lot */
+								printf(
+									esc_html__( '%1$d pièces : %2$s', 'aod-cod-form' ),
+									(int) $t['min'],
+									wp_strip_all_tags( wc_price( $t['price'] * $t['min'] ) )
+								);
+								?>
+							</li>
+						<?php endforeach; ?>
+					</ul>
+				<?php endif; ?>
 				<div class="aod-cod__field aod-cod__float">
 					<input type="text" id="aod-cod-name" name="name" autocomplete="name" placeholder=" " required>
 					<label for="aod-cod-name"><?php esc_html_e( 'Nom complet', 'aod-cod-form' ); ?> <span>*</span></label>
@@ -511,30 +581,6 @@ class AOD_COD_Form {
 					<input type="text" id="aod-cod-address" name="address" autocomplete="street-address" placeholder=" ">
 					<label for="aod-cod-address"><?php esc_html_e( 'Adresse', 'aod-cod-form' ); ?></label>
 				</div>
-				<div class="aod-cod__field aod-cod__qty">
-					<label for="aod-cod-qty"><?php esc_html_e( 'Quantité', 'aod-cod-form' ); ?></label>
-					<div class="aod-cod__stepper">
-						<button type="button" class="aod-cod__step aod-cod__step--minus" data-step="-1" aria-label="<?php esc_attr_e( 'Diminuer la quantité', 'aod-cod-form' ); ?>">&minus;</button>
-						<input type="number" id="aod-cod-qty" name="qty" value="1" min="1" step="1" inputmode="numeric">
-						<button type="button" class="aod-cod__step aod-cod__step--plus" data-step="1" aria-label="<?php esc_attr_e( 'Augmenter la quantité', 'aod-cod-form' ); ?>">+</button>
-					</div>
-					<?php if ( $tiers ) : ?>
-						<ul class="aod-cod__tiers">
-							<?php foreach ( $tiers as $t ) : ?>
-								<li data-min="<?php echo esc_attr( $t['min'] ); ?>">
-									<?php
-									/* translators: 1: quantité, 2: prix total du lot */
-									printf(
-										esc_html__( '%1$d pièces : %2$s', 'aod-cod-form' ),
-										(int) $t['min'],
-										wp_strip_all_tags( wc_price( $t['price'] * $t['min'] ) )
-									);
-									?>
-								</li>
-							<?php endforeach; ?>
-						</ul>
-					<?php endif; ?>
-				</div>
 
 				<div class="aod-cod__summary">
 					<div><span><?php esc_html_e( 'Sous-total', 'aod-cod-form' ); ?></span> <strong class="aod-cod__subtotal"></strong></div>
@@ -569,9 +615,16 @@ class AOD_COD_Form {
 		$commune    = isset( $_POST['commune'] ) ? sanitize_text_field( wp_unslash( $_POST['commune'] ) ) : '';
 		$address    = isset( $_POST['address'] ) ? sanitize_text_field( wp_unslash( $_POST['address'] ) ) : '';
 		$delivery   = ( isset( $_POST['delivery'] ) && 'desk' === $_POST['delivery'] ) ? 'desk' : 'home';
-		$qty        = isset( $_POST['qty'] ) ? max( 1, absint( $_POST['qty'] ) ) : 1;
-		// Sélection des options : une valeur par section, ex. opt[0]=L&opt[1]=Rouge.
-		$opt_sel    = ( isset( $_POST['opt'] ) && is_array( $_POST['opt'] ) ) ? wp_unslash( $_POST['opt'] ) : array();
+		// Articles : chaque entrée = une combinaison de variantes + sa quantité,
+		// ex. items[0][opt][0]=L, items[0][opt][1]=Rouge, items[0][qty]=2.
+		$items_raw  = ( isset( $_POST['items'] ) && is_array( $_POST['items'] ) ) ? wp_unslash( $_POST['items'] ) : array();
+		// Rétro-compat : ancien format mono-article (opt[]=… + qty).
+		if ( ! $items_raw && ( isset( $_POST['opt'] ) || isset( $_POST['qty'] ) ) ) {
+			$items_raw = array( array(
+				'opt' => ( isset( $_POST['opt'] ) && is_array( $_POST['opt'] ) ) ? wp_unslash( $_POST['opt'] ) : array(),
+				'qty' => isset( $_POST['qty'] ) ? absint( $_POST['qty'] ) : 1,
+			) );
+		}
 
 		// Normalise le téléphone DZ : 9 ou 10 chiffres commençant par 0.
 		$phone = preg_replace( '/\D+/', '', $phone_raw );
@@ -595,31 +648,53 @@ class AOD_COD_Form {
 			$errors[] = __( 'Produit indisponible.', 'aod-cod-form' );
 		}
 
-		// Sélection des options (Taille=L, Couleur=Rouge…) : une valeur par section.
-		// Une seule ligne de commande (produit + quantité), suppléments cumulés au prix.
-		$option_meta = array();   // label => valeur, visible sur la commande.
-		$supplement  = 0.0;       // somme des suppléments de prix des options choisies.
-		$lines       = array();
+		// Chaque article devient une ligne de commande WooCommerce distincte
+		// (visible dans le tableau ET le détail de la commande), avec son propre
+		// jeu de variantes (Taille=L, Couleur=Rouge…) et sa quantité. Le client peut
+		// ainsi commander, par ex., 2× « L Rouge » + 1× « M Bleu » en une seule fois.
+		$lines     = array();   // [ 'qty', 'option_meta', 'supplement' ] par article.
+		$total_qty = 0;         // quantité cumulée (sert au calcul des paliers).
 		if ( $product ) {
 			$sections = $this->get_product_options( $product );
-			foreach ( $sections as $si => $sec ) {
-				$chosen = isset( $opt_sel[ $si ] ) ? sanitize_text_field( (string) $opt_sel[ $si ] ) : '';
-				$match  = null;
-				foreach ( $sec['values'] as $val ) {
-					if ( $val['name'] === $chosen ) {
-						$match = $val;
-						break;
-					}
-				}
-				if ( null === $match ) {
-					/* translators: %s : nom de la section (Taille, Couleur…) */
-					$errors[] = sprintf( __( 'Veuillez choisir : %s.', 'aod-cod-form' ), $sec['label'] );
+			$line_no  = 0;
+			foreach ( $items_raw as $item ) {
+				if ( ! is_array( $item ) ) {
 					continue;
 				}
-				$option_meta[ $sec['label'] ] = $match['name'];
-				$supplement                  += (float) $match['price'];
+				$line_no++;
+				$line_qty = isset( $item['qty'] ) ? max( 1, absint( $item['qty'] ) ) : 1;
+				$opt_sel  = ( isset( $item['opt'] ) && is_array( $item['opt'] ) ) ? $item['opt'] : array();
+
+				$option_meta = array();   // label => valeur, visible sur la commande.
+				$supplement  = 0.0;       // somme des suppléments des options de CETTE ligne.
+				$line_ok     = true;
+				foreach ( $sections as $si => $sec ) {
+					$chosen = isset( $opt_sel[ $si ] ) ? sanitize_text_field( (string) $opt_sel[ $si ] ) : '';
+					$match  = null;
+					foreach ( $sec['values'] as $val ) {
+						if ( $val['name'] === $chosen ) {
+							$match = $val;
+							break;
+						}
+					}
+					if ( null === $match ) {
+						/* translators: 1: numéro de l'article, 2: nom de la section (Taille, Couleur…) */
+						$errors[] = sprintf( __( 'Article %1$d : veuillez choisir « %2$s ».', 'aod-cod-form' ), $line_no, $sec['label'] );
+						$line_ok  = false;
+						continue;
+					}
+					$option_meta[ $sec['label'] ] = $match['name'];
+					$supplement                  += (float) $match['price'];
+				}
+				if ( ! $line_ok ) {
+					continue;
+				}
+				$lines[]    = array( 'qty' => $line_qty, 'option_meta' => $option_meta, 'supplement' => $supplement );
+				$total_qty += $line_qty;
 			}
-			$lines[] = array( 'product' => $product, 'qty' => $qty );
+			if ( ! $lines && ! $errors ) {
+				$errors[] = __( 'Veuillez ajouter au moins un article.', 'aod-cod-form' );
+			}
 		}
 
 		if ( $errors ) {
@@ -630,18 +705,20 @@ class AOD_COD_Form {
 		try {
 			$order    = wc_create_order();
 			$subtotal = 0;
+			// Palier de prix appliqué sur la quantité TOTALE (« 2 pièces : X »), même si
+			// les pièces sont des variantes différentes ; les suppléments restent par ligne.
+			$tier_unit = $this->tier_unit_price( $product, $total_qty );
 			foreach ( $lines as $line ) {
-				// Prix unitaire : palier quantité (produit simple) + suppléments des options.
-				$unit       = $this->tier_unit_price( $line['product'], $line['qty'] ) + $supplement;
+				$unit       = $tier_unit + $line['supplement'];
 				$line_total = $unit * $line['qty'];
-				$item_id    = $order->add_product( $line['product'], $line['qty'] );
+				$item_id    = $order->add_product( $product, $line['qty'] );
 				if ( $item_id ) {
 					$item = $order->get_item( $item_id );
 					if ( $item ) {
 						$item->set_subtotal( $line_total );
 						$item->set_total( $line_total );
 						// Choix de variantes visibles sur la commande (Taille : L, Couleur : Rouge…).
-						foreach ( $option_meta as $olabel => $oval ) {
+						foreach ( $line['option_meta'] as $olabel => $oval ) {
 							$item->add_meta_data( $olabel, $oval, true );
 						}
 						$item->save();

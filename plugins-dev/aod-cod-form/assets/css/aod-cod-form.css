@@ -377,6 +377,45 @@
 .aod-cod__opt--color .aod-cod__opt-card{flex-direction:row;min-width:0;padding:8px 12px;gap:8px}
 .aod-cod__opt--color .aod-cod__opt-thumb{width:20px;height:20px;border-radius:50%}
 
+/* ---- Configurateur d'article (variantes + quantité, puis « Ajouter ») ---- */
+.aod-cod__config{
+	border:1px solid var(--sh-line);border-radius:var(--sh-radius);
+	background:var(--sh-bg-sub);padding:16px;margin:0 0 16px;
+}
+.aod-cod__config-head{font-size:13px;font-weight:600;color:var(--sh-text);margin:0 0 12px}
+.aod-cod__config .aod-cod__qty{margin-bottom:0}
+/* Bouton « Ajouter cet article » : sobre, secondaire (le CTA reste « Confirmer »). */
+.aod-cod__additem{
+	display:inline-flex;align-items:center;gap:4px;margin-top:14px;
+	padding:9px 16px;border:1px solid var(--sh-line-strong);border-radius:var(--sh-radius-sm);
+	background:#fff;color:var(--sh-text);font-size:14px;font-weight:600;cursor:pointer;
+	transition:background .12s,border-color .12s;-webkit-appearance:none;appearance:none;
+}
+.aod-cod__additem:hover{background:var(--sh-bg-sub)}
+.aod-cod__additem:focus-visible{outline:2px solid var(--sh-accent);outline-offset:2px}
+.aod-cod__config-msg{margin:8px 0 0;font-size:12.5px;color:var(--sh-error);min-height:0}
+.aod-cod__config-msg:empty{display:none}
+
+/* ---- Tableau des articles ajoutés (panier) ---- */
+.aod-cod__cart{width:100%;border-collapse:collapse;margin:0 0 16px}
+.aod-cod__cart-row{border-bottom:1px solid var(--sh-line)}
+.aod-cod__cart-row:last-child{border-bottom:0}
+.aod-cod__cart td{padding:10px 8px;font-size:14px;color:var(--sh-text);vertical-align:middle}
+.aod-cod__cart-variant{font-weight:500}
+.aod-cod__cart-qty{white-space:nowrap;color:var(--sh-text-2);text-align:center;width:1%}
+.aod-cod__cart-price{white-space:nowrap;font-weight:600;text-align:right;width:1%}
+.aod-cod__cart-act{width:1%;text-align:right}
+.aod-cod__rowremove{
+	display:inline-flex;align-items:center;justify-content:center;
+	width:28px;height:28px;padding:0;border:1px solid var(--sh-line);border-radius:50%;
+	background:#fff;color:var(--sh-text-2);font-size:18px;line-height:1;cursor:pointer;
+	transition:background .12s,color .12s,border-color .12s;-webkit-appearance:none;appearance:none;
+}
+.aod-cod__rowremove:hover{background:#fde8e4;border-color:var(--sh-error);color:var(--sh-error)}
+.aod-cod__rowremove:focus-visible{outline:2px solid var(--sh-accent);outline-offset:2px}
+.rtl .aod-cod__cart-price{text-align:left}
+.rtl .aod-cod__cart-act{text-align:left}
+
 /* ---- Flèches de navigation ‹ › superposées sur la galerie produit ---- */
 .woocommerce-product-gallery .aod-gallery-nav{
 	position:absolute;top:50%;transform:translateY(-50%);z-index:99;
