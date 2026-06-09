@@ -295,7 +295,91 @@ class AOD_Shipping {
 	}
 
 	/**
-	 * Contenu de la cellule « Livraison » : suivi, échec ou à envoyer.
+	 * État de suivi d'une commande pour l'icône camion.
+	 *
+	 * @param WC_Order $order
+	 * @return string 'sent' | 'failed' | 'pending' | 'none'
+	 */
+	public function ship_status( $order ) {
+		if ( ! $order instanceof WC_Order ) {
+			return 'none';
+		}
+		if ( $order->get_meta( AOD_Carrier::META_TRACKING ) ) {
+			return 'sent';
+		}
+		if ( $order->get_meta( AOD_Carrier::META_ERROR ) ) {
+			return 'failed';
+		}
+		// Commandes annulées / remboursées / corbeille : pas de livraison à prévoir.
+		if ( in_array( $order->get_status(), array( 'cancelled', 'refunded', 'trash', 'failed' ), true ) ) {
+			return 'none';
+		}
+		// Toute autre commande est « à envoyer » → camion gris (jamais de colonne vide).
+		return 'pending';
+	}
+
+	/**
+	 * Couleur + libellé associés à un état de suivi.
+	 *
+	 * @param string $status
+	 * @return array [ 'color' => '#hex', 'label' => '...' ]
+	 */
+	protected function ship_status_meta( $status ) {
+		$map = array(
+			'sent'    => array( 'color' => '#16a34a', 'label' => __( 'Envoyée au livreur', 'aod-cod-form' ) ),
+			'failed'  => array( 'color' => '#dc2626', 'label' => __( 'Échec de l’envoi', 'aod-cod-form' ) ),
+			'pending' => array( 'color' => '#9ca3af', 'label' => __( 'Pas encore envoyée', 'aod-cod-form' ) ),
+		);
+		return isset( $map[ $status ] ) ? $map[ $status ] : array( 'color' => '#9ca3af', 'label' => '' );
+	}
+
+	/**
+	 * Icône camion de livraison (SVG inline) colorée selon l'état.
+	 *
+	 * @param string $color  Couleur hexadécimale.
+	 * @param string $title  Texte d'infobulle.
+	 * @param int    $size   Taille en pixels.
+	 * @return string HTML sûr (déjà échappé).
+	 */
+	public function truck_icon( $color, $title = '', $size = 26 ) {
+		$c = esc_attr( $color );
+		$s = (int) $size;
+		$t = $title ? ' title="' . esc_attr( $title ) . '"' : '';
+		return '<span class="aod-truck" style="display:inline-flex;line-height:0;vertical-align:middle"' . $t . '>'
+			. '<svg width="' . $s . '" height="' . $s . '" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'
+			. '<path fill="' . $c . '" d="M1 5.5h12.2c.6 0 1 .4 1 1V14H2c-.6 0-1-.4-1-1V5.5z"/>'
+			. '<path fill="' . $c . '" d="M15.2 8h3.1l2.7 3v3h-5.8V8z"/>'
+			. '<circle cx="6" cy="16.5" r="2.3" fill="#fff" stroke="' . $c . '" stroke-width="1.6"/>'
+			. '<circle cx="17.4" cy="16.5" r="2.3" fill="#fff" stroke="' . $c . '" stroke-width="1.6"/>'
+			. '</svg></span>';
+	}
+
+	/**
+	 * Badge de suivi réutilisable (icône camion + libellé optionnel) pour une commande.
+	 *
+	 * Exposé pour que d'autres modules (tableau de bord client, etc.) affichent
+	 * exactement la même icône avec la même logique d'état.
+	 *
+	 * @param WC_Order $order
+	 * @param int      $size       Taille de l'icône en pixels.
+	 * @param bool     $with_label Ajouter le libellé textuel à côté de l'icône.
+	 * @return string HTML sûr (déjà échappé), ou '' si aucun suivi pertinent.
+	 */
+	public function status_badge_html( $order, $size = 22, $with_label = true ) {
+		$status = $this->ship_status( $order );
+		if ( 'none' === $status ) {
+			return '';
+		}
+		$m    = $this->ship_status_meta( $status );
+		$html = $this->truck_icon( $m['color'], $m['label'], $size );
+		if ( $with_label ) {
+			$html .= '<span style="color:' . esc_attr( $m['color'] ) . ';font-weight:600;margin-inline-start:6px">' . esc_html( $m['label'] ) . '</span>';
+		}
+		return $html;
+	}
+
+	/**
+	 * Contenu de la cellule « Livraison » : icône camion (gris/vert/rouge) + détails.
 	 *
 	 * @param WC_Order|false $order
 	 */
@@ -305,34 +389,43 @@ class AOD_Shipping {
 			return;
 		}
 
-		$tracking = $order->get_meta( AOD_Carrier::META_TRACKING );
-		if ( $tracking ) {
-			$cid     = $order->get_meta( AOD_Carrier::META_CARRIER );
-			$carrier = $this->carrier( $cid );
-			$name    = $carrier ? $carrier->label() : $cid;
-			$pdf     = $order->get_meta( AOD_Carrier::META_LABEL );
+		$status = $this->ship_status( $order );
+		if ( 'none' === $status ) {
+			echo '&mdash;';
+			return;
+		}
 
-			echo '<span style="color:#1a7f37;font-weight:600">&#10003; ' . esc_html( $name ) . '</span><br>';
-			echo '<code style="font-size:11px">' . esc_html( $tracking ) . '</code>';
+		$meta  = $this->ship_status_meta( $status );
+		$color = $meta['color'];
+
+		if ( 'sent' === $status ) {
+			$cid      = $order->get_meta( AOD_Carrier::META_CARRIER );
+			$carrier  = $this->carrier( $cid );
+			$name     = $carrier ? $carrier->label() : $cid;
+			$tracking = $order->get_meta( AOD_Carrier::META_TRACKING );
+			$pdf      = $order->get_meta( AOD_Carrier::META_LABEL );
+
+			echo '<span style="display:inline-flex;align-items:center;gap:6px">';
+			echo $this->truck_icon( $color, $name . ' — ' . $meta['label'] ); // phpcs:ignore WordPress.Security.EscapeOutput
+			echo '<span style="color:' . esc_attr( $color ) . ';font-weight:600">' . esc_html( $name ) . '</span></span>';
+			echo '<br><code style="font-size:11px">' . esc_html( $tracking ) . '</code>';
 			if ( $pdf ) {
 				echo '<br><a href="' . esc_url( $pdf ) . '" target="_blank" rel="noopener">' . esc_html__( 'Étiquette', 'aod-cod-form' ) . '</a>';
 			}
 			return;
 		}
 
-		$error = $order->get_meta( AOD_Carrier::META_ERROR );
-		if ( $error ) {
-			echo '<span style="color:#b32d2e;font-weight:600" title="' . esc_attr( $error ) . '">&#10007; ' . esc_html__( 'Échec', 'aod-cod-form' ) . '</span>';
-			return;
+		$tooltip = $meta['label'];
+		if ( 'failed' === $status ) {
+			$err = $order->get_meta( AOD_Carrier::META_ERROR );
+			if ( $err ) {
+				$tooltip = $meta['label'] . ' : ' . $err;
+			}
 		}
 
-		// Commande COD du formulaire pas encore expédiée.
-		if ( $order->get_meta( '_aod_source' ) || $order->get_meta( '_aod_delivery_type' ) ) {
-			echo '<span style="color:#b45309" title="' . esc_attr__( 'Pas encore envoyé au livreur', 'aod-cod-form' ) . '">&#9203; ' . esc_html__( 'À envoyer', 'aod-cod-form' ) . '</span>';
-			return;
-		}
-
-		echo '&mdash;';
+		echo '<span style="display:inline-flex;align-items:center;gap:6px">';
+		echo $this->truck_icon( $color, $tooltip ); // phpcs:ignore WordPress.Security.EscapeOutput
+		echo '<span style="color:' . esc_attr( $color ) . ';font-weight:600">' . esc_html( $meta['label'] ) . '</span></span>';
 	}
 
 	/* ============================================================
@@ -454,6 +547,202 @@ class AOD_Shipping {
 			'side',
 			'high'
 		);
+
+		// Récapitulatif complet des informations client / livraison.
+		add_meta_box(
+			'aod_order_info',
+			__( 'Détails de la commande (COD)', 'aod-cod-form' ),
+			array( $this, 'render_info_metabox' ),
+			array( 'shop_order', 'woocommerce_page_wc-orders' ),
+			'normal',
+			'high'
+		);
+	}
+
+	/**
+	 * Petite ligne « libellé : valeur » du récapitulatif.
+	 *
+	 * @param string $label
+	 * @param string $value HTML déjà échappé.
+	 * @return string
+	 */
+	protected function info_row( $label, $value ) {
+		if ( '' === (string) $value ) {
+			return '';
+		}
+		return '<tr><th style="text-align:left;padding:6px 12px 6px 0;vertical-align:top;color:#555;font-weight:600;white-space:nowrap">'
+			. esc_html( $label ) . '</th><td style="padding:6px 0;vertical-align:top">' . $value . '</td></tr>';
+	}
+
+	/**
+	 * Metabox « Détails de la commande » : toutes les infos saisies par le client,
+	 * la livraison, le suivi (camion) et les articles avec leurs variantes.
+	 *
+	 * @param WP_Post|WC_Order $post_or_order
+	 */
+	public function render_info_metabox( $post_or_order ) {
+		$order = ( $post_or_order instanceof WP_Post ) ? wc_get_order( $post_or_order->ID ) : $post_or_order;
+		if ( ! $order instanceof WC_Order ) {
+			return;
+		}
+
+		$name       = trim( $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() );
+		$phone      = $order->get_billing_phone();
+		$address    = $order->get_billing_address_1();
+		$commune    = $order->get_meta( '_aod_commune' );
+		$commune_ar = $order->get_meta( '_aod_commune_ar' );
+		$w_code     = $order->get_meta( '_aod_wilaya_code' );
+		$w_name     = $order->get_meta( '_aod_wilaya_name' );
+		$w_ar       = $order->get_meta( '_aod_wilaya_name_ar' );
+		$delivery   = $order->get_meta( '_aod_delivery_type' );
+		$is_aod     = $order->get_meta( '_aod_source' ) || $delivery;
+
+		echo '<div class="aod-oinfo" style="font-size:13px">';
+
+		/* ---- Client ---- */
+		$rows = '';
+		if ( '' !== $name ) {
+			$rows .= $this->info_row( __( 'Nom du client', 'aod-cod-form' ), esc_html( $name ) );
+		}
+		if ( '' !== $phone ) {
+			$tel   = preg_replace( '/[^0-9+]/', '', $phone );
+			$value = '<a href="tel:' . esc_attr( $tel ) . '" style="font-weight:600;font-size:15px;text-decoration:none">' . esc_html( $phone ) . '</a>'
+				. ' <button type="button" class="button button-small aod-oinfo-copy" data-copy="' . esc_attr( $phone ) . '" style="margin-inline-start:6px">' . esc_html__( 'Copier', 'aod-cod-form' ) . '</button>';
+			$rows .= $this->info_row( __( 'Téléphone', 'aod-cod-form' ), $value );
+		}
+		if ( $rows ) {
+			echo '<h4 style="margin:0 0 4px">' . esc_html__( 'Client', 'aod-cod-form' ) . '</h4>';
+			echo '<table style="width:100%;border-collapse:collapse;margin-bottom:14px">' . $rows . '</table>'; // phpcs:ignore WordPress.Security.EscapeOutput
+		}
+
+		/* ---- Livraison ---- */
+		$rows = '';
+		if ( '' !== (string) $delivery ) {
+			$dlabel = ( 'desk' === $delivery ) ? __( 'Stop-desk (point relais)', 'aod-cod-form' ) : __( 'Domicile', 'aod-cod-form' );
+			$dcolor = ( 'desk' === $delivery ) ? '#7c3aed' : '#2563eb';
+			$badge  = '<span style="display:inline-block;padding:2px 10px;border-radius:999px;background:' . esc_attr( $dcolor ) . ';color:#fff;font-weight:600;font-size:12px">' . esc_html( $dlabel ) . '</span>';
+			$rows  .= $this->info_row( __( 'Type de livraison', 'aod-cod-form' ), $badge );
+		}
+		if ( '' !== (string) $w_name || '' !== (string) $w_code ) {
+			$wv = esc_html( trim( sprintf( '%s %s', $w_code ? sprintf( '%02d -', (int) $w_code ) : '', $w_name ) ) );
+			if ( '' !== (string) $w_ar ) {
+				$wv .= ' <span dir="rtl" style="color:#666">(' . esc_html( $w_ar ) . ')</span>';
+			}
+			$rows .= $this->info_row( __( 'Wilaya', 'aod-cod-form' ), $wv );
+		}
+		if ( '' !== (string) $commune ) {
+			$cv = esc_html( $commune );
+			if ( '' !== (string) $commune_ar ) {
+				$cv .= ' <span dir="rtl" style="color:#666">(' . esc_html( $commune_ar ) . ')</span>';
+			}
+			$rows .= $this->info_row( __( 'Commune', 'aod-cod-form' ), $cv );
+		}
+		if ( '' !== (string) $address ) {
+			$rows .= $this->info_row( __( 'Adresse', 'aod-cod-form' ), esc_html( $address ) );
+		}
+		$stopdesk = $order->get_meta( AOD_Carrier::META_STOPDESK );
+		if ( '' !== (string) $stopdesk ) {
+			$rows .= $this->info_row( __( 'Centre / station', 'aod-cod-form' ), esc_html( $stopdesk ) );
+		}
+		if ( $rows ) {
+			echo '<h4 style="margin:0 0 4px">' . esc_html__( 'Livraison', 'aod-cod-form' ) . '</h4>';
+			echo '<table style="width:100%;border-collapse:collapse;margin-bottom:14px">' . $rows . '</table>'; // phpcs:ignore WordPress.Security.EscapeOutput
+		}
+
+		/* ---- Suivi (camion) ---- */
+		$status = $this->ship_status( $order );
+		if ( 'none' !== $status ) {
+			$sm  = $this->ship_status_meta( $status );
+			echo '<h4 style="margin:0 0 4px">' . esc_html__( 'Suivi', 'aod-cod-form' ) . '</h4>';
+			echo '<p style="display:flex;align-items:center;gap:8px;margin:0 0 14px">';
+			echo $this->truck_icon( $sm['color'], $sm['label'], 30 ); // phpcs:ignore WordPress.Security.EscapeOutput
+			echo '<span style="color:' . esc_attr( $sm['color'] ) . ';font-weight:600">' . esc_html( $sm['label'] ) . '</span>';
+			if ( 'sent' === $status ) {
+				$cid     = $order->get_meta( AOD_Carrier::META_CARRIER );
+				$carrier = $this->carrier( $cid );
+				$cname   = $carrier ? $carrier->label() : $cid;
+				$track   = $order->get_meta( AOD_Carrier::META_TRACKING );
+				echo '<span style="color:#555"> — ' . esc_html( $cname ) . ' · <code>' . esc_html( $track ) . '</code></span>';
+				$pdf = $order->get_meta( AOD_Carrier::META_LABEL );
+				if ( $pdf ) {
+					echo ' <a href="' . esc_url( $pdf ) . '" target="_blank" rel="noopener" class="button button-small">' . esc_html__( 'Étiquette', 'aod-cod-form' ) . '</a>';
+				}
+			} elseif ( 'failed' === $status ) {
+				$err = $order->get_meta( AOD_Carrier::META_ERROR );
+				if ( $err ) {
+					echo '<span style="color:#b32d2e"> — ' . esc_html( $err ) . '</span>';
+				}
+			}
+			echo '</p>';
+		}
+
+		/* ---- Articles ---- */
+		$items = $order->get_items();
+		if ( ! empty( $items ) ) {
+			echo '<h4 style="margin:0 0 4px">' . esc_html__( 'Articles commandés', 'aod-cod-form' ) . '</h4>';
+			echo '<table style="width:100%;border-collapse:collapse" cellspacing="0">';
+			echo '<thead><tr style="text-align:left;border-bottom:1px solid #e2e4e7">'
+				. '<th style="padding:6px 8px 6px 0">' . esc_html__( 'Produit', 'aod-cod-form' ) . '</th>'
+				. '<th style="padding:6px 8px;text-align:center">' . esc_html__( 'Qté', 'aod-cod-form' ) . '</th>'
+				. '<th style="padding:6px 0;text-align:right">' . esc_html__( 'Total', 'aod-cod-form' ) . '</th></tr></thead><tbody>';
+			foreach ( $items as $item ) {
+				$variants = array();
+				foreach ( $item->get_formatted_meta_data() as $m ) {
+					$variants[] = wp_strip_all_tags( $m->display_key ) . ' : ' . wp_strip_all_tags( $m->display_value );
+				}
+				echo '<tr style="border-bottom:1px solid #f0f0f1">';
+				echo '<td style="padding:6px 8px 6px 0;vertical-align:top">' . esc_html( $item->get_name() );
+				if ( $variants ) {
+					echo '<br><span style="color:#666;font-size:12px">' . esc_html( implode( ' · ', $variants ) ) . '</span>';
+				}
+				echo '</td>';
+				echo '<td style="padding:6px 8px;text-align:center;vertical-align:top">' . esc_html( $item->get_quantity() ) . '</td>';
+				echo '<td style="padding:6px 0;text-align:right;vertical-align:top">' . wp_kses_post( wc_price( $item->get_total() ) ) . '</td>';
+				echo '</tr>';
+			}
+			echo '</tbody></table>';
+
+			echo '<table style="width:100%;border-collapse:collapse;margin-top:8px">';
+			echo $this->info_row( __( 'Sous-total produits', 'aod-cod-form' ), wp_kses_post( wc_price( $order->get_subtotal() ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+			$ship_total = (float) $order->get_shipping_total();
+			$ship_value = $ship_total > 0 ? wp_kses_post( wc_price( $ship_total ) ) : '<span style="color:#16a34a;font-weight:600">' . esc_html__( 'Offerte', 'aod-cod-form' ) . '</span>';
+			echo $this->info_row( __( 'Livraison', 'aod-cod-form' ), $ship_value ); // phpcs:ignore WordPress.Security.EscapeOutput
+			echo $this->info_row( __( 'Total à encaisser', 'aod-cod-form' ), '<strong style="font-size:15px">' . wp_kses_post( $order->get_formatted_order_total() ) . '</strong>' ); // phpcs:ignore WordPress.Security.EscapeOutput
+			echo '</table>';
+		}
+
+		if ( ! $is_aod && '' === $name && empty( $items ) ) {
+			echo '<p style="color:#777">' . esc_html__( 'Aucune information COD pour cette commande.', 'aod-cod-form' ) . '</p>';
+		}
+
+		echo '</div>';
+		?>
+		<script>
+		( function () {
+			var box = document.getElementById( 'aod_order_info' );
+			if ( ! box ) { return; }
+			box.addEventListener( 'click', function ( e ) {
+				var b = e.target.closest( '.aod-oinfo-copy' );
+				if ( ! b ) { return; }
+				e.preventDefault();
+				var val = b.getAttribute( 'data-copy' ) || '';
+				var done = function () {
+					var t = b.textContent;
+					b.textContent = '<?php echo esc_js( __( 'Copié ✓', 'aod-cod-form' ) ); ?>';
+					setTimeout( function () { b.textContent = t; }, 1200 );
+				};
+				if ( navigator.clipboard && navigator.clipboard.writeText ) {
+					navigator.clipboard.writeText( val ).then( done ).catch( done );
+				} else {
+					var ta = document.createElement( 'textarea' );
+					ta.value = val; document.body.appendChild( ta ); ta.select();
+					try { document.execCommand( 'copy' ); } catch ( err ) {}
+					document.body.removeChild( ta ); done();
+				}
+			} );
+		} )();
+		</script>
+		<?php
 	}
 
 	/** Champ de sélection du centre/station (select si dispo, sinon saisie manuelle). */

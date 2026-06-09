@@ -168,7 +168,8 @@ class AOD_Carrier_Ecotrack extends AOD_Carrier {
 			'montant'      => $this->order_total( $order ),
 			'remarque'     => '',
 			'produit'      => $this->product_list( $order ),
-			'type_id'      => 1,
+			'type'         => 1, // 1 = livraison. Les instances EcoTrack récentes (API v1.1.0) exigent « type ».
+			'type_id'      => 1, // Conservé pour compatibilité avec les instances plus anciennes.
 			'poids'        => (int) $s['weight'],
 			'stop_desk'    => $is_desk ? 1 : 0,
 			'stock'        => 0,
