@@ -48,6 +48,7 @@ class AOD_CD_Dashboard {
 		add_action( 'wp_ajax_aod_cd_order_status', array( $this, 'ajax_order_status' ) );
 		add_action( 'wp_ajax_aod_cd_order_detail', array( $this, 'ajax_order_detail' ) );
 		add_action( 'wp_ajax_aod_cd_order_note', array( $this, 'ajax_order_note' ) );
+		add_action( 'wp_ajax_aod_cd_order_save_info', array( $this, 'ajax_order_save_info' ) );
 		add_action( 'wp_ajax_aod_cd_save_product', array( $this, 'ajax_save_product' ) );
 		add_action( 'wp_ajax_aod_cd_delete_product', array( $this, 'ajax_delete_product' ) );
 		add_action( 'wp_ajax_aod_cd_save_category', array( $this, 'ajax_save_category' ) );
@@ -2947,6 +2948,369 @@ class AOD_CD_Dashboard {
 		) );
 	}
 
+	/* ============================================================
+	 * AJAX : modification des infos client / livraison d'une commande
+	 * ========================================================== */
+
+	public function ajax_order_save_info() {
+		check_ajax_referer( 'aod_cd', 'nonce' );
+		if ( ! current_user_can( 'edit_shop_orders' ) && ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Accès refusé.', 'aod-client-dashboard' ) ), 403 );
+		}
+
+		$order_id = isset( $_POST['order_id'] ) ? absint( $_POST['order_id'] ) : 0;
+		$order    = $order_id ? wc_get_order( $order_id ) : false;
+		if ( ! $order instanceof WC_Order ) {
+			wp_send_json_error( array( 'message' => __( 'Commande introuvable.', 'aod-client-dashboard' ) ), 404 );
+		}
+
+		$name     = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
+		$phone    = isset( $_POST['phone'] ) ? sanitize_text_field( wp_unslash( $_POST['phone'] ) ) : '';
+		$addr     = isset( $_POST['address'] ) ? sanitize_text_field( wp_unslash( $_POST['address'] ) ) : '';
+		$wilaya   = isset( $_POST['wilaya'] ) ? absint( $_POST['wilaya'] ) : 0;
+		$commune  = isset( $_POST['commune'] ) ? sanitize_text_field( wp_unslash( $_POST['commune'] ) ) : '';
+		$delivery = isset( $_POST['delivery_type'] ) ? sanitize_key( wp_unslash( $_POST['delivery_type'] ) ) : '';
+
+		if ( '' === trim( $phone ) ) {
+			wp_send_json_error( array( 'message' => __( 'Le téléphone est obligatoire.', 'aod-client-dashboard' ) ), 400 );
+		}
+		if ( ! in_array( $delivery, array( 'home', 'desk' ), true ) ) {
+			$delivery = $order->get_meta( '_aod_delivery_type' );
+		}
+
+		$has_data = class_exists( 'AOD_COD_Data' );
+		if ( $has_data && $wilaya ) {
+			if ( '' === AOD_COD_Data::wilaya_name( $wilaya ) ) {
+				wp_send_json_error( array( 'message' => __( 'Wilaya invalide.', 'aod-client-dashboard' ) ), 400 );
+			}
+			if ( '' !== $commune && ! AOD_COD_Data::commune_valid( $wilaya, $commune ) ) {
+				wp_send_json_error( array( 'message' => __( 'Commune invalide pour cette wilaya.', 'aod-client-dashboard' ) ), 400 );
+			}
+		}
+
+		// Adresse de facturation + livraison (mêmes clés que la création de commande COD).
+		$parts = array(
+			'first_name' => $name,
+			'last_name'  => '',
+			'phone'      => $phone,
+			'address_1'  => $addr,
+			'country'    => 'DZ',
+		);
+		if ( '' !== $commune ) {
+			$parts['city'] = $commune;
+		}
+		if ( $wilaya && $has_data ) {
+			$parts['state'] = 'DZ-' . str_pad( (string) $wilaya, 2, '0', STR_PAD_LEFT );
+		}
+		$order->set_address( $parts, 'billing' );
+		$order->set_address( $parts, 'shipping' );
+
+		// Méta spécifiques à la livraison COD.
+		if ( $wilaya && $has_data ) {
+			$order->update_meta_data( '_aod_wilaya_code', $wilaya );
+			$order->update_meta_data( '_aod_wilaya_name', AOD_COD_Data::wilaya_name( $wilaya ) );
+			$order->update_meta_data( '_aod_wilaya_name_ar', AOD_COD_Data::wilaya_name_ar( $wilaya ) );
+		}
+		if ( '' !== $commune ) {
+			$order->update_meta_data( '_aod_commune', $commune );
+			if ( $wilaya && $has_data ) {
+				$order->update_meta_data( '_aod_commune_ar', AOD_COD_Data::commune_name_ar( $wilaya, $commune ) );
+			}
+		}
+		if ( $delivery ) {
+			$order->update_meta_data( '_aod_delivery_type', $delivery );
+		}
+
+		// Articles : variantes, quantités, retrait de lignes (recalcul des totaux).
+		$items_changed = false;
+		$items_json    = isset( $_POST['items_json'] ) ? wp_unslash( $_POST['items_json'] ) : '';
+		$items_in      = $items_json ? json_decode( $items_json, true ) : null;
+		if ( is_array( $items_in ) && $items_in ) {
+			// Plan de modification + quantités cumulées par produit (pour les paliers de prix).
+			$plan      = array();
+			$group_qty = array();
+			foreach ( $items_in as $row ) {
+				$iid  = isset( $row['id'] ) ? absint( $row['id'] ) : 0;
+				$item = $iid ? $order->get_item( $iid ) : null;
+				if ( ! $item instanceof WC_Order_Item_Product ) {
+					continue;
+				}
+				if ( ! empty( $row['remove'] ) ) {
+					$plan[ $iid ] = array( 'remove' => true );
+					continue;
+				}
+				$qty     = isset( $row['qty'] ) ? max( 1, absint( $row['qty'] ) ) : (int) $item->get_quantity();
+				$product = $item->get_product();
+				$opts_in = ( isset( $row['opts'] ) && is_array( $row['opts'] ) ) ? $row['opts'] : array();
+
+				$valid_opts = array();
+				$supplement = 0.0;
+				if ( $product ) {
+					foreach ( $this->get_product_options( $product ) as $sec ) {
+						$slabel = (string) $sec['label'];
+						$chosen = isset( $opts_in[ $slabel ] ) ? sanitize_text_field( (string) $opts_in[ $slabel ] ) : (string) $item->get_meta( $slabel );
+						$match  = null;
+						foreach ( $sec['values'] as $val ) {
+							if ( $val['name'] === $chosen ) {
+								$match = $val;
+								break;
+							}
+						}
+						if ( $match ) {
+							$valid_opts[ $slabel ] = $match['name'];
+							if ( '' !== $match['price'] ) {
+								$supplement += (float) $match['price'];
+							}
+						} elseif ( '' !== $chosen ) {
+							$valid_opts[ $slabel ] = $chosen; // valeur héritée inconnue : conservée sans supplément.
+						}
+					}
+					$pid               = $product->get_id();
+					$group_qty[ $pid ] = ( isset( $group_qty[ $pid ] ) ? $group_qty[ $pid ] : 0 ) + $qty;
+				}
+				$plan[ $iid ] = array(
+					'remove'     => false,
+					'qty'        => $qty,
+					'opts'       => $valid_opts,
+					'product'    => $product,
+					'supplement' => $supplement,
+				);
+			}
+
+			// Refus si toutes les lignes sont retirées.
+			$kept = 0;
+			foreach ( $plan as $p ) {
+				if ( empty( $p['remove'] ) ) {
+					$kept++;
+				}
+			}
+			if ( $plan && 0 === $kept ) {
+				wp_send_json_error( array( 'message' => __( 'Une commande doit contenir au moins un article.', 'aod-client-dashboard' ) ), 400 );
+			}
+
+			foreach ( $plan as $iid => $p ) {
+				$item = $order->get_item( $iid );
+				if ( ! $item ) {
+					continue;
+				}
+				if ( ! empty( $p['remove'] ) ) {
+					$order->remove_item( $iid );
+					$items_changed = true;
+					continue;
+				}
+				$product = $p['product'];
+				if ( $product ) {
+					$qty_total = isset( $group_qty[ $product->get_id() ] ) ? $group_qty[ $product->get_id() ] : $p['qty'];
+					$unit      = $this->tier_unit_price( $product, $qty_total ) + $p['supplement'];
+				} else {
+					// Produit supprimé du catalogue : on garde le prix unitaire actuel.
+					$prev_qty = max( 1, (int) $item->get_quantity() );
+					$unit     = ( (float) $item->get_subtotal() / $prev_qty ) + $p['supplement'];
+				}
+				$line_total = $unit * $p['qty'];
+
+				$item->set_quantity( $p['qty'] );
+				$item->set_subtotal( $line_total );
+				$item->set_total( $line_total );
+				foreach ( $p['opts'] as $slabel => $val ) {
+					$item->update_meta_data( $slabel, $val );
+				}
+				$item->save();
+				$items_changed = true;
+			}
+		}
+
+		$order->save();
+
+		if ( $items_changed ) {
+			$order->calculate_totals();
+		}
+
+		$order->add_order_note(
+			$items_changed
+				? __( 'Infos client / livraison et articles modifiés depuis l’espace de gestion.', 'aod-client-dashboard' )
+				: __( 'Infos client / livraison modifiées depuis l’espace de gestion.', 'aod-client-dashboard' ),
+			0,
+			true
+		);
+
+		$order = wc_get_order( $order_id );
+		ob_start();
+		$this->render_order_detail( $order );
+		$html = ob_get_clean();
+
+		wp_send_json_success( array(
+			'message' => __( 'Commande mise à jour.', 'aod-client-dashboard' ),
+			'title'   => sprintf( __( 'Commande #%s', 'aod-client-dashboard' ), $order->get_order_number() ),
+			'html'    => $html,
+		) );
+	}
+
+	/**
+	 * Prix unitaire d'un produit pour une quantité donnée, paliers de prix appliqués.
+	 *
+	 * Réplique la logique du formulaire COD : on retient le prix du plus grand palier
+	 * dont la quantité minimale est atteinte, uniquement s'il est inférieur au prix de base.
+	 *
+	 * @param WC_Product $product
+	 * @param int        $qty
+	 * @return float
+	 */
+	protected function tier_unit_price( $product, $qty ) {
+		$base = (float) wc_get_price_to_display( $product );
+		if ( ! $product || $product->is_type( 'variation' ) ) {
+			return $base;
+		}
+		$tiers = $product->get_meta( '_aod_qty_tiers' );
+		if ( ! is_array( $tiers ) || ! $tiers ) {
+			return $base;
+		}
+		$unit     = $base;
+		$best_min = 1;
+		foreach ( $tiers as $t ) {
+			$min   = isset( $t['min'] ) ? (int) $t['min'] : 0;
+			$price = isset( $t['price'] ) ? (float) $t['price'] : 0;
+			if ( $min >= 2 && $price > 0 && $price < $base && $qty >= $min && $min >= $best_min ) {
+				$best_min = $min;
+				$unit     = $price;
+			}
+		}
+		return $unit;
+	}
+
+	/**
+	 * Formulaire d'édition des infos client / livraison (affiché dans la modale détail).
+	 *
+	 * @param WC_Order $order
+	 */
+	protected function render_order_edit_form( $order ) {
+		$wilaya_code = (int) $order->get_meta( '_aod_wilaya_code' );
+		$commune     = $order->get_meta( '_aod_commune' );
+		$delivery    = $order->get_meta( '_aod_delivery_type' );
+		$has_data    = class_exists( 'AOD_COD_Data' );
+
+		$full_name = trim( $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() );
+
+		echo '<form class="aod-cd-form aod-cd-od-edit" data-order="' . esc_attr( $order->get_id() ) . '" hidden>';
+
+		echo '<label class="aod-cd-field"><span class="aod-cd-label">' . esc_html__( 'Nom du client', 'aod-client-dashboard' ) . '</span>';
+		echo '<input type="text" name="name" value="' . esc_attr( $full_name ) . '"></label>';
+
+		echo '<div class="aod-cd-row2">';
+		echo '<label class="aod-cd-field"><span class="aod-cd-label">' . esc_html__( 'Téléphone', 'aod-client-dashboard' ) . ' *</span>';
+		echo '<input type="text" name="phone" required value="' . esc_attr( $order->get_billing_phone() ) . '"></label>';
+		echo '<label class="aod-cd-field"><span class="aod-cd-label">' . esc_html__( 'Type de livraison', 'aod-client-dashboard' ) . '</span>';
+		echo '<select name="delivery_type">';
+		echo '<option value="home" ' . selected( $delivery, 'home', false ) . '>' . esc_html__( 'À domicile', 'aod-client-dashboard' ) . '</option>';
+		echo '<option value="desk" ' . selected( $delivery, 'desk', false ) . '>' . esc_html__( 'Stop-desk (bureau)', 'aod-client-dashboard' ) . '</option>';
+		echo '</select></label>';
+		echo '</div>';
+
+		echo '<label class="aod-cd-field"><span class="aod-cd-label">' . esc_html__( 'Adresse', 'aod-client-dashboard' ) . '</span>';
+		echo '<input type="text" name="address" value="' . esc_attr( $order->get_billing_address_1() ) . '"></label>';
+
+		echo '<div class="aod-cd-row2">';
+
+		// Wilaya.
+		echo '<label class="aod-cd-field"><span class="aod-cd-label">' . esc_html__( 'Wilaya', 'aod-client-dashboard' ) . '</span>';
+		echo '<select name="wilaya" class="aod-cd-od-wilaya">';
+		echo '<option value="">' . esc_html__( '—', 'aod-client-dashboard' ) . '</option>';
+		if ( $has_data ) {
+			foreach ( AOD_COD_Data::places() as $w ) {
+				$label = AOD_COD_Data::label( $w['name'], isset( $w['name_ar'] ) ? $w['name_ar'] : '' );
+				echo '<option value="' . esc_attr( $w['code'] ) . '" ' . selected( $wilaya_code, (int) $w['code'], false ) . '>'
+					. esc_html( sprintf( '%02d - %s', $w['code'], $label ) ) . '</option>';
+			}
+		}
+		echo '</select></label>';
+
+		// Commune (peuplée pour la wilaya courante, recalculée en JS au changement).
+		echo '<label class="aod-cd-field"><span class="aod-cd-label">' . esc_html__( 'Commune', 'aod-client-dashboard' ) . '</span>';
+		echo '<select name="commune" class="aod-cd-od-commune">';
+		echo '<option value="">' . esc_html__( '—', 'aod-client-dashboard' ) . '</option>';
+		if ( $has_data && $wilaya_code ) {
+			foreach ( AOD_COD_Data::communes( $wilaya_code ) as $c ) {
+				$label = AOD_COD_Data::label( $c['name'], isset( $c['name_ar'] ) ? $c['name_ar'] : '' );
+				echo '<option value="' . esc_attr( $c['name'] ) . '" ' . selected( $commune, $c['name'], false ) . '>'
+					. esc_html( $label ) . '</option>';
+			}
+		} elseif ( '' !== $commune ) {
+			echo '<option value="' . esc_attr( $commune ) . '" selected>' . esc_html( $commune ) . '</option>';
+		}
+		echo '</select></label>';
+
+		echo '</div>'; // /row2
+
+		// Articles : variantes + quantité, avec possibilité de retirer une ligne.
+		$items = $order->get_items();
+		if ( $items ) {
+			echo '<h4 class="aod-cd-od-sub">' . esc_html__( 'Articles', 'aod-client-dashboard' ) . '</h4>';
+			echo '<div class="aod-cd-od-items">';
+			foreach ( $items as $item_id => $item ) {
+				$product = $item->get_product();
+				$options = $product ? $this->get_product_options( $product ) : array();
+
+				echo '<div class="aod-cd-od-item" data-item="' . esc_attr( $item_id ) . '">';
+				echo '<div class="aod-cd-od-item-head">';
+				echo '<strong>' . esc_html( $item->get_name() ) . '</strong>';
+				echo '<label class="aod-cd-check aod-cd-od-item-rm"><input type="checkbox" class="aod-cd-od-itemremove"> ' . esc_html__( 'Retirer', 'aod-client-dashboard' ) . '</label>';
+				echo '</div>';
+
+				echo '<div class="aod-cd-od-item-fields">';
+				foreach ( $options as $sec ) {
+					$slabel  = (string) $sec['label'];
+					$current = (string) $item->get_meta( $slabel );
+					$found   = false;
+					echo '<label class="aod-cd-field"><span class="aod-cd-label">' . esc_html( $slabel ) . '</span>';
+					echo '<select class="aod-cd-od-itemopt" data-label="' . esc_attr( $slabel ) . '">';
+					foreach ( $sec['values'] as $val ) {
+						$price  = ( '' !== $val['price'] ) ? (float) $val['price'] : 0;
+						$suffix = $price > 0 ? ' (+' . wp_strip_all_tags( wc_price( $price, array( 'currency' => $order->get_currency() ) ) ) . ')' : '';
+						$sel    = selected( $current, $val['name'], false );
+						if ( '' !== $sel ) {
+							$found = true;
+						}
+						echo '<option value="' . esc_attr( $val['name'] ) . '" ' . $sel . '>' . esc_html( $val['name'] . $suffix ) . '</option>';
+					}
+					if ( ! $found && '' !== $current ) {
+						echo '<option value="' . esc_attr( $current ) . '" selected>' . esc_html( $current ) . '</option>';
+					}
+					echo '</select></label>';
+				}
+				echo '<label class="aod-cd-field aod-cd-od-item-qty"><span class="aod-cd-label">' . esc_html__( 'Quantité', 'aod-client-dashboard' ) . '</span>';
+				echo '<input type="number" min="1" step="1" class="aod-cd-od-itemqty" value="' . esc_attr( $item->get_quantity() ) . '"></label>';
+				echo '</div>'; // /item-fields
+				echo '</div>'; // /item
+			}
+			echo '</div>'; // /items
+			echo '<p class="aod-cd-note aod-cd-od-items-note">' . esc_html__( 'Le total est recalculé automatiquement (prix de base + suppléments des variantes).', 'aod-client-dashboard' ) . '</p>';
+		}
+
+		// Carte des communes par wilaya pour le cascade JS (uniquement les valeurs nécessaires).
+		if ( $has_data ) {
+			$map = array();
+			foreach ( AOD_COD_Data::places() as $w ) {
+				$list = array();
+				foreach ( $w['communes'] as $c ) {
+					$list[] = array(
+						'v' => $c['name'],
+						'l' => AOD_COD_Data::label( $c['name'], isset( $c['name_ar'] ) ? $c['name_ar'] : '' ),
+					);
+				}
+				$map[ (int) $w['code'] ] = $list;
+			}
+			echo '<script type="application/json" class="aod-cd-od-wilmap">' . wp_json_encode( $map ) . '</script>';
+		}
+
+		echo '<div class="aod-cd-form-foot">';
+		echo '<button type="submit" class="aod-cd-btn aod-cd-btn-primary">' . esc_html__( 'Enregistrer', 'aod-client-dashboard' ) . '</button>';
+		echo '<button type="button" class="aod-cd-btn aod-cd-od-edit-cancel">' . esc_html__( 'Annuler', 'aod-client-dashboard' ) . '</button>';
+		echo '<span class="aod-cd-form-msg"></span>';
+		echo '</div>';
+
+		echo '</form>';
+	}
+
 	/**
 	 * Contenu HTML du détail d'une commande (produits, adresse, livraison, historique).
 	 *
@@ -2966,21 +3330,22 @@ class AOD_CD_Dashboard {
 		$addr     = $order->get_billing_address_1();
 		$status   = wc_get_order_status_name( $order->get_status() );
 
-		// En-tête : statut + date.
+		// En-tête : statut + date + bouton de modification.
 		echo '<div class="aod-cd-od-head">';
+		echo '<span class="aod-cd-od-meta">';
 		echo '<span class="aod-cd-od-status">' . esc_html( $status ) . '</span>';
 		echo '<span class="aod-cd-od-date">' . esc_html( wc_format_datetime( $order->get_date_created(), 'd/m/Y H:i' ) ) . '</span>';
+		echo '</span>';
+		echo '<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-od-edit-toggle">✏️ ' . esc_html__( 'Modifier', 'aod-client-dashboard' ) . '</button>';
 		echo '</div>';
 
-		// Bloc client / livraison.
+		// Bloc client / livraison (vue en lecture).
+		echo '<div class="aod-cd-od-readview">';
 		echo '<div class="aod-cd-od-grid">';
 
 		echo '<div class="aod-cd-od-box"><h4>' . esc_html__( 'Client', 'aod-client-dashboard' ) . '</h4><ul class="aod-cd-od-list">';
 		echo '<li>👤 ' . esc_html( $name ? $name : '—' ) . '</li>';
 		echo '<li>📞 ' . ( $phone ? '<a href="tel:' . esc_attr( $phone ) . '">' . esc_html( $phone ) . '</a>' : '—' ) . '</li>';
-		if ( $order->get_billing_email() ) {
-			echo '<li>✉️ ' . esc_html( $order->get_billing_email() ) . '</li>';
-		}
 		echo '</ul></div>';
 
 		echo '<div class="aod-cd-od-box"><h4>' . esc_html__( 'Livraison', 'aod-client-dashboard' ) . '</h4><ul class="aod-cd-od-list">';
@@ -3005,7 +3370,7 @@ class AOD_CD_Dashboard {
 
 		echo '</div>'; // /grid
 
-		// Produits.
+		// Produits (vue lecture).
 		echo '<h4 class="aod-cd-od-sub">' . esc_html__( 'Produits', 'aod-client-dashboard' ) . '</h4>';
 		echo '<table class="aod-cd-table" style="min-width:0"><thead><tr>';
 		echo '<th>' . esc_html__( 'Article', 'aod-client-dashboard' ) . '</th><th>' . esc_html__( 'Qté', 'aod-client-dashboard' ) . '</th><th>' . esc_html__( 'Total', 'aod-client-dashboard' ) . '</th>';
@@ -3028,6 +3393,11 @@ class AOD_CD_Dashboard {
 		}
 		echo '<tr><td colspan="2"><strong>' . esc_html__( 'Total', 'aod-client-dashboard' ) . '</strong></td><td><strong>' . wp_kses_post( $order->get_formatted_order_total() ) . '</strong></td></tr>';
 		echo '</tfoot></table>';
+
+		echo '</div>'; // /readview
+
+		// Formulaire d'édition (client / livraison + articles), masqué par défaut, basculé en JS.
+		$this->render_order_edit_form( $order );
 
 		// Notes & historique de la commande.
 		$notes = wc_get_order_notes( array( 'order_id' => $order->get_id() ) );

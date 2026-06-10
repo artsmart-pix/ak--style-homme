@@ -317,7 +317,19 @@ body.aod-cd{
 .aod-cd-modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
 
 /* ---- Détail commande ---- */
-.aod-cd-od-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.aod-cd-od-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
+.aod-cd-od-meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.aod-cd-od-edit{margin-bottom:8px}
+.aod-cd-od-edit .aod-cd-form-foot{margin-top:18px;padding-top:16px}
+.aod-cd-od-items{display:flex;flex-direction:column;gap:12px}
+.aod-cd-od-item{border:1px solid var(--cd-line);border-radius:var(--cd-radius);padding:14px 16px;background:var(--cd-bg)}
+.aod-cd-od-item-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.aod-cd-od-item-rm{font-size:12.5px;color:var(--cd-muted);text-transform:none;letter-spacing:0}
+.aod-cd-od-item-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
+.aod-cd-od-item-qty{max-width:120px}
+.aod-cd-od-item:has(.aod-cd-od-itemremove:checked){opacity:.45}
+.aod-cd-od-item:has(.aod-cd-od-itemremove:checked) .aod-cd-od-item-fields{pointer-events:none}
+.aod-cd-od-items-note{margin-top:10px}
 .aod-cd-od-status{background:var(--cd-yellow);color:var(--cd-ink);padding:6px 16px;border-radius:30px;font-weight:800;font-size:12.5px;text-transform:uppercase;letter-spacing:.5px}
 .aod-cd-od-date{color:var(--cd-muted);font-size:13px;font-weight:600}
 .aod-cd-od-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:8px}

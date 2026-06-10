@@ -633,6 +633,7 @@
 						if ( res && res.success ) {
 							titleEl.textContent = res.data.title || '';
 							bodyEl.innerHTML = res.data.html || '';
+							initOrderEdit( bodyEl, titleEl );
 						} else {
 							close();
 							toast( ( res && res.data && res.data.message ) || 'Erreur.', true );
@@ -640,6 +641,100 @@
 					} )
 					.catch( function () { close(); toast( 'Erreur réseau.', true ); } );
 			} );
+		} );
+	}
+
+	/* Édition des infos client / livraison dans la modale détail */
+	function initOrderEdit( root, titleEl ) {
+		var form     = root.querySelector( '.aod-cd-od-edit' );
+		var toggle   = root.querySelector( '.aod-cd-od-edit-toggle' );
+		var readview = root.querySelector( '.aod-cd-od-readview' );
+		if ( ! form || ! toggle || ! readview ) { return; }
+
+		var cancel = form.querySelector( '.aod-cd-od-edit-cancel' );
+		var wilSel = form.querySelector( '.aod-cd-od-wilaya' );
+		var comSel = form.querySelector( '.aod-cd-od-commune' );
+		var mapEl  = form.querySelector( '.aod-cd-od-wilmap' );
+		var msg    = form.querySelector( '.aod-cd-form-msg' );
+		var map    = {};
+		if ( mapEl ) { try { map = JSON.parse( mapEl.textContent || '{}' ); } catch ( e ) { map = {}; } }
+
+		function showForm( on ) {
+			form.hidden = ! on;
+			readview.hidden = on;
+			toggle.hidden = on;
+		}
+
+		toggle.addEventListener( 'click', function () { showForm( true ); } );
+		if ( cancel ) { cancel.addEventListener( 'click', function () { showForm( false ); } ); }
+
+		if ( wilSel && comSel ) {
+			wilSel.addEventListener( 'change', function () {
+				var list = map[ parseInt( wilSel.value, 10 ) ] || [];
+				comSel.innerHTML = '<option value="">—</option>';
+				list.forEach( function ( c ) {
+					var o = document.createElement( 'option' );
+					o.value = c.v;
+					o.textContent = c.l;
+					comSel.appendChild( o );
+				} );
+			} );
+		}
+
+		form.addEventListener( 'submit', function ( e ) {
+			e.preventDefault();
+			var btn = form.querySelector( 'button[type="submit"]' );
+			if ( btn ) { btn.disabled = true; }
+			if ( msg ) { msg.textContent = ''; }
+
+			var body = new URLSearchParams();
+			body.append( 'action', 'aod_cd_order_save_info' );
+			body.append( 'nonce', CD.nonce );
+			body.append( 'order_id', form.dataset.order );
+			[ 'name', 'phone', 'address', 'wilaya', 'commune', 'delivery_type' ].forEach( function ( n ) {
+				var el = form.querySelector( '[name="' + n + '"]' );
+				body.append( n, el ? el.value : '' );
+			} );
+
+			// Articles : variantes + quantité + retrait éventuel.
+			var items = [];
+			form.querySelectorAll( '.aod-cd-od-item' ).forEach( function ( row ) {
+				var opts = {};
+				row.querySelectorAll( '.aod-cd-od-itemopt' ).forEach( function ( sel ) {
+					opts[ sel.dataset.label ] = sel.value;
+				} );
+				var qtyEl = row.querySelector( '.aod-cd-od-itemqty' );
+				var rmEl  = row.querySelector( '.aod-cd-od-itemremove' );
+				items.push( {
+					id:     row.dataset.item,
+					qty:    qtyEl ? qtyEl.value : '1',
+					remove: rmEl && rmEl.checked ? 1 : 0,
+					opts:   opts
+				} );
+			} );
+			if ( items.length ) {
+				body.append( 'items_json', JSON.stringify( items ) );
+			}
+
+			fetch( CD.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body } )
+				.then( function ( r ) { return r.json(); } )
+				.then( function ( res ) {
+					if ( btn ) { btn.disabled = false; }
+					if ( res && res.success ) {
+						if ( titleEl && res.data.title ) { titleEl.textContent = res.data.title; }
+						root.innerHTML = res.data.html || '';
+						initOrderEdit( root, titleEl );
+						toast( res.data.message || 'OK', false );
+					} else {
+						var m = ( res && res.data && res.data.message ) || 'Erreur.';
+						if ( msg ) { msg.textContent = m; }
+						toast( m, true );
+					}
+				} )
+				.catch( function () {
+					if ( btn ) { btn.disabled = false; }
+					toast( 'Erreur réseau.', true );
+				} );
 		} );
 	}
 
