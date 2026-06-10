@@ -152,19 +152,133 @@ class AOD_Carrier_Ecotrack extends AOD_Carrier {
 		);
 	}
 
+	/**
+	 * Liste des communes EcoTrack d'une wilaya (cache 12 h).
+	 *
+	 * EcoTrack impose l'orthographe EXACTE de la commune (ex. « Tichy », pas
+	 * « Tichi ») et indique par commune si un point relais (stop-desk) existe.
+	 * On met le résultat en cache par domaine + wilaya pour éviter un appel
+	 * réseau à chaque envoi.
+	 *
+	 * @param int $wilaya_code 1-58.
+	 * @return array Liste [ [ 'nom' => string, 'has_stop_desk' => bool ], … ].
+	 */
+	protected function communes( $wilaya_code ) {
+		$wilaya_code = (int) $wilaya_code;
+		if ( $wilaya_code < 1 || ! $this->is_configured() ) {
+			return array();
+		}
+		$key    = 'aod_eco_communes_' . md5( $this->effective_domain() ) . '_' . $wilaya_code;
+		$cached = get_transient( $key );
+		if ( is_array( $cached ) ) {
+			return $cached;
+		}
+
+		$s   = $this->settings();
+		$url = add_query_arg(
+			array( 'api_token' => $s['api_token'], 'wilaya_id' => $wilaya_code ),
+			$this->api_base() . 'get/communes'
+		);
+		$res = $this->remote( 'GET', $url, array(
+			'headers' => array( 'Authorization' => 'Bearer ' . $s['api_token'], 'Accept' => 'application/json' ),
+		) );
+		if ( is_wp_error( $res ) || ! is_array( $res ) ) {
+			return array();
+		}
+
+		// La réponse est une liste d'objets ; on ne garde que la wilaya demandée.
+		$list = array();
+		foreach ( $res as $row ) {
+			if ( is_array( $row ) && isset( $row['nom'] ) && (int) $row['wilaya_id'] === $wilaya_code ) {
+				$list[] = array(
+					'nom'           => (string) $row['nom'],
+					'has_stop_desk' => ! empty( $row['has_stop_desk'] ),
+				);
+			}
+		}
+		if ( ! empty( $list ) ) {
+			set_transient( $key, $list, 12 * HOUR_IN_SECONDS );
+		}
+		return $list;
+	}
+
+	/**
+	 * Normalise un nom de commune pour une comparaison tolérante
+	 * (accents, casse, apostrophes/tirets, et « y » ≈ « i »).
+	 *
+	 * @param string $name
+	 * @return string
+	 */
+	protected function normalize_commune( $name ) {
+		$name = remove_accents( (string) $name );
+		$name = strtolower( $name );
+		$name = str_replace( 'y', 'i', $name );           // Tichy ≈ Tichi.
+		$name = preg_replace( '/[^a-z0-9]+/', '', $name ); // Retire espaces, apostrophes, tirets.
+		return (string) $name;
+	}
+
+	/**
+	 * Résout le nom de commune saisi vers l'orthographe canonique EcoTrack.
+	 *
+	 * Évite l'erreur « Commune mal écrite » en alignant le nom envoyé sur la
+	 * base EcoTrack (correspondance normalisée puis distance de Levenshtein).
+	 *
+	 * @param int    $wilaya_code
+	 * @param string $commune
+	 * @return array [ 'nom' => string, 'has_stop_desk' => bool, 'matched' => bool ].
+	 */
+	protected function resolve_commune( $wilaya_code, $commune ) {
+		$commune = trim( (string) $commune );
+		$list    = $this->communes( $wilaya_code );
+		if ( empty( $list ) ) {
+			// Pas de référentiel disponible : on laisse EcoTrack valider tel quel.
+			return array( 'nom' => $commune, 'has_stop_desk' => false, 'matched' => false );
+		}
+
+		$target = $this->normalize_commune( $commune );
+
+		// 1) Correspondance normalisée exacte (gère accents/casse/ponctuation/y≈i).
+		foreach ( $list as $c ) {
+			if ( $this->normalize_commune( $c['nom'] ) === $target ) {
+				return array( 'nom' => $c['nom'], 'has_stop_desk' => $c['has_stop_desk'], 'matched' => true );
+			}
+		}
+
+		// 2) Repli : commune la plus proche (petites fautes de frappe).
+		$best = null;
+		$best_d = PHP_INT_MAX;
+		foreach ( $list as $c ) {
+			$d = levenshtein( $target, $this->normalize_commune( $c['nom'] ) );
+			if ( $d < $best_d ) {
+				$best_d = $d;
+				$best   = $c;
+			}
+		}
+		if ( $best && $best_d <= 2 ) {
+			return array( 'nom' => $best['nom'], 'has_stop_desk' => $best['has_stop_desk'], 'matched' => true );
+		}
+
+		return array( 'nom' => $commune, 'has_stop_desk' => false, 'matched' => false );
+	}
+
 	public function build_payload( $order ) {
 		$s       = $this->settings();
 		$is_desk = $this->is_stopdesk_order( $order );
 
+		$raw_commune = $order->get_meta( '_aod_commune' ) ? $order->get_meta( '_aod_commune' ) : $order->get_billing_city();
+		$match       = $this->resolve_commune( (int) $order->get_meta( '_aod_wilaya_code' ), $raw_commune );
+
+		// EcoTrack pilote le stop-desk par la COMMUNE (champ has_stop_desk), pas
+		// par un code de station : on ne transmet donc aucun « station_code ».
 		$payload = array(
 			'api_token'    => $s['api_token'],
 			'reference'    => (string) $order->get_order_number(),
 			'nom_client'   => $this->full_name( $order ),
 			'telephone'    => $order->get_billing_phone(),
 			'telephone_2'  => '',
-			'adresse'      => $order->get_billing_address_1() ? $order->get_billing_address_1() : $order->get_meta( '_aod_commune' ),
+			'adresse'      => $order->get_billing_address_1() ? $order->get_billing_address_1() : $raw_commune,
 			'code_wilaya'  => (int) $order->get_meta( '_aod_wilaya_code' ),
-			'commune'      => $order->get_meta( '_aod_commune' ) ? $order->get_meta( '_aod_commune' ) : $order->get_billing_city(),
+			'commune'      => $match['nom'], // Orthographe canonique EcoTrack.
 			'montant'      => $this->order_total( $order ),
 			'remarque'     => '',
 			'produit'      => $this->product_list( $order ),
@@ -176,9 +290,6 @@ class AOD_Carrier_Ecotrack extends AOD_Carrier {
 			'quantite'     => '1',
 			'fragile'      => (int) $s['fragile'],
 		);
-		if ( $is_desk ) {
-			$payload['station_code'] = (string) $order->get_meta( self::META_STOPDESK );
-		}
 		return $payload;
 	}
 
@@ -186,11 +297,23 @@ class AOD_Carrier_Ecotrack extends AOD_Carrier {
 		if ( ! $this->is_configured() ) {
 			return new WP_Error( 'aod_ecotrack_no_creds', __( 'Domaine ou token EcoTrack manquant.', 'aod-cod-form' ) );
 		}
-		if ( ! (int) $order->get_meta( '_aod_wilaya_code' ) ) {
+		$wilaya = (int) $order->get_meta( '_aod_wilaya_code' );
+		if ( ! $wilaya ) {
 			return new WP_Error( 'aod_ecotrack_no_wilaya', __( 'Wilaya de la commande manquante.', 'aod-cod-form' ) );
 		}
-		if ( $this->is_stopdesk_order( $order ) && '' === (string) $order->get_meta( self::META_STOPDESK ) ) {
-			return new WP_Error( 'aod_ecotrack_no_desk', __( 'Stop-desk : code de station requis avant l’envoi.', 'aod-cod-form' ) );
+
+		// Stop-desk demandé mais la commune n'a pas de point relais EcoTrack :
+		// message clair plutôt qu'un refus générique « commune mal écrite ».
+		if ( $this->is_stopdesk_order( $order ) ) {
+			$raw_commune = $order->get_meta( '_aod_commune' ) ? $order->get_meta( '_aod_commune' ) : $order->get_billing_city();
+			$match       = $this->resolve_commune( $wilaya, $raw_commune );
+			if ( $match['matched'] && ! $match['has_stop_desk'] ) {
+				return new WP_Error( 'aod_ecotrack_no_desk', sprintf(
+					/* translators: %s : nom de la commune */
+					__( 'La commune « %s » ne dispose pas de point relais (stop-desk) EcoTrack. Choisissez la livraison à domicile.', 'aod-cod-form' ),
+					$match['nom']
+				) );
+			}
 		}
 
 		$s       = $this->settings();

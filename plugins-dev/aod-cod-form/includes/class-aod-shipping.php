@@ -95,6 +95,7 @@ class AOD_Shipping {
 	 */
 	protected function ecotrack_whitelabels() {
 		return array(
+			array( 'id' => 'allolivraison', 'label' => 'Allo Livraison',    'domain' => 'allolivraison.ecotrack.dz',    'brand' => '#0ea5e9', 'initials' => 'AL' ),
 			array( 'id' => 'rex',          'label' => 'Rex Livraison',     'domain' => 'rex.ecotrack.dz',              'brand' => '#db2777', 'initials' => 'REX' ),
 			array( 'id' => 'golivri',      'label' => 'GOLIVRI',           'domain' => 'golivri.ecotrack.dz',          'brand' => '#0d9488', 'initials' => 'GO' ),
 			array( 'id' => 'dhd',          'label' => 'DHD',               'domain' => 'dhd.ecotrack.dz',              'brand' => '#b45309', 'initials' => 'DHD' ),

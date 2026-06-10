@@ -149,6 +149,20 @@ abstract class AOD_Carrier {
 			$msg = ( is_array( $data ) && ! empty( $data['message'] ) )
 				? $data['message']
 				: sprintf( __( 'Erreur API %1$s (HTTP %2$d).', 'aod-cod-form' ), $this->label(), $code );
+			// Détaille les erreurs de validation (format Laravel { errors: { champ: [..] } })
+			// au lieu du résumé tronqué « … (and 1 more error) ».
+			if ( is_array( $data ) && ! empty( $data['errors'] ) && is_array( $data['errors'] ) ) {
+				$details = array();
+				foreach ( $data['errors'] as $field_errors ) {
+					foreach ( (array) $field_errors as $fe ) {
+						$details[] = (string) $fe;
+					}
+				}
+				$details = array_values( array_unique( array_filter( $details ) ) );
+				if ( ! empty( $details ) ) {
+					$msg = implode( ' ', $details );
+				}
+			}
 			return new WP_Error( 'aod_carrier_http', $msg, array( 'http' => $code, 'data' => $data, 'raw' => $raw ) );
 		}
 		return is_array( $data ) ? $data : array( '_raw' => $raw );
