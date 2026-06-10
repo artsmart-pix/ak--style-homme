@@ -7,3 +7,6 @@ library/plugins/*.zip
 
 # Kit de template Elementor (référence visuelle, non livrable)
 Laste - Real Estate & Property Elementor Template Kit/
+
+# BMAD — config personnelle uniquement (le reste est versionné)
+**/config.user.toml
