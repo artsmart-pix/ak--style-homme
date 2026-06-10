@@ -31,8 +31,8 @@ class AOD_COD_Lang {
 	 * Branche les hooks. Appelé tôt (plugins_loaded) pour que le filtre de
 	 * locale soit actif avant le chargement des traductions.
 	 */
-	/** Emplacements de menu où injecter le sélecteur. */
-	const MENU_LOCATIONS = array( 'primary', 'secondary_menu' );
+	/** Emplacements de menu où injecter le sélecteur (en-tête desktop + mobile/off-canvas). */
+	const MENU_LOCATIONS = array( 'primary', 'secondary_menu', 'mobile_menu' );
 
 	public static function init() {
 		add_filter( 'locale', array( __CLASS__, 'filter_locale' ) );
