@@ -1216,15 +1216,17 @@ class AOD_CD_Dashboard {
 	/**
 	 * Rend la cellule « Prix » de la liste produits sur plusieurs lignes :
 	 * prix normal (barré si une promo est active), prix actuel mis en évidence,
-	 * puis le prix d'achat (`_aod_cost_price`). Évite le `get_price_html()` natif
-	 * qui injecte du texte « Original price was… » destiné aux lecteurs d'écran.
+	 * prix d'achat (`_aod_cost_price`) puis la marge (prix actuel − achat).
+	 * Évite le `get_price_html()` natif qui injecte du texte « Original price
+	 * was… » destiné aux lecteurs d'écran.
 	 *
 	 * @param WC_Product $p Produit.
 	 * @return string HTML de la cellule (déjà échappé).
 	 */
 	protected function render_price_cell( $p ) {
-		$cost = (string) $p->get_meta( '_aod_cost_price' );
-		$out  = '<div class="aod-cd-price">';
+		$cost    = (string) $p->get_meta( '_aod_cost_price' );
+		$current = null; // Prix actuel sous forme numérique, pour la marge (produits simples).
+		$out     = '<div class="aod-cd-price">';
 
 		if ( $p->is_type( 'variable' ) ) {
 			// Produit variable : on conserve la fourchette de prix native de WooCommerce.
@@ -1235,16 +1237,28 @@ class AOD_CD_Dashboard {
 			$sale    = $p->get_sale_price();
 
 			if ( $p->is_on_sale() && '' !== (string) $sale ) {
+				$current = (float) $sale;
 				$out .= '<span class="aod-cd-price-was"><span class="aod-cd-price-tag">' . esc_html__( 'Prix', 'aod-client-dashboard' ) . '</span> <del>' . wp_kses_post( wc_price( $regular ) ) . '</del></span>';
 				$out .= '<span class="aod-cd-price-now"><span class="aod-cd-price-tag">' . esc_html__( 'Promo', 'aod-client-dashboard' ) . '</span> ' . wp_kses_post( wc_price( $sale ) ) . '</span>';
 			} else {
 				$price = ( '' !== (string) $regular ) ? $regular : $p->get_price();
-				$out  .= '<span class="aod-cd-price-now">' . ( '' !== (string) $price ? wp_kses_post( wc_price( $price ) ) : '&mdash;' ) . '</span>';
+				if ( '' !== (string) $price ) {
+					$current = (float) $price;
+				}
+				$out .= '<span class="aod-cd-price-now">' . ( '' !== (string) $price ? wp_kses_post( wc_price( $price ) ) : '&mdash;' ) . '</span>';
 			}
 		}
 
 		if ( '' !== $cost ) {
 			$out .= '<span class="aod-cd-price-cost"><span class="aod-cd-price-tag">' . esc_html__( 'Achat', 'aod-client-dashboard' ) . '</span> ' . wp_kses_post( wc_price( $cost ) ) . '</span>';
+
+			// Marge = prix actuel − prix d'achat (uniquement pour les produits simples avec un prix connu).
+			if ( null !== $current ) {
+				$margin = $current - (float) $cost;
+				$pct    = $current > 0 ? round( $margin / $current * 100 ) : 0;
+				$state  = $margin < 0 ? ' aod-cd-price-margin--neg' : '';
+				$out   .= '<span class="aod-cd-price-margin' . $state . '"><span class="aod-cd-price-tag">' . esc_html__( 'Marge', 'aod-client-dashboard' ) . '</span> ' . wp_kses_post( wc_price( $margin ) ) . ' <span class="aod-cd-price-pct">(' . esc_html( (string) $pct ) . '%)</span></span>';
+			}
 		}
 
 		$out .= '</div>';

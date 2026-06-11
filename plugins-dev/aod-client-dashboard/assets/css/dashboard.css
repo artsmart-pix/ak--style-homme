@@ -107,6 +107,9 @@ body.aod-cd{
 .aod-cd-price-was del{color:var(--cd-muted)}
 .aod-cd-price-now{font-size:15px;font-weight:700;color:var(--cd-ink)}
 .aod-cd-price-cost{font-size:12px;color:var(--cd-muted)}
+.aod-cd-price-margin{font-size:12px;font-weight:600;color:var(--cd-ok)}
+.aod-cd-price-margin--neg{color:var(--cd-bad)}
+.aod-cd-price-pct{font-weight:400;opacity:.8}
 /* Masque le texte d'accessibilité WooCommerce (« Original price was… ») dans le dashboard. */
 .aod-cd-table .screen-reader-text{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 /* ---- Colonne Articles (produits + variantes) ---- */
