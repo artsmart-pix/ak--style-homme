@@ -845,3 +845,15 @@ msgstr "تطوّر رقم الأعمال"
 #: includes/class-aod-cd-dashboard.php:689
 msgid "Chiffre d’affaires sur la période"
 msgstr "رقم الأعمال خلال الفترة"
+
+msgid "Offres"
+msgstr "العروض"
+
+msgid "Nombre d’unités"
+msgstr "عدد القطع"
+
+msgid "Ajouter une offre"
+msgstr "إضافة عرض"
+
+msgid "Supprimer cette offre"
+msgstr "حذف هذا العرض"

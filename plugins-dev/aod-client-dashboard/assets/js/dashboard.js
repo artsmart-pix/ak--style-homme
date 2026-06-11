@@ -134,9 +134,8 @@
 		// Bindings optionnels : isolés en try/catch pour qu'une erreur dans l'un
 		// (données inattendues, élément absent…) n'empêche jamais les autres ni la
 		// soumission ci-dessus de fonctionner.
-		try { bindOptions(); }   catch ( err ) { /* options */ }
-		try { bindTierRows(); }  catch ( err ) { /* paliers */ }
-		try { bindPackRows(); }  catch ( err ) { /* packs */ }
+		try { bindOptions(); }    catch ( err ) { /* options */ }
+		try { bindOfferRows(); }  catch ( err ) { /* offres */ }
 
 		// Suppression (corbeille) avec confirmation.
 		document.querySelectorAll( '.aod-cd-del-product' ).forEach( function ( b ) {
@@ -285,13 +284,13 @@
 		} );
 	}
 
-	/* Paliers de prix par quantité (packs) : lignes ajoutables */
-	function bindTierRows() {
-		var wrap = document.getElementById( 'aod-cd-tiers' );
+	/* Offres (prix par quantité) : lignes ajoutables + aperçu de l'économie par offre */
+	function bindOfferRows() {
+		var wrap = document.getElementById( 'aod-cd-offers' );
 		if ( ! wrap ) { return; }
-		var rows   = wrap.querySelector( '.aod-cd-tier-rows' );
-		var tpl    = document.getElementById( 'aod-cd-tier-tpl' );
-		var addBtn = wrap.querySelector( '.aod-cd-tier-add' );
+		var rows   = wrap.querySelector( '.aod-cd-offer-rows' );
+		var tpl    = document.getElementById( 'aod-cd-offer-tpl' );
+		var addBtn = wrap.querySelector( '.aod-cd-offer-add' );
 
 		if ( addBtn && tpl && rows ) {
 			addBtn.addEventListener( 'click', function () {
@@ -308,82 +307,46 @@
 		}
 
 		wrap.addEventListener( 'click', function ( e ) {
-			var del = e.target.closest( '.aod-cd-tier-del' );
+			var del = e.target.closest( '.aod-cd-offer-del' );
 			if ( del ) {
-				var row = del.closest( '.aod-cd-tier-row' );
-				if ( row ) { row.remove(); }
-			}
-		} );
-	}
-
-	/* Pack assortiment : toggle de section, lignes de composants, économie */
-	function bindPackRows() {
-		var wrap = document.getElementById( 'aod-cd-pack' );
-		if ( ! wrap ) { return; }
-		var toggle  = document.getElementById( 'aod-cd-pack-toggle' );
-		var bodyEl  = wrap.querySelector( '.aod-cd-pack-body' );
-		var rows    = wrap.querySelector( '.aod-cd-pack-rows' );
-		var tpl     = document.getElementById( 'aod-cd-pack-tpl' );
-		var addBtn  = wrap.querySelector( '.aod-cd-pack-add' );
-		var savings = wrap.querySelector( '.aod-cd-pack-savings' );
-
-		if ( toggle && bodyEl ) {
-			toggle.addEventListener( 'change', function () {
-				bodyEl.style.display = toggle.checked ? '' : 'none';
-			} );
-		}
-
-		if ( addBtn && tpl && rows ) {
-			addBtn.addEventListener( 'click', function () {
-				var next = parseInt( addBtn.dataset.next, 10 ) || 0;
-				var html = tpl.innerHTML.replace( /__i__/g, String( next ) );
-				var tmp  = document.createElement( 'div' );
-				tmp.innerHTML = html.trim();
-				var node = tmp.firstChild;
-				rows.appendChild( node );
-				addBtn.dataset.next = String( next + 1 );
-				updateSavings();
-			} );
-		}
-
-		wrap.addEventListener( 'click', function ( e ) {
-			var del = e.target.closest( '.aod-cd-pack-del' );
-			if ( del ) {
-				var row = del.closest( '.aod-cd-pack-row' );
-				if ( row ) { row.remove(); updateSavings(); }
+				var row = del.closest( '.aod-cd-offer-row' );
+				if ( row ) { row.remove(); updateOffers(); }
 			}
 		} );
 
-		wrap.addEventListener( 'change', updateSavings );
-		wrap.addEventListener( 'input', updateSavings );
+		wrap.addEventListener( 'change', updateOffers );
+		wrap.addEventListener( 'input', updateOffers );
 
-		// Économie = somme(prix composant × qté) − prix du pack.
-		function updateSavings() {
-			if ( ! savings || ! rows ) { return; }
-			var sum = 0;
-			rows.querySelectorAll( '.aod-cd-pack-row' ).forEach( function ( row ) {
-				var sel    = row.querySelector( '.aod-cd-pack-select' );
-				var qtyEl  = row.querySelector( 'input[type=number]' );
-				var qty    = qtyEl ? ( parseInt( qtyEl.value, 10 ) || 0 ) : 0;
-				if ( sel && sel.value !== '0' ) {
-					var opt = sel.options[ sel.selectedIndex ];
-					var p   = parseFloat( opt && opt.getAttribute( 'data-price' ) ) || 0;
-					sum += p * qty;
+		// Aperçu par offre : économie = prix normal × nb d'unités − prix du lot.
+		function updateOffers() {
+			if ( ! rows ) { return; }
+			var base = parseFloat( ( document.querySelector( 'input[name="regular_price"]' ) || {} ).value ) || 0;
+			rows.querySelectorAll( '.aod-cd-offer-row' ).forEach( function ( row ) {
+				var qtyEl   = row.querySelector( 'input[name^="offer_qty"]' );
+				var priceEl = row.querySelector( 'input[name^="offer_price"]' );
+				var hint    = row.querySelector( '.aod-cd-offer-eco' );
+				if ( ! hint ) {
+					hint = document.createElement( 'span' );
+					hint.className = 'aod-cd-offer-eco';
+					row.appendChild( hint );
+				}
+				var qty   = qtyEl ? ( parseInt( qtyEl.value, 10 ) || 0 ) : 0;
+				var total = priceEl ? ( parseFloat( priceEl.value ) || 0 ) : 0;
+				if ( base > 0 && qty >= 2 && total > 0 && total < base * qty ) {
+					var eco = Math.round( ( base * qty - total ) * 100 ) / 100;
+					hint.textContent = 'Économie : ' + eco.toLocaleString( 'fr-DZ' );
+					hint.classList.remove( 'is-bad' );
+				} else if ( qty >= 2 && total > 0 ) {
+					hint.textContent = 'Aucune réduction (sera ignorée)';
+					hint.classList.add( 'is-bad' );
+				} else {
+					hint.textContent = '';
+					hint.classList.remove( 'is-bad' );
 				}
 			} );
-			var packPrice = parseFloat( ( document.querySelector( 'input[name="regular_price"]' ) || {} ).value ) || 0;
-			if ( sum > 0 && packPrice > 0 && sum > packPrice ) {
-				var eco = Math.round( ( sum - packPrice ) * 100 ) / 100;
-				savings.textContent = 'Valeur séparée : ' + sum.toLocaleString( 'fr-DZ' ) +
-					' — économie pour le client : ' + eco.toLocaleString( 'fr-DZ' );
-				savings.removeAttribute( 'hidden' );
-			} else {
-				savings.setAttribute( 'hidden', 'hidden' );
-				savings.textContent = '';
-			}
 		}
 
-		updateSavings();
+		updateOffers();
 	}
 
 	/* Catégories : création, renommage et suppression (page « Catégories ») */

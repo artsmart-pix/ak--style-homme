@@ -1242,33 +1242,9 @@ class AOD_CD_Dashboard {
 
 		$categories = get_terms( array( 'taxonomy' => 'product_cat', 'hide_empty' => false ) );
 
-		// Paliers de prix par quantité (packs « 2 pour X ») — produits simples.
-		$tiers = array();
-		if ( $product ) {
-			$raw = $product->get_meta( '_aod_qty_tiers' );
-			if ( is_array( $raw ) ) {
-				$tiers = $raw;
-			}
-		}
-
-		// Pack assortiment : produit composé de plusieurs autres produits.
-		$is_pack    = $product ? ( '1' === (string) $product->get_meta( '_aod_is_pack' ) ) : false;
-		$pack_items = array();
-		if ( $product ) {
-			$raw = $product->get_meta( '_aod_pack_items' );
-			if ( is_array( $raw ) ) {
-				$pack_items = $raw;
-			}
-		}
-		// Produits sélectionnables comme composants (simples, publiés, hors packs et hors produit courant).
-		$pack_choices = wc_get_products( array(
-			'limit'   => 300,
-			'status'  => 'publish',
-			'type'    => 'simple',
-			'orderby' => 'title',
-			'order'   => 'ASC',
-			'return'  => 'objects',
-		) );
+		// Offres (prix par quantité) : N unités de ce produit à un prix de lot.
+		// Fusionne les anciennes sections « Prix par quantité » et « Pack/Assortiment ».
+		$offers = $this->get_product_offers( $product );
 
 		// Lot 2 : poids, prix d'achat, arguments de vente, galerie.
 		$weight      = $product ? (string) $product->get_weight() : '';
@@ -1470,77 +1446,34 @@ class AOD_CD_Dashboard {
 				</div>
 			</details>
 
-			<!-- Section : Paliers de prix -->
-			<details class="aod-cd-acc">
-				<summary class="aod-cd-acc-sum"><span class="aod-cd-acc-ic">🏷️</span> <?php esc_html_e( 'Prix par quantité', 'aod-client-dashboard' ); ?> <span class="aod-cd-acc-sub"><?php esc_html_e( 'packs « 2 pour X » (optionnel)', 'aod-client-dashboard' ); ?></span></summary>
+			<!-- Section : Offres (prix par quantité) -->
+			<details class="aod-cd-acc"<?php echo $offers ? ' open' : ''; ?>>
+				<summary class="aod-cd-acc-sum"><span class="aod-cd-acc-ic">🏷️</span> <?php esc_html_e( 'Offres', 'aod-client-dashboard' ); ?> <span class="aod-cd-acc-sub"><?php esc_html_e( 'packs « 2 produits », « 3 produits »… (optionnel)', 'aod-client-dashboard' ); ?></span></summary>
 				<div class="aod-cd-acc-body">
-					<div class="aod-cd-tiers" id="aod-cd-tiers">
-						<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Offrez un prix de lot avantageux (« 2 pour … », « 3 pour … »). Indiquez la quantité et le PRIX TOTAL du lot (ex. : 2 → 2500). Ce total doit être inférieur au prix normal multiplié par la quantité, sinon le lot n’offre aucune réduction et sera ignoré. Laissez vide pour un prix unique. (Cumulable avec les sections d’options ci-dessus ; les suppléments des options s’ajoutent.)', 'aod-client-dashboard' ); ?></p>
+					<div class="aod-cd-offers" id="aod-cd-offers">
+						<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Proposez d’acheter plusieurs unités de ce produit à un prix de lot avantageux. Indiquez le NOMBRE d’unités et le PRIX TOTAL du lot (ex. : 2 → 2500, 3 → 3300). Ce total doit être inférieur au prix normal multiplié par le nombre d’unités, sinon l’offre n’apporte aucune réduction et sera ignorée. Sur la page produit, le client verra une carte « 1 produit » par défaut, puis une carte par offre ; au clic, il choisit une variante pour chaque unité.', 'aod-client-dashboard' ); ?></p>
 
-						<div class="aod-cd-tier-head">
-							<span><?php esc_html_e( 'À partir de (qté)', 'aod-client-dashboard' ); ?></span>
+						<div class="aod-cd-offer-head">
+							<span><?php esc_html_e( 'Nombre d’unités', 'aod-client-dashboard' ); ?></span>
 							<span><?php printf( esc_html__( 'Prix total du lot (%s)', 'aod-client-dashboard' ), esc_html( $currency ) ); ?></span>
 							<span></span>
 						</div>
 
-						<div class="aod-cd-tier-rows">
+						<div class="aod-cd-offer-rows">
 							<?php
-							$ti = 0;
-							foreach ( $tiers as $row ) {
-								$this->render_tier_row( $ti, $row );
-								$ti++;
+							$oi = 0;
+							foreach ( $offers as $row ) {
+								$this->render_offer_row( $oi, $row );
+								$oi++;
 							}
 							?>
 						</div>
 
-						<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-tier-add" data-next="<?php echo esc_attr( (string) $ti ); ?>">+ <?php esc_html_e( 'Ajouter un palier', 'aod-client-dashboard' ); ?></button>
+						<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-offer-add" data-next="<?php echo esc_attr( (string) $oi ); ?>">+ <?php esc_html_e( 'Ajouter une offre', 'aod-client-dashboard' ); ?></button>
 
-						<template id="aod-cd-tier-tpl">
-							<?php $this->render_tier_row( '__i__', array() ); ?>
+						<template id="aod-cd-offer-tpl">
+							<?php $this->render_offer_row( '__i__', array() ); ?>
 						</template>
-					</div>
-				</div>
-			</details>
-
-			<!-- Section : Pack / Assortiment -->
-			<details class="aod-cd-acc"<?php echo $is_pack ? ' open' : ''; ?>>
-				<summary class="aod-cd-acc-sum"><span class="aod-cd-acc-ic">🎁</span> <?php esc_html_e( 'Pack / Assortiment', 'aod-client-dashboard' ); ?> <span class="aod-cd-acc-sub"><?php esc_html_e( 'plusieurs produits ensemble (optionnel)', 'aod-client-dashboard' ); ?></span></summary>
-				<div class="aod-cd-acc-body">
-					<div class="aod-cd-pack" id="aod-cd-pack">
-						<div class="aod-cd-field">
-							<label class="aod-cd-check">
-								<input type="checkbox" name="is_pack" id="aod-cd-pack-toggle" value="1" <?php checked( $is_pack ); ?>>
-								<?php esc_html_e( 'Ce produit est un pack (plusieurs produits vendus ensemble à prix réduit)', 'aod-client-dashboard' ); ?>
-							</label>
-						</div>
-
-						<div class="aod-cd-pack-body" <?php echo $is_pack ? '' : 'style="display:none"'; ?>>
-							<p class="aod-cd-note" style="margin-top:0"><?php esc_html_e( 'Choisissez les produits inclus et leur quantité. Le « Prix » saisi plus haut est le prix de vente du pack ; l’économie par rapport à l’achat séparé est calculée automatiquement.', 'aod-client-dashboard' ); ?></p>
-
-							<div class="aod-cd-pack-head">
-								<span><?php esc_html_e( 'Produit inclus', 'aod-client-dashboard' ); ?></span>
-								<span><?php esc_html_e( 'Qté', 'aod-client-dashboard' ); ?></span>
-								<span></span>
-							</div>
-
-							<div class="aod-cd-pack-rows">
-								<?php
-								$pi = 0;
-								foreach ( $pack_items as $row ) {
-									$this->render_pack_row( $pi, $row, $pack_choices, $pid );
-									$pi++;
-								}
-								?>
-							</div>
-
-							<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-pack-add" data-next="<?php echo esc_attr( (string) $pi ); ?>">+ <?php esc_html_e( 'Ajouter un produit au pack', 'aod-client-dashboard' ); ?></button>
-
-							<p class="aod-cd-pack-savings" hidden></p>
-
-							<template id="aod-cd-pack-tpl">
-								<?php $this->render_pack_row( '__i__', array(), $pack_choices, $pid ); ?>
-							</template>
-						</div>
 					</div>
 				</div>
 			</details>
@@ -1781,61 +1714,66 @@ class AOD_CD_Dashboard {
 	 * @param int|string $i   Index de la ligne (ou « __i__ » pour le gabarit JS).
 	 * @param array      $row min, price.
 	 */
-	protected function render_tier_row( $i, $row ) {
-		$row = wp_parse_args( $row, array( 'min' => '', 'price' => '' ) );
-		$idx = esc_attr( (string) $i );
-		// Le meta stocke un prix par pièce ; le champ affiche le PRIX TOTAL DU LOT
-		// (= prix/pièce × quantité), plus intuitif pour le marchand (« 2 pour X »).
-		$min_val   = ( '' !== $row['min'] && null !== $row['min'] ) ? (int) $row['min'] : '';
-		$lot_total = ( '' !== $row['price'] && null !== $row['price'] && '' !== $min_val )
-			? (string) ( (float) $row['price'] * $min_val )
-			: '';
-		?>
-		<div class="aod-cd-tier-row" data-row="<?php echo $idx; ?>">
-			<input type="number" min="2" step="1" name="tier_min[<?php echo $idx; ?>]" value="<?php echo esc_attr( (string) $row['min'] ); ?>" placeholder="<?php esc_attr_e( 'ex : 2', 'aod-client-dashboard' ); ?>">
-			<input type="number" min="0" step="0.01" name="tier_price[<?php echo $idx; ?>]" value="<?php echo esc_attr( $lot_total ); ?>" placeholder="<?php esc_attr_e( 'ex : 2500 (pour 2)', 'aod-client-dashboard' ); ?>">
-			<button type="button" class="aod-cd-color-del aod-cd-tier-del" aria-label="<?php esc_attr_e( 'Supprimer ce palier', 'aod-client-dashboard' ); ?>">&times;</button>
-		</div>
-		<?php
+	/**
+	 * Offres d'un produit (N unités à prix de lot), pour l'édition.
+	 *
+	 * Lit la méta `_aod_offers` ; à défaut, migre l'ancienne méta `_aod_qty_tiers`
+	 * (prix par pièce → prix total du lot). La carte « 1 produit » est implicite et
+	 * n'est jamais stockée ici.
+	 *
+	 * @param WC_Product|null $product
+	 * @return array Liste de [ 'qty' => int, 'price' => float (total du lot) ], triée par qty.
+	 */
+	protected function get_product_offers( $product ) {
+		if ( ! $product ) {
+			return array();
+		}
+		$offers = array();
+		$raw    = $product->get_meta( '_aod_offers' );
+		if ( is_array( $raw ) && $raw ) {
+			foreach ( $raw as $o ) {
+				$qty   = isset( $o['qty'] ) ? (int) $o['qty'] : 0;
+				$price = isset( $o['price'] ) ? (float) $o['price'] : 0;
+				if ( $qty >= 2 && $price > 0 ) {
+					$offers[] = array( 'qty' => $qty, 'price' => $price );
+				}
+			}
+			if ( $offers ) {
+				return $offers;
+			}
+		}
+
+		// Compat : ancien « prix par quantité » (prix par pièce) → offres (prix total du lot).
+		$tiers = $product->get_meta( '_aod_qty_tiers' );
+		if ( is_array( $tiers ) ) {
+			foreach ( $tiers as $t ) {
+				$min = isset( $t['min'] ) ? (int) $t['min'] : 0;
+				$pp  = isset( $t['price'] ) ? (float) $t['price'] : 0;
+				if ( $min >= 2 && $pp > 0 ) {
+					$offers[] = array( 'qty' => $min, 'price' => $pp * $min );
+				}
+			}
+		}
+		usort( $offers, function ( $a, $b ) {
+			return $a['qty'] - $b['qty'];
+		} );
+		return $offers;
 	}
 
 	/**
-	 * Une ligne de composant de pack (produit inclus + quantité).
+	 * Une ligne d'offre (nombre d'unités + prix total du lot).
 	 *
-	 * @param int|string $i        Index (ou « __i__ » pour le gabarit JS).
-	 * @param array      $row      id, qty.
-	 * @param array      $choices  Produits sélectionnables (WC_Product[]).
-	 * @param int        $self_pid Produit courant (exclu de la liste).
+	 * @param int|string $i   Index (ou « __i__ » pour le gabarit JS).
+	 * @param array      $row qty, price (total du lot).
 	 */
-	protected function render_pack_row( $i, $row, $choices, $self_pid ) {
-		$row = wp_parse_args( $row, array( 'id' => 0, 'qty' => 1 ) );
+	protected function render_offer_row( $i, $row ) {
+		$row = wp_parse_args( $row, array( 'qty' => '', 'price' => '' ) );
 		$idx = esc_attr( (string) $i );
-		$sel = (int) $row['id'];
 		?>
-		<div class="aod-cd-pack-row" data-row="<?php echo $idx; ?>">
-			<select name="pack_id[<?php echo $idx; ?>]" class="aod-cd-pack-select">
-				<option value="0" data-price="0"><?php esc_html_e( '— Choisir un produit —', 'aod-client-dashboard' ); ?></option>
-				<?php
-				foreach ( $choices as $c ) {
-					if ( ! $c || (int) $c->get_id() === (int) $self_pid ) {
-						continue; // Jamais s'inclure soi-même.
-					}
-					if ( '1' === (string) $c->get_meta( '_aod_is_pack' ) ) {
-						continue; // Pas de pack dans un pack.
-					}
-					printf(
-						'<option value="%d" data-price="%s"%s>%s — %s</option>',
-						(int) $c->get_id(),
-						esc_attr( (string) wc_get_price_to_display( $c ) ),
-						selected( $sel, (int) $c->get_id(), false ),
-						esc_html( $c->get_name() ),
-						wp_strip_all_tags( wc_price( wc_get_price_to_display( $c ) ) )
-					);
-				}
-				?>
-			</select>
-			<input type="number" min="1" step="1" name="pack_qty[<?php echo $idx; ?>]" value="<?php echo esc_attr( (string) max( 1, (int) $row['qty'] ) ); ?>">
-			<button type="button" class="aod-cd-color-del aod-cd-pack-del" aria-label="<?php esc_attr_e( 'Retirer ce produit', 'aod-client-dashboard' ); ?>">&times;</button>
+		<div class="aod-cd-offer-row" data-row="<?php echo $idx; ?>">
+			<input type="number" min="2" step="1" name="offer_qty[<?php echo $idx; ?>]" value="<?php echo esc_attr( (string) $row['qty'] ); ?>" placeholder="<?php esc_attr_e( 'ex : 2', 'aod-client-dashboard' ); ?>">
+			<input type="number" min="0" step="0.01" name="offer_price[<?php echo $idx; ?>]" value="<?php echo esc_attr( (string) $row['price'] ); ?>" placeholder="<?php esc_attr_e( 'ex : 2500 (pour 2)', 'aod-client-dashboard' ); ?>">
+			<button type="button" class="aod-cd-color-del aod-cd-offer-del" aria-label="<?php esc_attr_e( 'Supprimer cette offre', 'aod-client-dashboard' ); ?>">&times;</button>
 		</div>
 		<?php
 	}
@@ -1959,36 +1897,29 @@ class AOD_CD_Dashboard {
 		// Libellé d'axe mono-variante : obsolète (remplacé par les sections d'options).
 		$product->delete_meta_data( '_aod_variant_label' );
 
-		if ( $options ) {
-			// Un pack (assortiment de plusieurs produits) n'a pas de sens avec des sections d'options.
-			$product->delete_meta_data( '_aod_is_pack' );
-			$product->delete_meta_data( '_aod_pack_items' );
-		} else {
+		if ( ! $options ) {
 			$product->delete_meta_data( '_aod_options' );
-
-			// Pack assortiment (produits inclus).
-			$pack_items = ! empty( $_POST['is_pack'] ) ? $this->collect_pack_items( $pid ) : array();
-			if ( $pack_items ) {
-				$product->update_meta_data( '_aod_is_pack', '1' );
-				$product->update_meta_data( '_aod_pack_items', $pack_items );
-			} else {
-				$product->delete_meta_data( '_aod_is_pack' );
-				$product->delete_meta_data( '_aod_pack_items' );
-			}
 		}
 
-		// Paliers de prix par quantité (« 2 pour X ») — compatibles avec les sections d'options.
-		// Référence = PRIX NORMAL (jamais la promo) : une offre de lot est une remise sur
-		// le prix habituel, pas sur une promo temporaire. Sinon un produit en promo ferait
-		// disparaître des paliers pourtant avantageux par rapport au prix normal.
-		$base          = (float) $reg;
-		$dropped_tiers = 0;
-		$tiers         = $this->collect_qty_tiers( $base, $dropped_tiers );
-		if ( $tiers ) {
-			$product->update_meta_data( '_aod_qty_tiers', $tiers );
+		// Pack « produits différents » : éditeur retiré (fusionné dans les Offres).
+		// On nettoie les métas legacy pour migrer proprement les anciens produits.
+		$product->delete_meta_data( '_aod_is_pack' );
+		$product->delete_meta_data( '_aod_pack_items' );
+
+		// Offres (prix par quantité) : N unités de ce produit à prix de lot — compatibles
+		// avec les sections d'options. Référence = PRIX NORMAL (jamais la promo) : une offre
+		// est une remise sur le prix habituel, pas sur une promo temporaire. Sinon un produit
+		// en promo ferait disparaître des offres pourtant avantageuses par rapport au prix normal.
+		$base           = (float) $reg;
+		$dropped_offers = 0;
+		$offers         = $this->collect_offers( $base, $dropped_offers );
+		if ( $offers ) {
+			$product->update_meta_data( '_aod_offers', $offers );
 		} else {
-			$product->delete_meta_data( '_aod_qty_tiers' );
+			$product->delete_meta_data( '_aod_offers' );
 		}
+		// Legacy migré vers `_aod_offers` : on retire l'ancienne méta paliers.
+		$product->delete_meta_data( '_aod_qty_tiers' );
 
 		$product->save();
 		$new_id = $product->get_id();
@@ -2034,16 +1965,16 @@ class AOD_CD_Dashboard {
 			'message'  => $pid ? __( 'Produit mis à jour.', 'aod-client-dashboard' ) : __( 'Produit créé.', 'aod-client-dashboard' ),
 			'redirect' => $this->products_url(),
 		);
-		if ( $dropped_tiers > 0 ) {
+		if ( $dropped_offers > 0 ) {
 			$data['warning'] = sprintf(
-				/* translators: %d: nombre de paliers ignorés */
+				/* translators: %d: nombre d'offres ignorées */
 				_n(
-					'%d palier « prix par quantité » a été ignoré : le prix total du lot doit être INFÉRIEUR au prix normal multiplié par la quantité (sinon le lot n’offre aucune réduction).',
-					'%d paliers « prix par quantité » ont été ignorés : le prix total du lot doit être INFÉRIEUR au prix normal multiplié par la quantité (sinon le lot n’offre aucune réduction).',
-					$dropped_tiers,
+					'%d offre a été ignorée : le prix total du lot doit être INFÉRIEUR au prix normal multiplié par le nombre d’unités (sinon l’offre n’apporte aucune réduction).',
+					'%d offres ont été ignorées : le prix total du lot doit être INFÉRIEUR au prix normal multiplié par le nombre d’unités (sinon l’offre n’apporte aucune réduction).',
+					$dropped_offers,
 					'aod-client-dashboard'
 				),
-				$dropped_tiers
+				$dropped_offers
 			);
 		}
 		wp_send_json_success( $data );
@@ -2185,75 +2116,36 @@ class AOD_CD_Dashboard {
 	 * @param float $base_price Prix unitaire de référence (promo sinon normal).
 	 * @return array Liste de [ 'min' => int, 'price' => float ].
 	 */
-	protected function collect_qty_tiers( $base_price, &$dropped = 0 ) {
-		$dropped = 0; // Nb de paliers renseignés mais écartés faute de réduction réelle.
-		if ( empty( $_POST['tier_min'] ) || ! is_array( $_POST['tier_min'] ) ) {
+	protected function collect_offers( $base_price, &$dropped = 0 ) {
+		$dropped = 0; // Nb d'offres renseignées mais écartées faute de réduction réelle.
+		if ( empty( $_POST['offer_qty'] ) || ! is_array( $_POST['offer_qty'] ) ) {
 			return array();
 		}
-		$mins   = wp_unslash( $_POST['tier_min'] );   // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-		$prices = isset( $_POST['tier_price'] ) ? wp_unslash( $_POST['tier_price'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-		$tiers  = array();
+		$qtys   = wp_unslash( $_POST['offer_qty'] );   // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$prices = isset( $_POST['offer_price'] ) ? wp_unslash( $_POST['offer_price'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$offers = array();
 		$seen   = array();
-		foreach ( $mins as $i => $raw_min ) {
-			$min   = absint( $raw_min );
-			// Le champ contient le PRIX TOTAL DU LOT ; on stocke un prix par pièce.
+		foreach ( $qtys as $i => $raw_qty ) {
+			$qty   = absint( $raw_qty );
+			// Le champ contient le PRIX TOTAL DU LOT ; on le stocke tel quel.
 			$total = isset( $prices[ $i ] ) ? (float) wc_format_decimal( $prices[ $i ] ) : 0;
-			if ( $min < 2 || $total <= 0 ) {
+			if ( $qty < 2 || $total <= 0 ) {
 				continue; // Ligne vide ou incomplète : on l'ignore sans alerter.
 			}
-			$price = $total / $min;
-			if ( $base_price > 0 && $price >= $base_price ) {
+			if ( $base_price > 0 && $total >= $base_price * $qty ) {
 				$dropped++; // Lot pas plus avantageux que l'achat à l'unité : ignoré + alerte.
 				continue;
 			}
-			if ( isset( $seen[ $min ] ) ) {
+			if ( isset( $seen[ $qty ] ) ) {
 				continue; // Doublon de quantité : on garde le premier.
 			}
-			$seen[ $min ] = true;
-			$tiers[]      = array( 'min' => $min, 'price' => $price );
+			$seen[ $qty ] = true;
+			$offers[]     = array( 'qty' => $qty, 'price' => $total );
 		}
-		usort( $tiers, function ( $a, $b ) {
-			return $a['min'] - $b['min'];
+		usort( $offers, function ( $a, $b ) {
+			return $a['qty'] - $b['qty'];
 		} );
-		return $tiers;
-	}
-
-	/**
-	 * Rassemble les composants de pack postés (produits valides uniquement).
-	 *
-	 * Filtre : produit existant, publié, simple, différent du produit courant et
-	 * qui n'est pas lui-même un pack (pas d'imbrication). Quantités cumulées par produit.
-	 *
-	 * @param int $self_pid Produit courant (exclu pour éviter l'auto-référence).
-	 * @return array Liste de [ 'id' => int, 'qty' => int ].
-	 */
-	protected function collect_pack_items( $self_pid ) {
-		if ( empty( $_POST['pack_id'] ) || ! is_array( $_POST['pack_id'] ) ) {
-			return array();
-		}
-		$ids  = wp_unslash( $_POST['pack_id'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-		$qtys = isset( $_POST['pack_qty'] ) ? wp_unslash( $_POST['pack_qty'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-		$byid = array();
-		foreach ( $ids as $i => $raw_id ) {
-			$cid = absint( $raw_id );
-			$qty = isset( $qtys[ $i ] ) ? max( 1, absint( $qtys[ $i ] ) ) : 1;
-			if ( ! $cid || (int) $cid === (int) $self_pid ) {
-				continue;
-			}
-			$cp = wc_get_product( $cid );
-			if ( ! $cp || 'publish' !== $cp->get_status() || ! $cp->is_type( 'simple' ) ) {
-				continue;
-			}
-			if ( '1' === (string) $cp->get_meta( '_aod_is_pack' ) ) {
-				continue; // Pas de pack dans un pack.
-			}
-			$byid[ $cid ] = ( isset( $byid[ $cid ] ) ? $byid[ $cid ] : 0 ) + $qty;
-		}
-		$items = array();
-		foreach ( $byid as $cid => $qty ) {
-			$items[] = array( 'id' => (int) $cid, 'qty' => (int) $qty );
-		}
-		return $items;
+		return $offers;
 	}
 
 	/**
@@ -3147,10 +3039,10 @@ class AOD_CD_Dashboard {
 	}
 
 	/**
-	 * Prix unitaire d'un produit pour une quantité donnée, paliers de prix appliqués.
+	 * Prix unitaire d'un produit pour une quantité donnée, offres de lot appliquées.
 	 *
-	 * Réplique la logique du formulaire COD : on retient le prix du plus grand palier
-	 * dont la quantité minimale est atteinte, uniquement s'il est inférieur au prix de base.
+	 * Réplique la logique du formulaire COD : on retient le prix par unité de la plus
+	 * grande offre dont le nombre d'unités est atteint, s'il est inférieur au prix de base.
 	 *
 	 * @param WC_Product $product
 	 * @param int        $qty
@@ -3161,18 +3053,18 @@ class AOD_CD_Dashboard {
 		if ( ! $product || $product->is_type( 'variation' ) ) {
 			return $base;
 		}
-		$tiers = $product->get_meta( '_aod_qty_tiers' );
-		if ( ! is_array( $tiers ) || ! $tiers ) {
+		$offers = $this->get_product_offers( $product );
+		if ( ! $offers ) {
 			return $base;
 		}
 		$unit     = $base;
-		$best_min = 1;
-		foreach ( $tiers as $t ) {
-			$min   = isset( $t['min'] ) ? (int) $t['min'] : 0;
-			$price = isset( $t['price'] ) ? (float) $t['price'] : 0;
-			if ( $min >= 2 && $price > 0 && $price < $base && $qty >= $min && $min >= $best_min ) {
-				$best_min = $min;
-				$unit     = $price;
+		$best_qty = 1;
+		foreach ( $offers as $o ) {
+			$oqty = (int) $o['qty'];
+			$u    = $oqty > 0 ? (float) $o['price'] / $oqty : 0; // price = prix total du lot.
+			if ( $oqty >= 2 && $u > 0 && $u < $base && $qty >= $oqty && $oqty >= $best_qty ) {
+				$best_qty = $oqty;
+				$unit     = $u;
 			}
 		}
 		return $unit;

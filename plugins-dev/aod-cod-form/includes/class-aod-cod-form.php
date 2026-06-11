@@ -342,11 +342,14 @@ class AOD_COD_Form {
 	 * Chaque valeur porte son `data-si` (section), `data-name`, `data-price` et ses
 	 * `data-img*` (échange de la photo de galerie + récap du panier).
 	 *
-	 * @param int   $product_id Produit concerné.
-	 * @param array $options    Sections d'options (voir get_product_options()).
+	 * @param int    $product_id Produit concerné.
+	 * @param array  $options    Sections d'options (voir get_product_options()).
+	 * @param string $prefix     Préfixe unique pour les `name`/`id` des radios (ex. offre+unité),
+	 *                           afin de répéter ces sections plusieurs fois sur la même page.
 	 * @return string
 	 */
-	protected function option_sections_html( $product_id, $options ) {
+	protected function option_sections_html( $product_id, $options, $prefix = '' ) {
+		$prefix = '' !== (string) $prefix ? (string) $prefix : (string) (int) $product_id;
 		ob_start();
 		foreach ( $options as $si => $sec ) :
 			?>
@@ -355,7 +358,7 @@ class AOD_COD_Form {
 				<div class="aod-cod__opts">
 					<?php
 					foreach ( $sec['values'] as $vi => $val ) :
-						$oid = 'aod-cod-opt-' . (int) $product_id . '-' . (int) $si . '-' . (int) $vi;
+						$oid = 'aod-cod-opt-' . $prefix . '-' . (int) $si . '-' . (int) $vi;
 						$has_hex   = ! empty( $val['hex'] );
 						$is_visual = $sec['visual'] || $has_hex;
 						// Pastille couleur sans photo : rendu compact (point + nom).
@@ -369,7 +372,7 @@ class AOD_COD_Form {
 						}
 						?>
 						<label class="<?php echo esc_attr( $opt_class ); ?>" for="<?php echo esc_attr( $oid ); ?>">
-							<input type="radio" id="<?php echo esc_attr( $oid ); ?>" name="aod-cfg-opt-<?php echo (int) $product_id . '-' . (int) $si; ?>" value="<?php echo esc_attr( $val['name'] ); ?>" data-si="<?php echo esc_attr( $si ); ?>" data-name="<?php echo esc_attr( $val['name'] ); ?>" data-price="<?php echo esc_attr( $val['price'] ); ?>" data-img="<?php echo esc_url( $val['img'] ); ?>" data-img-id="<?php echo esc_attr( $val['img_id'] ); ?>" data-img-full="<?php echo esc_url( $val['img_full'] ); ?>" data-img-w="<?php echo esc_attr( $val['img_w'] ); ?>" data-img-h="<?php echo esc_attr( $val['img_h'] ); ?>" data-srcset="<?php echo esc_attr( $val['srcset'] ); ?>">
+							<input type="radio" id="<?php echo esc_attr( $oid ); ?>" name="aod-opt-<?php echo esc_attr( $prefix . '-' . (int) $si ); ?>" value="<?php echo esc_attr( $val['name'] ); ?>" data-si="<?php echo esc_attr( $si ); ?>" data-name="<?php echo esc_attr( $val['name'] ); ?>" data-price="<?php echo esc_attr( $val['price'] ); ?>" data-img="<?php echo esc_url( $val['img'] ); ?>" data-img-id="<?php echo esc_attr( $val['img_id'] ); ?>" data-img-full="<?php echo esc_url( $val['img_full'] ); ?>" data-img-w="<?php echo esc_attr( $val['img_w'] ); ?>" data-img-h="<?php echo esc_attr( $val['img_h'] ); ?>" data-srcset="<?php echo esc_attr( $val['srcset'] ); ?>">
 							<span class="aod-cod__opt-card">
 								<?php if ( $is_visual && $val['img'] ) : ?>
 									<span class="aod-cod__opt-thumb" style="background-image:url('<?php echo esc_url( $val['img'] ); ?>')"></span>
@@ -387,6 +390,127 @@ class AOD_COD_Form {
 			</div>
 			<?php
 		endforeach;
+		return ob_get_clean();
+	}
+
+	/**
+	 * Offres d'un produit (N unités à prix de lot), pour le formulaire de commande.
+	 *
+	 * Lit la méta `_aod_offers` ; à défaut, migre l'ancienne méta `_aod_qty_tiers`
+	 * (prix par pièce → prix total du lot). La carte « 1 produit » est implicite et
+	 * n'est PAS incluse ici (elle est ajoutée au rendu avec le prix d'affichage).
+	 *
+	 * @param WC_Product $product
+	 * @return array Liste de [ 'qty' => int, 'price' => float (total du lot) ], triée par qty.
+	 */
+	protected function get_product_offers( $product ) {
+		$offers = array();
+		if ( ! $product ) {
+			return $offers;
+		}
+		$raw = $product->get_meta( '_aod_offers' );
+		if ( is_array( $raw ) && $raw ) {
+			foreach ( $raw as $o ) {
+				$qty   = isset( $o['qty'] ) ? (int) $o['qty'] : 0;
+				$price = isset( $o['price'] ) ? (float) $o['price'] : 0;
+				if ( $qty >= 2 && $price > 0 ) {
+					$offers[] = array( 'qty' => $qty, 'price' => $price );
+				}
+			}
+			if ( $offers ) {
+				usort( $offers, function ( $a, $b ) {
+					return $a['qty'] - $b['qty'];
+				} );
+				return $offers;
+			}
+		}
+
+		// Compat : ancien « prix par quantité » (prix par pièce) → offres (prix total du lot).
+		$tiers = $product->get_meta( '_aod_qty_tiers' );
+		if ( is_array( $tiers ) ) {
+			foreach ( $tiers as $t ) {
+				$min = isset( $t['min'] ) ? (int) $t['min'] : 0;
+				$pp  = isset( $t['price'] ) ? (float) $t['price'] : 0;
+				if ( $min >= 2 && $pp > 0 ) {
+					$offers[] = array( 'qty' => $min, 'price' => $pp * $min );
+				}
+			}
+		}
+		usort( $offers, function ( $a, $b ) {
+			return $a['qty'] - $b['qty'];
+		} );
+		return $offers;
+	}
+
+	/**
+	 * Cartes d'offres : « 1 produit » (par défaut) + une carte par offre configurée.
+	 *
+	 * Chaque carte porte `data-qty` (nombre d'unités) et `data-price` (prix total du lot)
+	 * pour que le JS calcule le sous-total. La première carte est sélectionnée par défaut.
+	 * Si le produit a des variantes, le panneau de sélection (N blocs « Article k ») est
+	 * imbriqué DANS la carte et se déplie à l'intérieur de celle-ci une fois sélectionnée.
+	 *
+	 * @param int   $product_id
+	 * @param float $base_price  Prix d'affichage unitaire (carte « 1 produit »).
+	 * @param array $offers      Offres (voir get_product_offers()).
+	 * @param array $options     Sections d'options (vide = produit sans variantes).
+	 * @return string
+	 */
+	protected function offer_cards_html( $product_id, $base_price, $offers, $options = array() ) {
+		// Carte « 1 produit » implicite en tête, puis les offres.
+		$cards       = array_merge( array( array( 'qty' => 1, 'price' => $base_price ) ), $offers );
+		$name        = 'aod-offer-' . (int) $product_id;
+		$has_options = ! empty( $options );
+		ob_start();
+		?>
+		<div class="aod-cod__offers" role="radiogroup" aria-label="<?php esc_attr_e( 'Choisissez votre offre', 'aod-cod-form' ); ?>">
+			<?php foreach ( $cards as $oi => $card ) :
+				$qty   = (int) $card['qty'];
+				$total = (float) $card['price'];
+				$old   = $base_price * $qty;             // Prix « plein » (achat à l'unité).
+				$save  = $old - $total;                  // Économie du lot.
+				$oid   = 'aod-cod-offer-' . (int) $product_id . '-' . (int) $oi;
+				?>
+				<div class="aod-cod__offer-card<?php echo 0 === $oi ? ' is-selected' : ''; ?>" data-offer="<?php echo esc_attr( $oi ); ?>" data-qty="<?php echo esc_attr( $qty ); ?>" data-price="<?php echo esc_attr( $total ); ?>">
+					<label class="aod-cod__offer-head" for="<?php echo esc_attr( $oid ); ?>">
+						<input type="radio" id="<?php echo esc_attr( $oid ); ?>" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $oi ); ?>" <?php checked( 0, $oi ); ?>>
+						<span class="aod-cod__offer-body">
+							<span class="aod-cod__offer-title">
+								<?php
+								/* translators: %d: nombre d'unités */
+								echo esc_html( sprintf( _n( '%d produit', '%d produits', $qty, 'aod-cod-form' ), $qty ) );
+								?>
+							</span>
+							<?php if ( $qty > 1 && $save > 0 ) : ?>
+								<span class="aod-cod__offer-badge"><?php echo esc_html( sprintf( __( 'Économisez %s', 'aod-cod-form' ), wp_strip_all_tags( wc_price( $save ) ) ) ); ?></span>
+							<?php endif; ?>
+							<span class="aod-cod__offer-price">
+								<span class="aod-cod__offer-now"><?php echo wp_kses_post( wc_price( $total ) ); ?></span>
+								<?php if ( $qty > 1 && $save > 0 ) : ?>
+									<s class="aod-cod__offer-old"><?php echo wp_kses_post( wc_price( $old ) ); ?></s>
+								<?php endif; ?>
+							</span>
+						</span>
+						<span class="aod-cod__offer-check" aria-hidden="true"></span>
+					</label>
+					<?php if ( $has_options ) : ?>
+						<div class="aod-cod__offer-panel" data-offer="<?php echo esc_attr( $oi ); ?>"<?php echo 0 === $oi ? '' : ' hidden'; ?>>
+							<?php for ( $u = 0; $u < $qty; $u++ ) :
+								$prefix = (int) $product_id . '-' . (int) $oi . '-' . (int) $u;
+								?>
+								<div class="aod-cod__unit" data-unit="<?php echo esc_attr( $u ); ?>">
+									<?php if ( $qty > 1 ) : ?>
+										<div class="aod-cod__unit-head"><?php echo esc_html( sprintf( __( 'Article %d', 'aod-cod-form' ), $u + 1 ) ); ?></div>
+									<?php endif; ?>
+									<?php echo $this->option_sections_html( $product_id, $options, $prefix ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+								</div>
+							<?php endfor; ?>
+						</div>
+					<?php endif; ?>
+				</div>
+			<?php endforeach; ?>
+		</div>
+		<?php
 		return ob_get_clean();
 	}
 
@@ -421,18 +545,9 @@ class AOD_COD_Form {
 			}
 		}
 
-		// Paliers de prix par quantité (« 2 pour X ») — cumulables avec les sections d'options.
-		$tiers = array();
-		$raw   = $product->get_meta( '_aod_qty_tiers' );
-		if ( is_array( $raw ) ) {
-			foreach ( $raw as $t ) {
-				$min = isset( $t['min'] ) ? (int) $t['min'] : 0;
-				$tp  = isset( $t['price'] ) ? (float) $t['price'] : 0;
-				if ( $min >= 2 && $tp > 0 ) {
-					$tiers[] = array( 'min' => $min, 'price' => $tp );
-				}
-			}
-		}
+		// Offres (prix par quantité) : N unités de ce produit à prix de lot. La carte
+		// « 1 produit » (prix d'affichage) est ajoutée implicitement au rendu.
+		$offers = $this->get_product_offers( $product );
 
 		// Arguments de vente (liste à puces).
 		$selling_points = $product->get_meta( '_aod_selling_points' );
@@ -456,7 +571,7 @@ class AOD_COD_Form {
 
 		ob_start();
 		?>
-		<div class="aod-cod" data-product="<?php echo esc_attr( $product_id ); ?>" data-price="<?php echo esc_attr( $price ); ?>" data-tiers="<?php echo esc_attr( wp_json_encode( $tiers ) ); ?>">
+		<div class="aod-cod" data-product="<?php echo esc_attr( $product_id ); ?>" data-price="<?php echo esc_attr( $price ); ?>">
 			<h3 class="aod-cod__title"><?php esc_html_e( 'Commander maintenant — Paiement à la livraison', 'aod-cod-form' ); ?></h3>
 			<?php if ( $selling_points ) : ?>
 				<ul class="aod-cod__points">
@@ -476,53 +591,11 @@ class AOD_COD_Form {
 				</div>
 			<?php endif; ?>
 			<form class="aod-cod__form" novalidate>
+				<?php // Cartes d'offres : « 1 produit » par défaut + une carte par offre. Les
+				// variantes (N blocs « Article k ») se déplient à l'intérieur de la carte choisie. ?>
+				<?php echo $this->offer_cards_html( $product_id, $price, $offers, $has_options ? $options : array() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				<?php if ( $has_options ) : ?>
-					<?php // Configurateur : on choisit les variantes + la quantité, puis « Ajouter ». ?>
-					<div class="aod-cod__config">
-						<div class="aod-cod__config-head"><?php esc_html_e( 'Configurez votre article', 'aod-cod-form' ); ?></div>
-						<?php echo $this->option_sections_html( $product_id, $options ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-						<div class="aod-cod__field aod-cod__qty">
-							<label for="aod-cod-cfg-qty"><?php esc_html_e( 'Quantité', 'aod-cod-form' ); ?></label>
-							<div class="aod-cod__stepper">
-								<button type="button" class="aod-cod__step aod-cod__step--minus" data-step="-1" aria-label="<?php esc_attr_e( 'Diminuer la quantité', 'aod-cod-form' ); ?>">&minus;</button>
-								<input type="number" id="aod-cod-cfg-qty" class="aod-cod__cfg-qty" value="1" min="1" step="1" inputmode="numeric">
-								<button type="button" class="aod-cod__step aod-cod__step--plus" data-step="1" aria-label="<?php esc_attr_e( 'Augmenter la quantité', 'aod-cod-form' ); ?>">+</button>
-							</div>
-						</div>
-						<button type="button" class="aod-cod__additem">+ <?php esc_html_e( 'Ajouter cet article', 'aod-cod-form' ); ?></button>
-						<p class="aod-cod__config-msg" role="alert"></p>
-					</div>
-					<?php // Tableau des articles ajoutés (rempli côté JS). ?>
-					<table class="aod-cod__cart" hidden>
-						<tbody class="aod-cod__cart-body"></tbody>
-					</table>
-					<template class="aod-cod__row-tpl"><tr class="aod-cod__cart-row"><td class="aod-cod__cart-variant"></td><td class="aod-cod__cart-qty"></td><td class="aod-cod__cart-price"></td><td class="aod-cod__cart-act"><button type="button" class="aod-cod__rowremove" aria-label="<?php esc_attr_e( 'Retirer cet article', 'aod-cod-form' ); ?>">&times;</button></td></tr></template>
-				<?php else : ?>
-					<?php // Produit sans variantes : simple quantité (une seule ligne). ?>
-					<div class="aod-cod__field aod-cod__qty">
-						<label for="aod-cod-qty-0"><?php esc_html_e( 'Quantité', 'aod-cod-form' ); ?></label>
-						<div class="aod-cod__stepper">
-							<button type="button" class="aod-cod__step aod-cod__step--minus" data-step="-1" aria-label="<?php esc_attr_e( 'Diminuer la quantité', 'aod-cod-form' ); ?>">&minus;</button>
-							<input type="number" id="aod-cod-qty-0" name="items[0][qty]" value="1" min="1" step="1" inputmode="numeric">
-							<button type="button" class="aod-cod__step aod-cod__step--plus" data-step="1" aria-label="<?php esc_attr_e( 'Augmenter la quantité', 'aod-cod-form' ); ?>">+</button>
-						</div>
-					</div>
-				<?php endif; ?>
-				<?php if ( $tiers ) : ?>
-					<ul class="aod-cod__tiers">
-						<?php foreach ( $tiers as $t ) : ?>
-							<li data-min="<?php echo esc_attr( $t['min'] ); ?>">
-								<?php
-								/* translators: 1: quantité, 2: prix total du lot */
-								printf(
-									esc_html__( '%1$d pièces : %2$s', 'aod-cod-form' ),
-									(int) $t['min'],
-									wp_strip_all_tags( wc_price( $t['price'] * $t['min'] ) )
-								);
-								?>
-							</li>
-						<?php endforeach; ?>
-					</ul>
+					<p class="aod-cod__config-msg" role="alert"></p>
 				<?php endif; ?>
 				<div class="aod-cod__field aod-cod__float">
 					<input type="text" id="aod-cod-name" name="name" autocomplete="name" placeholder=" " required>
@@ -705,11 +778,13 @@ class AOD_COD_Form {
 		try {
 			$order    = wc_create_order();
 			$subtotal = 0;
-			// Palier de prix appliqué sur la quantité TOTALE (« 2 pièces : X »), même si
-			// les pièces sont des variantes différentes ; les suppléments restent par ligne.
-			$tier_unit = $this->tier_unit_price( $product, $total_qty );
+			// Prix de lot de l'offre correspondant à la quantité TOTALE (« 2 produits : X »),
+			// réparti à parts égales sur les unités ; les suppléments des variantes restent
+			// propres à chaque ligne.
+			$lot_total = $this->offer_lot_total( $product, $total_qty );
+			$per_unit  = $total_qty > 0 ? $lot_total / $total_qty : (float) wc_get_price_to_display( $product );
 			foreach ( $lines as $line ) {
-				$unit       = $tier_unit + $line['supplement'];
+				$unit       = $per_unit + $line['supplement'];
 				$line_total = $unit * $line['qty'];
 				$item_id    = $order->add_product( $product, $line['qty'] );
 				if ( $item_id ) {
@@ -799,36 +874,30 @@ class AOD_COD_Form {
 	}
 
 	/**
-	 * Prix unitaire d'un produit pour une quantité donnée, en appliquant les
-	 * paliers de prix par quantité (« packs ») définis sur le produit.
+	 * Prix TOTAL du lot pour une quantité donnée, selon les offres du produit.
 	 *
-	 * Les paliers ne s'appliquent qu'aux produits simples (jamais aux variations).
-	 * On retient le prix du plus grand palier dont la quantité minimale est atteinte,
-	 * et uniquement s'il est réellement inférieur au prix de base (anti-incohérence).
+	 * Renvoie le prix de l'offre dont le nombre d'unités correspond exactement à la
+	 * quantité (« 2 produits : X »), s'il est réellement inférieur au plein tarif.
+	 * Sinon — pas d'offre pour cette taille de lot, produit variable, ou qty < 2 —
+	 * on facture le plein tarif (prix d'affichage × quantité).
 	 *
 	 * @param WC_Product $product
 	 * @param int        $qty
-	 * @return float Prix unitaire à facturer.
+	 * @return float Prix total à facturer pour le lot.
 	 */
-	protected function tier_unit_price( $product, $qty ) {
+	protected function offer_lot_total( $product, $qty ) {
 		$base = (float) wc_get_price_to_display( $product );
-		if ( ! $product || $product->is_type( 'variation' ) ) {
-			return $base;
+		$qty  = max( 1, (int) $qty );
+		if ( ! $product || $product->is_type( 'variation' ) || $qty < 2 ) {
+			return $base * $qty;
 		}
-		$tiers = $product->get_meta( '_aod_qty_tiers' );
-		if ( ! is_array( $tiers ) || ! $tiers ) {
-			return $base;
-		}
-		$unit     = $base;
-		$best_min = 1;
-		foreach ( $tiers as $t ) {
-			$min   = isset( $t['min'] ) ? (int) $t['min'] : 0;
-			$price = isset( $t['price'] ) ? (float) $t['price'] : 0;
-			if ( $min >= 2 && $price > 0 && $price < $base && $qty >= $min && $min >= $best_min ) {
-				$best_min = $min;
-				$unit     = $price;
+		foreach ( $this->get_product_offers( $product ) as $o ) {
+			$oqty   = (int) $o['qty'];
+			$oprice = (float) $o['price'];
+			if ( $oqty === $qty && $oprice > 0 && $oprice < $base * $qty ) {
+				return $oprice;
 			}
 		}
-		return $unit;
+		return $base * $qty;
 	}
 }

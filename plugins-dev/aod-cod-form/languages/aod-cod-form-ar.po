@@ -97,3 +97,21 @@ msgstr "المنزل"
 
 msgid "Stop-desk"
 msgstr "مكتب التوصيل"
+
+msgid "Choisissez votre offre"
+msgstr "اختر عرضك"
+
+msgid "%d produit"
+msgid_plural "%d produits"
+msgstr[0] "%d منتج"
+msgstr[1] "%d منتج"
+msgstr[2] "منتجان"
+msgstr[3] "%d منتجات"
+msgstr[4] "%d منتجًا"
+msgstr[5] "%d منتج"
+
+msgid "Économisez %s"
+msgstr "وفّر %s"
+
+msgid "Article %d"
+msgstr "المنتج %d"

@@ -335,27 +335,66 @@
 .aod-cod__pack-list li{font-size:14px;color:var(--sh-text)}
 .aod-cod__pack-qty{font-weight:600;color:var(--sh-text)}
 
-/* ---- Paliers de prix par quantité (produit simple) ---- */
-.aod-cod__tiers{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
-.aod-cod__tiers li{
-	font-size:12.5px;font-weight:500;color:var(--sh-text-2);background:var(--sh-bg-sub);
-	border:1px solid var(--sh-line);border-radius:999px;padding:4px 11px;
+/* ---- Cartes d'offres (1 produit, 2 produits…) ---- */
+.aod-cod__offers{display:flex;flex-direction:column;gap:7px;margin:0 0 14px}
+/* La carte est un conteneur : en-tête cliquable + panneau de variantes imbriqué. */
+.aod-cod__offer-card{
+	position:relative;
+	border:1.5px solid var(--sh-line);border-radius:var(--sh-radius-sm);background:#fff;
+	transition:border-color .12s,box-shadow .12s;overflow:hidden;
 }
-.aod-cod__tiers li.is-active{background:#eef0f1;border-color:var(--sh-line-strong);color:var(--sh-text)}
+.aod-cod__offer-card:hover{border-color:var(--sh-line-strong)}
+.aod-cod__offer-card.is-selected{border-color:var(--sh-accent);box-shadow:0 0 0 1px var(--sh-accent)}
+/* En-tête cliquable de la carte (rangée titre / prix / coche). */
+.aod-cod__offer-head{
+	display:flex;align-items:center;gap:9px;margin:0;padding:8px 12px;cursor:pointer;
+}
+.aod-cod__offer-card.is-selected .aod-cod__offer-head{background:var(--sh-bg-sub)}
+.aod-cod__offer-card input{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+.aod-cod__offer-body{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.aod-cod__offer-title{font-size:13.5px;font-weight:700;color:var(--sh-text)}
+.aod-cod__offer-badge{
+	align-self:flex-start;font-size:10.5px;font-weight:700;color:#fff;background:var(--sh-green,#16a34a);
+	border-radius:999px;padding:1px 7px;
+}
+.aod-cod__offer-price{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.aod-cod__offer-now{font-size:14px;font-weight:700;color:var(--sh-accent)}
+.aod-cod__offer-old{font-size:12px;color:var(--sh-text-2)}
+/* Pastille « cochée » à droite de l'en-tête. */
+.aod-cod__offer-check{
+	flex-shrink:0;width:18px;height:18px;border-radius:50%;border:2px solid var(--sh-line-strong);
+	background:#fff;transition:.12s;position:relative;
+}
+.aod-cod__offer-card.is-selected .aod-cod__offer-check{border-color:var(--sh-accent);background:var(--sh-accent)}
+.aod-cod__offer-card.is-selected .aod-cod__offer-check::after{
+	content:"";position:absolute;inset:0;margin:auto;width:5px;height:9px;
+	border:solid #fff;border-width:0 2px 2px 0;transform:translateY(-1px) rotate(45deg);
+}
+
+/* ---- Panneau de variantes, déplié À L'INTÉRIEUR de la carte sélectionnée ---- */
+.aod-cod__offer-panel{padding:10px 12px;border-top:1px solid var(--sh-line)}
+.aod-cod__offer-panel[hidden]{display:none}
+.aod-cod__unit{
+	border:1px solid var(--sh-line);border-radius:var(--sh-radius-sm);
+	background:#fff;padding:10px 12px;margin:0 0 8px;
+}
+.aod-cod__unit:last-child{margin-bottom:0}
+.aod-cod__unit-head{font-size:12px;font-weight:700;color:var(--sh-text);margin:0 0 9px}
+.aod-cod__unit .aod-cod__optsec:last-child{margin-bottom:0}
 
 /* ---- Sections d'options (Taille, Couleur, Pointure…) — style Shopify ---- */
-.aod-cod__optsec{margin-bottom:16px}
-.aod-cod__optlabel{display:block;font-size:13px;font-weight:600;color:var(--sh-text);margin:0 0 8px}
+.aod-cod__optsec{margin-bottom:12px}
+.aod-cod__optlabel{display:block;font-size:12px;font-weight:600;color:var(--sh-text);margin:0 0 6px}
 .aod-cod__optlabel span{color:var(--sh-error)}
-.aod-cod__opts{display:flex;flex-wrap:wrap;gap:8px}
+.aod-cod__opts{display:flex;flex-wrap:wrap;gap:6px}
 /* La case radio reste accessible mais invisible (la carte fait le rendu). */
 .aod-cod__opt{position:relative;display:inline-flex;margin:0;cursor:pointer}
 .aod-cod__opt input{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
 .aod-cod__opt-card{
-	display:flex;align-items:center;justify-content:center;gap:6px;
-	min-width:48px;min-height:44px;padding:8px 14px;
+	display:flex;align-items:center;justify-content:center;gap:5px;
+	min-width:36px;min-height:32px;padding:5px 10px;
 	border:1px solid var(--sh-line);border-radius:var(--sh-radius-sm);background:#fff;
-	font-size:14px;font-weight:500;color:var(--sh-text);text-align:center;transition:.12s;
+	font-size:12.5px;font-weight:500;color:var(--sh-text);text-align:center;transition:.12s;
 }
 .aod-cod__opt:hover .aod-cod__opt-card{border-color:var(--sh-line-strong)}
 .aod-cod__opt input:checked + .aod-cod__opt-card{
@@ -363,58 +402,23 @@
 }
 .aod-cod__opt input:focus-visible + .aod-cod__opt-card{box-shadow:0 0 0 2px rgba(0,128,96,.25)}
 .aod-cod__opt-name{line-height:1.2}
-.aod-cod__opt-plus{font-size:12px;color:var(--sh-accent);font-weight:600}
+.aod-cod__opt-plus{font-size:11px;color:var(--sh-accent);font-weight:600}
 /* Valeurs « avec photo » : pastille verticale (vignette + nom). */
-.aod-cod__opt--visual .aod-cod__opt-card{flex-direction:column;gap:6px;min-width:84px;padding:8px}
+.aod-cod__opt--visual .aod-cod__opt-card{flex-direction:column;gap:5px;min-width:60px;padding:6px}
 .aod-cod__opt-thumb{
-	width:72px;height:72px;border-radius:6px;background-size:cover;background-position:center;
+	width:52px;height:52px;border-radius:6px;background-size:cover;background-position:center;
 	border:1px solid var(--sh-line);
 }
 /* Pastille de couleur prédéfinie (pas de photo) : on affiche la vraie couleur. */
 .aod-cod__opt-thumb--color{box-shadow:inset 0 0 0 2px #fff;border-color:rgba(0,0,0,.18)}
 /* Couleur sans photo : carte compacte en ligne (petit point rond + nom),
    au lieu de la grande vignette verticale des valeurs avec photo. */
-.aod-cod__opt--color .aod-cod__opt-card{flex-direction:row;min-width:0;padding:8px 12px;gap:8px}
-.aod-cod__opt--color .aod-cod__opt-thumb{width:20px;height:20px;border-radius:50%}
+.aod-cod__opt--color .aod-cod__opt-card{flex-direction:row;min-width:0;padding:5px 9px;gap:6px}
+.aod-cod__opt--color .aod-cod__opt-thumb{width:16px;height:16px;border-radius:50%}
 
-/* ---- Configurateur d'article (variantes + quantité, puis « Ajouter ») ---- */
-.aod-cod__config{
-	border:1px solid var(--sh-line);border-radius:var(--sh-radius);
-	background:var(--sh-bg-sub);padding:16px;margin:0 0 16px;
-}
-.aod-cod__config-head{font-size:13px;font-weight:600;color:var(--sh-text);margin:0 0 12px}
-.aod-cod__config .aod-cod__qty{margin-bottom:0}
-/* Bouton « Ajouter cet article » : sobre, secondaire (le CTA reste « Confirmer »). */
-.aod-cod__additem{
-	display:inline-flex;align-items:center;gap:4px;margin-top:14px;
-	padding:9px 16px;border:1px solid var(--sh-line-strong);border-radius:var(--sh-radius-sm);
-	background:#fff;color:var(--sh-text);font-size:14px;font-weight:600;cursor:pointer;
-	transition:background .12s,border-color .12s;-webkit-appearance:none;appearance:none;
-}
-.aod-cod__additem:hover{background:var(--sh-bg-sub)}
-.aod-cod__additem:focus-visible{outline:2px solid var(--sh-accent);outline-offset:2px}
-.aod-cod__config-msg{margin:8px 0 0;font-size:12.5px;color:var(--sh-error);min-height:0}
+/* ---- Message d'erreur de configuration (variante manquante) ---- */
+.aod-cod__config-msg{margin:8px 0 12px;font-size:12.5px;color:var(--sh-error);min-height:0}
 .aod-cod__config-msg:empty{display:none}
-
-/* ---- Tableau des articles ajoutés (panier) ---- */
-.aod-cod__cart{width:100%;border-collapse:collapse;margin:0 0 16px}
-.aod-cod__cart-row{border-bottom:1px solid var(--sh-line)}
-.aod-cod__cart-row:last-child{border-bottom:0}
-.aod-cod__cart td{padding:10px 8px;font-size:14px;color:var(--sh-text);vertical-align:middle}
-.aod-cod__cart-variant{font-weight:500}
-.aod-cod__cart-qty{white-space:nowrap;color:var(--sh-text-2);text-align:center;width:1%}
-.aod-cod__cart-price{white-space:nowrap;font-weight:600;text-align:right;width:1%}
-.aod-cod__cart-act{width:1%;text-align:right}
-.aod-cod__rowremove{
-	display:inline-flex;align-items:center;justify-content:center;
-	width:28px;height:28px;padding:0;border:1px solid var(--sh-line);border-radius:50%;
-	background:#fff;color:var(--sh-text-2);font-size:18px;line-height:1;cursor:pointer;
-	transition:background .12s,color .12s,border-color .12s;-webkit-appearance:none;appearance:none;
-}
-.aod-cod__rowremove:hover{background:#fde8e4;border-color:var(--sh-error);color:var(--sh-error)}
-.aod-cod__rowremove:focus-visible{outline:2px solid var(--sh-accent);outline-offset:2px}
-.rtl .aod-cod__cart-price{text-align:left}
-.rtl .aod-cod__cart-act{text-align:left}
 
 /* ---- Flèches de navigation ‹ › superposées sur la galerie produit ---- */
 .woocommerce-product-gallery .aod-gallery-nav{

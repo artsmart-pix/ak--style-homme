@@ -13,79 +13,53 @@
 			var $form     = $box.find( '.aod-cod__form' );
 			var price     = parseFloat( $box.data( 'price' ) ) || 0;
 			var productId = $box.data( 'product' );
-			// Paliers de prix par quantité (packs) — produits simples.
-			var tiers     = $box.data( 'tiers' ) || [];
-			if ( typeof tiers === 'string' ) {
-				try { tiers = JSON.parse( tiers ); } catch ( e ) { tiers = []; }
+
+			// Modèle « cartes d'offres » : le client choisit une offre (1 produit, 2 produits…)
+			// puis, si le produit a des variantes, une variante pour chaque unité de l'offre.
+			var $offers = $box.find( '.aod-cod__offers' );
+			var $cards  = $offers.find( '.aod-cod__offer-card' );
+			// Les panneaux de variantes sont imbriqués DANS chaque carte (accordéon).
+			var $panels = $offers.find( '.aod-cod__offer-panel' );
+			var hasOptions = $panels.length > 0;
+
+			var $wilaya  = $form.find( 'select[name="wilaya"]' );
+			var $commune = $form.find( 'select[name="commune"]' );
+			var $msg     = $box.find( '.aod-cod__msg' );
+			var $cmsg    = $box.find( '.aod-cod__config-msg' );
+			var $hint    = $box.find( '.aod-cod__free-hint' );
+
+			// Carte d'offre actuellement sélectionnée (index 0 = « 1 produit » par défaut).
+			function $selectedCard() {
+				var $c = $cards.filter( '.is-selected' ).first();
+				return $c.length ? $c : $cards.first();
 			}
-			if ( ! Array.isArray( tiers ) ) { tiers = []; }
-
-			// Prix unitaire applicable pour une quantité (palier le plus avantageux atteint).
-			function tierUnit( qty ) {
-				var unit = price, bestMin = 1;
-				for ( var i = 0; i < tiers.length; i++ ) {
-					var min = parseInt( tiers[ i ].min, 10 ) || 0;
-					var p   = parseFloat( tiers[ i ].price ) || 0;
-					if ( min >= 2 && p > 0 && p < price && qty >= min && min >= bestMin ) {
-						bestMin = min;
-						unit    = p;
-					}
-				}
-				return unit;
+			function selectedQty() {
+				return Math.max( 1, parseInt( $selectedCard().attr( 'data-qty' ), 10 ) || 1 );
 			}
-			var $wilaya   = $form.find( 'select[name="wilaya"]' );
-			var $commune  = $form.find( 'select[name="commune"]' );
-			var $msg      = $box.find( '.aod-cod__msg' );
-			var $hint     = $box.find( '.aod-cod__free-hint' );
-
-			// Modèle « configurateur + panier » : on choisit des variantes dans le
-			// configurateur, puis « Ajouter » crée une ligne dans le tableau du panier.
-			var hasOptions = $box.find( '.aod-cod__config' ).length > 0;
-			// Articles ajoutés : { qty, opt:{si:valeur}, names:[…], supp, imgId }.
-			var cart = [];
-
-			// Quantité saisie dans le configurateur (avant ajout).
-			function cfgQty() {
-				return Math.max( 1, parseInt( $box.find( '.aod-cod__cfg-qty' ).val(), 10 ) || 1 );
+			function selectedLotPrice() {
+				return parseFloat( $selectedCard().attr( 'data-price' ) ) || price;
+			}
+			function $selectedPanel() {
+				return $selectedCard().find( '.aod-cod__offer-panel' );
 			}
 
-			// Quantité totale : somme du panier (avec options) ou champ unique (sans options).
 			function totalQty() {
-				if ( ! hasOptions ) {
-					return Math.max( 1, parseInt( $form.find( 'input[name="items[0][qty]"]' ).val(), 10 ) || 1 );
-				}
-				var t = 0;
-				for ( var i = 0; i < cart.length; i++ ) { t += cart[ i ].qty; }
-				return t;
+				return selectedQty();
 			}
 
-			// Sous-total : palier sur la quantité TOTALE + suppléments par article.
-			function productsSubtotal() {
-				if ( ! hasOptions ) {
-					var q = totalQty();
-					return tierUnit( q ) * q;
-				}
-				var unit = tierUnit( totalQty() );
-				var sub  = 0;
-				for ( var i = 0; i < cart.length; i++ ) {
-					sub += ( unit + cart[ i ].supp ) * cart[ i ].qty;
-				}
-				return sub;
-			}
-
-			// Met en évidence le palier actif selon la quantité totale.
-			function updateTierHint() {
-				if ( ! tiers.length ) { return; }
-				var qty = totalQty();
-				var bestMin = 1;
-				for ( var i = 0; i < tiers.length; i++ ) {
-					var min = parseInt( tiers[ i ].min, 10 ) || 0;
-					if ( min >= 2 && qty >= min && min >= bestMin ) { bestMin = min; }
-				}
-				$box.find( '.aod-cod__tiers li' ).each( function () {
-					var m = parseInt( $( this ).attr( 'data-min' ), 10 ) || 0;
-					$( this ).toggleClass( 'is-active', m === bestMin );
+			// Somme des suppléments des variantes choisies dans le panneau actif.
+			function panelSupplements() {
+				if ( ! hasOptions ) { return 0; }
+				var supp = 0;
+				$selectedPanel().find( '.aod-cod__optsec input[type="radio"]:checked' ).each( function () {
+					supp += parseFloat( $( this ).attr( 'data-price' ) ) || 0;
 				} );
+				return supp;
+			}
+
+			// Sous-total produits : prix de lot de l'offre + suppléments des variantes.
+			function productsSubtotal() {
+				return selectedLotPrice() + panelSupplements();
 			}
 
 			// Place la galerie WooCommerce sur la photo de la variante choisie.
@@ -126,34 +100,11 @@
 				return !! ( w && w.free );
 			}
 
-			// (Re)construit le tableau du panier à partir de `cart`.
-			function renderCart() {
-				var $table = $box.find( '.aod-cod__cart' );
-				var $body  = $box.find( '.aod-cod__cart-body' );
-				if ( ! $table.length ) { return; }
-				$body.empty();
-				if ( ! cart.length ) { $table.attr( 'hidden', 'hidden' ); return; }
-				$table.removeAttr( 'hidden' );
-				var tpl  = $box.find( '.aod-cod__row-tpl' ).html();
-				var unit = tierUnit( totalQty() );
-				for ( var i = 0; i < cart.length; i++ ) {
-					var it   = cart[ i ];
-					var $row = $( tpl );
-					$row.attr( 'data-idx', i );
-					$row.find( '.aod-cod__cart-variant' ).text( it.names.join( ' · ' ) );
-					$row.find( '.aod-cod__cart-qty' ).text( '×' + it.qty );
-					$row.find( '.aod-cod__cart-price' ).text( fmt( ( unit + it.supp ) * it.qty ) );
-					$body.append( $row );
-				}
-			}
-
 			// Recalcule cartes de livraison + récapitulatif + incitation au seuil.
 			function render() {
 				var subtotal = productsSubtotal();
 				var th       = freeThreshold();
 				var free     = wilayaIsFree() || ( th > 0 && subtotal >= th );
-
-				updateTierHint();
 
 				$box.find( '.aod-cod__radio-price' ).each( function () {
 					var $p = $( this );
@@ -181,6 +132,38 @@
 				}
 			}
 
+			// Sélection d'une carte d'offre : on affiche son panneau de variantes, on masque
+			// les autres, et on recalcule. La photo de galerie suit la 1re variante visuelle.
+			function selectCard( $card ) {
+				if ( ! $card.length ) { return; }
+				$cards.removeClass( 'is-selected' );
+				$card.addClass( 'is-selected' );
+				$card.children( '.aod-cod__offer-head' ).find( 'input[type="radio"]' ).prop( 'checked', true );
+				if ( hasOptions ) {
+					$panels.attr( 'hidden', 'hidden' );
+					$selectedPanel().removeAttr( 'hidden' );
+				}
+				if ( $cmsg ) { $cmsg.text( '' ); }
+				render();
+			}
+
+			$offers.on( 'change', '.aod-cod__offer-card input[type="radio"]', function () {
+				selectCard( $( this ).closest( '.aod-cod__offer-card' ) );
+			} );
+
+			// Choisir une valeur d'option : marque la carte/option et change la grande photo.
+			if ( hasOptions ) {
+				$offers.on( 'change', '.aod-cod__optsec input[type="radio"]', function () {
+					var $sec = $( this ).closest( '.aod-cod__optsec' );
+					$sec.find( '.aod-cod__opt' ).removeClass( 'is-selected' );
+					$( this ).closest( '.aod-cod__opt' ).addClass( 'is-selected' );
+					if ( $sec.hasClass( 'is-visual' ) ) {
+						swapGallery( $( this ) );
+					}
+					render();
+				} );
+			}
+
 			// Cascade wilaya -> communes
 			$wilaya.on( 'change', function () {
 				var code = parseInt( $( this ).val(), 10 );
@@ -199,84 +182,10 @@
 				render();
 			} );
 
-			$form.on( 'change input', 'select[name="commune"], input[name="delivery"], input[type="number"], .aod-cod__optsec input[type="radio"]', render );
+			$form.on( 'change input', 'select[name="commune"], input[name="delivery"]', render );
 
-			// Stepper quantité : boutons − / + agissant sur l'input de leur propre groupe.
-			$form.on( 'click', '.aod-cod__step', function () {
-				var step = parseInt( $( this ).attr( 'data-step' ), 10 ) || 0;
-				var $inp = $( this ).closest( '.aod-cod__stepper' ).find( 'input[type="number"]' );
-				var min  = parseInt( $inp.attr( 'min' ), 10 );
-				if ( isNaN( min ) ) { min = 1; }
-				var cur  = parseInt( $inp.val(), 10 );
-				if ( isNaN( cur ) ) { cur = min; }
-				$inp.val( Math.max( min, cur + step ) ).trigger( 'change' );
-			} );
-
-			// Réinitialise le configurateur après ajout.
-			function resetConfig() {
-				var $cfg = $box.find( '.aod-cod__config' );
-				$cfg.find( 'input[type="radio"]' ).prop( 'checked', false );
-				$cfg.find( '.aod-cod__opt' ).removeClass( 'is-selected' );
-				$cfg.find( '.aod-cod__cfg-qty' ).val( 1 );
-			}
-
-			// « Ajouter cet article » : lit la sélection, l'ajoute au panier, réinitialise.
-			$form.on( 'click', '.aod-cod__additem', function () {
-				var $cfg    = $box.find( '.aod-cod__config' );
-				var $cmsg   = $cfg.find( '.aod-cod__config-msg' );
-				var opt     = {};
-				var names   = [];
-				var supp    = 0;
-				var imgId   = 0;
-				var missing = false;
-				$cfg.find( '.aod-cod__optsec' ).each( function () {
-					var si   = $( this ).data( 'si' );
-					var $sel = $( this ).find( 'input[type="radio"]:checked' );
-					if ( $sel.length ) {
-						opt[ si ] = $sel.val();
-						names.push( $sel.attr( 'data-name' ) || $sel.val() );
-						supp += parseFloat( $sel.attr( 'data-price' ) ) || 0;
-						var iid = parseInt( $sel.attr( 'data-img-id' ), 10 ) || 0;
-						if ( iid ) { imgId = iid; }
-					} else {
-						missing = true;
-					}
-				} );
-				if ( missing ) {
-					$cmsg.text( AOD_COD.i18n.choose_option || AOD_COD.i18n.required );
-					return;
-				}
-				$cmsg.text( '' );
-				cart.push( { qty: cfgQty(), opt: opt, names: names, supp: supp, imgId: imgId } );
-				resetConfig();
-				renderCart();
-				render();
-			} );
-
-			// Retirer un article du panier.
-			$form.on( 'click', '.aod-cod__rowremove', function () {
-				var idx = parseInt( $( this ).closest( '.aod-cod__cart-row' ).attr( 'data-idx' ), 10 );
-				if ( idx >= 0 ) {
-					cart.splice( idx, 1 );
-					renderCart();
-					render();
-				}
-			} );
-
-			renderCart();
-			render();
-
-			if ( hasOptions ) {
-				// Choisir une valeur « avec photo » change la grande image + marque la carte.
-				$form.on( 'change', '.aod-cod__optsec input[type="radio"]', function () {
-					var $sec = $( this ).closest( '.aod-cod__optsec' );
-					$sec.find( '.aod-cod__opt' ).removeClass( 'is-selected' );
-					$( this ).closest( '.aod-cod__opt' ).addClass( 'is-selected' );
-					if ( $sec.hasClass( 'is-visual' ) ) {
-						swapGallery( $( this ) );
-					}
-				} );
-			}
+			// État initial : carte par défaut + panneau visible cohérents.
+			selectCard( $selectedCard() );
 
 			/* ---- Capture « panier abandonné » (prospect à rappeler) ---- */
 			var leadToken   = 'l' + Date.now().toString( 36 ) + Math.random().toString( 36 ).slice( 2, 8 );
@@ -311,7 +220,7 @@
 			}
 
 			$form.find( 'input[name="phone"]' ).on( 'blur', pushLead );
-			$form.on( 'input change', 'input[name="name"], input[name="phone"], input[type="number"], .aod-cod__optsec input[type="radio"], select[name="wilaya"], select[name="commune"], input[name="delivery"]', function () {
+			$form.on( 'input change', 'input[name="name"], input[name="phone"], select[name="wilaya"], select[name="commune"], input[name="delivery"]', function () {
 				if ( leadStarted ) {
 					scheduleLead();
 				} else {
@@ -320,27 +229,47 @@
 				}
 			} );
 
+			// Lit la sélection de variantes du panneau actif : une entrée par unité.
+			// Renvoie { items: [...], missing: bool }.
+			function collectItems() {
+				if ( ! hasOptions ) {
+					return { items: [ { qty: totalQty(), opt: {} } ], missing: false };
+				}
+				var items   = [];
+				var missing = false;
+				$selectedPanel().find( '.aod-cod__unit' ).each( function () {
+					var opt = {};
+					$( this ).find( '.aod-cod__optsec' ).each( function () {
+						var si   = $( this ).data( 'si' );
+						var $sel = $( this ).find( 'input[type="radio"]:checked' );
+						if ( $sel.length ) {
+							opt[ si ] = $sel.val();
+						} else {
+							missing = true;
+						}
+					} );
+					items.push( { qty: 1, opt: opt } );
+				} );
+				return { items: items, missing: missing };
+			}
+
 			// Soumission
 			$form.on( 'submit', function ( e ) {
 				e.preventDefault();
 				$msg.removeClass( 'is-error is-success' ).text( '' );
+				if ( $cmsg ) { $cmsg.text( '' ); }
 
 				var name    = $form.find( 'input[name="name"]' ).val().trim();
 				var phone   = $form.find( 'input[name="phone"]' ).val().replace( /\D+/g, '' );
 				var wilaya  = $wilaya.val();
 				var commune = $commune.val();
 
-				var itemsData = [];
-				if ( hasOptions ) {
-					if ( ! cart.length ) {
-						return showError( AOD_COD.i18n.cart_empty || AOD_COD.i18n.choose_option || AOD_COD.i18n.required );
-					}
-					for ( var i = 0; i < cart.length; i++ ) {
-						itemsData.push( { qty: cart[ i ].qty, opt: cart[ i ].opt } );
-					}
-				} else {
-					itemsData.push( { qty: totalQty(), opt: {} } );
+				var collected = collectItems();
+				if ( collected.missing ) {
+					if ( $cmsg ) { $cmsg.text( AOD_COD.i18n.choose_option ); }
+					return showError( AOD_COD.i18n.choose_option );
 				}
+				var itemsData = collected.items;
 
 				if ( ! name || ! wilaya || ! commune ) {
 					return showError( AOD_COD.i18n.required );
@@ -393,6 +322,8 @@
 			function showError( m ) {
 				$msg.addClass( 'is-error' ).text( m );
 			}
+
+			render();
 		} );
 
 		// Flèches ‹ › superposées sur la grande photo pour parcourir toutes les
