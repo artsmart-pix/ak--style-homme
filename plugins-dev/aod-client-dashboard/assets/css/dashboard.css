@@ -139,10 +139,10 @@ body.aod-cd{
 .aod-cd-status.is-ok{border-color:var(--cd-ok);box-shadow:0 0 0 2px rgba(26,127,55,.14)}
 
 /* ---- Cartes stats ---- */
-.aod-cd-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+.aod-cd-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
 .aod-cd-card{
 	position:relative;background:#fff;border:1px solid var(--cd-line);border-radius:var(--cd-radius);
-	padding:20px;display:flex;flex-direction:column;gap:15px;overflow:hidden;
+	padding:11px 12px;display:flex;flex-direction:column;gap:7px;overflow:hidden;
 	transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease;
 }
 .aod-cd-card::before{
@@ -152,8 +152,8 @@ body.aod-cd{
 .aod-cd-card:hover{transform:translateY(-3px);box-shadow:var(--cd-shadow);border-color:#d9d9d9}
 .aod-cd-card:hover::before{transform:scaleY(1)}
 .aod-cd-card-ico{
-	width:46px;height:46px;border-radius:var(--cd-radius-sm);display:inline-flex;align-items:center;justify-content:center;
-	font-size:21px;line-height:1;background:#fff6c2;color:var(--cd-ink);
+	width:30px;height:30px;border-radius:var(--cd-radius-sm);display:inline-flex;align-items:center;justify-content:center;
+	font-size:15px;line-height:1;background:#fff6c2;color:var(--cd-ink);
 }
 .aod-cd-card-ico.t-blue{background:#e6f0ff;color:#1d4ed8}
 .aod-cd-card-ico.t-indigo{background:#ecebff;color:#4338ca}
@@ -162,8 +162,8 @@ body.aod-cd{
 .aod-cd-card-ico.t-amber{background:#fff2cc;color:#b45309}
 .aod-cd-card-ico.t-red{background:#fde7e5;color:#b91c1c}
 .aod-cd-card-ico.t-slate{background:#eef1f5;color:#475569}
-.aod-cd-card-val{font-size:28px;font-weight:800;color:var(--cd-ink);line-height:1.05;letter-spacing:-.6px}
-.aod-cd-card-lab{margin-top:6px;color:var(--cd-ink);font-size:15px;font-weight:700;letter-spacing:.1px}
+.aod-cd-card-val{font-size:18px;font-weight:800;color:var(--cd-ink);line-height:1.05;letter-spacing:-.3px}
+.aod-cd-card-lab{margin-top:2px;color:var(--cd-ink);font-size:11.5px;font-weight:700;letter-spacing:.1px}
 
 /* ---- Graphe CA (courbe SVG, sans librairie) ---- */
 .aod-cd-chartcard{background:#fff;border:1px solid var(--cd-line);border-radius:var(--cd-radius);padding:18px 20px}
