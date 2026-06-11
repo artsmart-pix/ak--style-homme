@@ -904,14 +904,24 @@
 			if ( ! pts.length ) { return; }
 
 			var vw    = parseFloat( box.dataset.vw ) || 820;
+			var vh    = parseFloat( box.dataset.vh ) || 215;
 			var guide = box.querySelector( '.aod-cd-guide' );
 			var tip   = box.querySelector( '.aod-cd-tip' );
 			var dots  = box.querySelectorAll( '.aod-cd-dot' );
 
-			function scale() { return box.clientWidth / vw; }
+			// Géométrie réellement rendue du SVG. Avec `preserveAspectRatio` +
+			// `max-height` en CSS, le tracé peut être plus étroit que le conteneur
+			// (marges vides à gauche/droite) : il faut donc l'échelle ajustée et le
+			// décalage du letterboxing, sinon le survol vise le mauvais point.
+			function geom() {
+				var r  = box.getBoundingClientRect();
+				var sc = Math.min( r.width / vw, r.height / vh );
+				if ( ! sc || ! isFinite( sc ) ) { sc = r.width / vw; }
+				return { rect: r, sc: sc, ox: ( r.width - vw * sc ) / 2, oy: ( r.height - vh * sc ) / 2 };
+			}
 
-			function show( i ) {
-				var s = scale();
+			function show( i, g ) {
+				g = g || geom();
 				var p = pts[ i ];
 				if ( guide ) {
 					guide.setAttribute( 'x1', p.x );
@@ -926,8 +936,8 @@
 					tip.classList.add( 'show' );
 					// Maintient l'infobulle dans le cadre du graphe (clamp horizontal),
 					// et la bascule sous le point quand l'espace au-dessus manque.
-					var px    = p.x * s;
-					var py    = p.y * s;
+					var px    = g.ox + p.x * g.sc;
+					var py    = g.oy + p.y * g.sc;
 					var halfW = tip.offsetWidth / 2;
 					var pad   = 6;
 					var minX  = halfW + pad;
@@ -947,14 +957,14 @@
 			}
 
 			function pick( clientX ) {
-				var rect = box.getBoundingClientRect();
-				var mx   = ( clientX - rect.left ) / scale(); // coord. viewBox
+				var g  = geom();
+				var mx = ( clientX - g.rect.left - g.ox ) / g.sc; // coord. viewBox
 				var best = 0, bd = Infinity;
 				for ( var i = 0; i < pts.length; i++ ) {
 					var d = Math.abs( pts[ i ].x - mx );
 					if ( d < bd ) { bd = d; best = i; }
 				}
-				show( best );
+				show( best, g );
 			}
 
 			box.addEventListener( 'mousemove', function ( e ) { pick( e.clientX ); } );

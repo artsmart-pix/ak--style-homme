@@ -1022,7 +1022,7 @@ class AOD_CD_Dashboard {
 		}
 		$area = $line . ' L' . $r( $pts[ $n - 1 ][0] ) . ' ' . $r( $base_y ) . ' L' . $r( $pts[0][0] ) . ' ' . $r( $base_y ) . ' Z';
 
-		echo '<div class="aod-cd-linechart" data-vw="' . (int) $vw . '" data-points="' . esc_attr( wp_json_encode( $data ) ) . '">';
+		echo '<div class="aod-cd-linechart" data-vw="' . (int) $vw . '" data-vh="' . (int) $vh . '" data-points="' . esc_attr( wp_json_encode( $data ) ) . '">';
 		echo '<svg viewBox="0 0 ' . (int) $vw . ' ' . (int) $vh . '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="' . esc_attr__( 'Chiffre d’affaires sur la période', 'aod-client-dashboard' ) . '">';
 		echo '<defs><linearGradient id="aodAreaGrad" x1="0" y1="0" x2="0" y2="1">'
 			. '<stop offset="0%" stop-color="#FFE21E" stop-opacity="0.22"/>'
