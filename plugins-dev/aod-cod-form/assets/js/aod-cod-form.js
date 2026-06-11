@@ -7,6 +7,16 @@
 		return n.toLocaleString( 'fr-DZ' ) + ' ' + AOD_COD.currency;
 	}
 
+	// Normalise un nom de commune comme le serveur (accents, casse, y≈i, ponctuation),
+	// pour comparer la commune choisie aux communes qui ont réellement un bureau.
+	function normCommune( s ) {
+		return ( s == null ? '' : String( s ) )
+			.normalize( 'NFD' ).replace( /[\u0300-\u036f]/g, '' )
+			.toLowerCase()
+			.replace( /y/g, 'i' )
+			.replace( /[^a-z0-9]+/g, '' );
+	}
+
 	$( function () {
 		$( '.aod-cod' ).each( function () {
 			var $box      = $( this );
@@ -27,6 +37,12 @@
 			var $msg     = $box.find( '.aod-cod__msg' );
 			var $cmsg    = $box.find( '.aod-cod__config-msg' );
 			var $hint    = $box.find( '.aod-cod__free-hint' );
+
+			// Filtrage du mode « bureau » (stop-desk) selon la commune.
+			var $deskRadio = $form.find( 'input[name="delivery"][value="desk"]' );
+			var $homeRadio = $form.find( 'input[name="delivery"][value="home"]' );
+			var $deskLabel = $deskRadio.closest( '.aod-cod__radio' );
+			var deskCache  = {}; // wilaya -> { gated:bool, set:[clés normalisées] }
 
 			// Carte d'offre actuellement sélectionnée (index 0 = « 1 produit » par défaut).
 			function $selectedCard() {
@@ -101,6 +117,49 @@
 				var code = parseInt( $wilaya.val(), 10 );
 				var w    = AOD_COD.wilayas[ code ];
 				return !! ( w && w.free );
+			}
+
+			// Affiche/masque l'option « bureau » selon que la commune choisie a un
+			// point relais. Tant qu'on ne connaît pas la wilaya (cache absent) ou que
+			// le livreur ne filtre pas, l'option reste visible.
+			function applyDeskGate() {
+				var code  = parseInt( $wilaya.val(), 10 );
+				var entry = deskCache[ code ];
+				var allowed = true;
+				if ( entry && entry.gated ) {
+					var val = $commune.val();
+					if ( val ) {
+						allowed = entry.set.indexOf( normCommune( val ) ) !== -1;
+					}
+				}
+				if ( allowed ) {
+					$deskLabel.show();
+				} else {
+					$deskLabel.hide();
+					if ( $deskRadio.is( ':checked' ) ) {
+						$homeRadio.prop( 'checked', true );
+					}
+				}
+				render();
+			}
+
+			// Récupère (et met en cache) les communes éligibles au stop-desk d'une
+			// wilaya auprès du livreur d'envoi automatique, puis applique le filtre.
+			function loadDeskSet( code ) {
+				if ( ! code ) { applyDeskGate(); return; }
+				if ( deskCache[ code ] ) { applyDeskGate(); return; }
+				$.post( AOD_COD.ajax_url, {
+					action: 'aod_cod_desk_communes',
+					nonce: AOD_COD.nonce,
+					wilaya: code
+				} ).done( function ( res ) {
+					var d = ( res && res.data ) || {};
+					deskCache[ code ] = { gated: !! d.gated, set: d.communes || [] };
+					applyDeskGate();
+				} ).fail( function () {
+					deskCache[ code ] = { gated: false, set: [] };
+					applyDeskGate();
+				} );
 			}
 
 			// Recalcule cartes de livraison + récapitulatif + incitation au seuil.
@@ -188,10 +247,12 @@
 				} else {
 					$commune.prop( 'disabled', true );
 				}
-				render();
+				applyDeskGate(); // rend immédiatement (option « bureau » visible le temps du chargement)
+				loadDeskSet( code );
 			} );
 
-			$form.on( 'change input', 'select[name="commune"], input[name="delivery"]', render );
+			$form.on( 'change', 'select[name="commune"]', applyDeskGate );
+			$form.on( 'change input', 'input[name="delivery"]', render );
 
 			// État initial : carte par défaut + panneau visible cohérents.
 			selectCard( $selectedCard() );

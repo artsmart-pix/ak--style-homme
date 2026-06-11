@@ -108,6 +108,22 @@ abstract class AOD_Carrier {
 		return array();
 	}
 
+	/**
+	 * Communes d'une wilaya qui disposent réellement d'un point relais (stop-desk),
+	 * sous forme de clés normalisées (cf. normalisation propre à chaque livreur).
+	 *
+	 * Sert au formulaire public à masquer l'option « bureau » là où elle n'existe
+	 * pas. Par défaut, le livreur ne filtre PAS par commune (stop-desk géré au
+	 * niveau wilaya/station, ou non géré) : on renvoie null = « ne pas filtrer ».
+	 *
+	 * @param int $wilaya_code 1-58.
+	 * @return string[]|null Clés normalisées des communes avec bureau, ou null si
+	 *                       le filtrage par commune ne s'applique pas / indéterminé.
+	 */
+	public function desk_communes( $wilaya_code ) {
+		return null;
+	}
+
 	/* ---- Helpers communs ---- */
 
 	/** Clé d'option WordPress des réglages de ce livreur. */

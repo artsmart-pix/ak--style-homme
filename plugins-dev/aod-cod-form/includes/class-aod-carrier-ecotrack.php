@@ -261,6 +261,31 @@ class AOD_Carrier_Ecotrack extends AOD_Carrier {
 		return array( 'nom' => $commune, 'has_stop_desk' => false, 'matched' => false );
 	}
 
+	/**
+	 * Communes (clés normalisées) de la wilaya disposant d'un point relais EcoTrack.
+	 *
+	 * Permet au formulaire public de n'afficher « bureau » que là où EcoTrack a
+	 * réellement un stop-desk. On renvoie null si le référentiel est indisponible
+	 * (livreur non configuré ou API muette) afin de NE PAS masquer l'option à tort
+	 * sur une panne réseau — la validation finale reste faite à la confirmation.
+	 *
+	 * @param int $wilaya_code 1-58.
+	 * @return string[]|null Clés normalisées des communes avec bureau, ou null.
+	 */
+	public function desk_communes( $wilaya_code ) {
+		$list = $this->communes( $wilaya_code );
+		if ( empty( $list ) ) {
+			return null; // Pas de référentiel : on ne filtre pas (fallback sûr).
+		}
+		$keys = array();
+		foreach ( $list as $c ) {
+			if ( ! empty( $c['has_stop_desk'] ) ) {
+				$keys[] = $this->normalize_commune( $c['nom'] );
+			}
+		}
+		return array_values( array_unique( $keys ) );
+	}
+
 	public function build_payload( $order ) {
 		$s       = $this->settings();
 		$is_desk = $this->is_stopdesk_order( $order );

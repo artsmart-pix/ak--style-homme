@@ -45,6 +45,47 @@ class AOD_COD_Form {
 		// AJAX (connecté + visiteur).
 		add_action( 'wp_ajax_aod_cod_submit', array( $this, 'handle_submit' ) );
 		add_action( 'wp_ajax_nopriv_aod_cod_submit', array( $this, 'handle_submit' ) );
+
+		// AJAX : communes éligibles au stop-desk pour une wilaya (filtrage du formulaire).
+		add_action( 'wp_ajax_aod_cod_desk_communes', array( $this, 'handle_desk_communes' ) );
+		add_action( 'wp_ajax_nopriv_aod_cod_desk_communes', array( $this, 'handle_desk_communes' ) );
+	}
+
+	/**
+	 * AJAX : renvoie les communes d'une wilaya qui ont réellement un point relais
+	 * (stop-desk) chez le livreur d'envoi automatique, pour que le formulaire
+	 * public ne propose « bureau » que là où c'est possible.
+	 *
+	 * Réponse : { gated:false } si le livreur ne filtre pas par commune (ou n'est
+	 * pas configuré), sinon { gated:true, communes:[clés normalisées] }.
+	 */
+	public function handle_desk_communes() {
+		check_ajax_referer( 'aod_cod_nonce', 'nonce' );
+
+		$wilaya = isset( $_POST['wilaya'] ) ? absint( $_POST['wilaya'] ) : 0;
+		if ( $wilaya < 1 || $wilaya > 58 ) {
+			wp_send_json_success( array( 'gated' => false ) );
+		}
+
+		// Livreur configuré pour l'envoi automatique à la confirmation.
+		if ( ! class_exists( 'AOD_Shipping' ) ) {
+			wp_send_json_success( array( 'gated' => false ) );
+		}
+		$shipping = AOD_Shipping::instance();
+		$auto     = $shipping->auto_settings();
+		$carrier  = $shipping->carrier( $auto['carrier'] );
+
+		if ( ! $carrier || ! $carrier->is_configured() || ! $carrier->supports_stopdesk() ) {
+			wp_send_json_success( array( 'gated' => false ) );
+		}
+
+		$set = $carrier->desk_communes( $wilaya );
+		if ( ! is_array( $set ) ) {
+			// null = filtrage non applicable / référentiel indisponible : on n'impose rien.
+			wp_send_json_success( array( 'gated' => false ) );
+		}
+
+		wp_send_json_success( array( 'gated' => true, 'communes' => array_values( $set ) ) );
 	}
 
 	/**
