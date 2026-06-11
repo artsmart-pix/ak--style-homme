@@ -70,6 +70,12 @@ body.aod-cd{
 }
 .aod-cd-h1{margin:0;font-size:23px;font-weight:800;letter-spacing:-.3px}
 .aod-cd-user{font-size:13px;font-weight:600;color:var(--cd-ink);background:var(--cd-bg);padding:7px 14px;border-radius:30px;border:1px solid var(--cd-line)}
+.aod-cd-top-right{display:flex;align-items:center;gap:14px}
+/* Sélecteur de langue FR ⇄ AR */
+.aod-cd-lang{display:inline-flex;gap:3px;background:var(--cd-bg);border:1px solid var(--cd-line);border-radius:999px;padding:3px}
+.aod-cd-lang__btn{display:inline-block;min-width:34px;text-align:center;padding:5px 11px;border-radius:999px;font-size:13px;font-weight:700;line-height:1;text-decoration:none;color:var(--cd-muted);transition:.15s}
+.aod-cd-lang__btn:hover{background:var(--cd-line-2);color:var(--cd-ink)}
+.aod-cd-lang__btn.is-active{background:var(--cd-ink);color:var(--cd-yellow)}
 .aod-cd-content{padding:26px 30px}
 
 /* ---- Onglets de filtre ---- */

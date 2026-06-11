@@ -3,6 +3,7 @@
 	'use strict';
 
 	var CD = window.AOD_CD || {};
+	var netErr = CD.i18nNetErr || 'Erreur réseau.';
 
 	function toast( message, isBad ) {
 		var t = document.createElement( 'div' );
@@ -55,7 +56,7 @@
 						sel.classList.remove( 'is-saving' );
 						sel.disabled = false;
 						sel.value = sel.dataset.prev;
-						toast( 'Erreur réseau.', true );
+						toast( netErr, true );
 					} );
 			} );
 		} );
@@ -126,7 +127,7 @@
 					} )
 					.catch( function () {
 						btn.disabled = false;
-						toast( 'Erreur réseau.', true );
+						toast( netErr, true );
 					} );
 			} );
 		}
@@ -141,7 +142,8 @@
 		document.querySelectorAll( '.aod-cd-del-product' ).forEach( function ( b ) {
 			b.addEventListener( 'click', function () {
 				var name = b.dataset.name || '';
-				if ( ! window.confirm( 'Supprimer « ' + name + ' » ? (déplacé dans la corbeille)' ) ) { return; }
+				var delMsg = ( CD.i18nProductDelConfirm || 'Supprimer « %s » ? (déplacé dans la corbeille)' ).replace( '%s', name );
+				if ( ! window.confirm( delMsg ) ) { return; }
 				b.disabled = true;
 				var body = new URLSearchParams();
 				body.append( 'action', 'aod_cd_delete_product' );
@@ -153,13 +155,13 @@
 						if ( res && res.success ) {
 							var row = b.closest( 'tr' );
 							if ( row ) { row.style.opacity = '0.4'; row.remove(); }
-							toast( res.data.message || 'Supprimé', false );
+							toast( res.data.message || CD.i18nDeleted || 'Supprimé', false );
 						} else {
 							b.disabled = false;
 							toast( ( res && res.data && res.data.message ) || 'Erreur.', true );
 						}
 					} )
-					.catch( function () { b.disabled = false; toast( 'Erreur réseau.', true ); } );
+					.catch( function () { b.disabled = false; toast( netErr, true ); } );
 			} );
 		} );
 	}
@@ -334,10 +336,10 @@
 				var total = priceEl ? ( parseFloat( priceEl.value ) || 0 ) : 0;
 				if ( base > 0 && qty >= 2 && total > 0 && total < base * qty ) {
 					var eco = Math.round( ( base * qty - total ) * 100 ) / 100;
-					hint.textContent = 'Économie : ' + eco.toLocaleString( 'fr-DZ' );
+					hint.textContent = ( CD.i18nEco || 'Économie : %s' ).replace( '%s', eco.toLocaleString( 'fr-DZ' ) );
 					hint.classList.remove( 'is-bad' );
 				} else if ( qty >= 2 && total > 0 ) {
-					hint.textContent = 'Aucune réduction (sera ignorée)';
+					hint.textContent = CD.i18nNoDiscount || 'Aucune réduction (sera ignorée)';
 					hint.classList.add( 'is-bad' );
 				} else {
 					hint.textContent = '';
@@ -393,7 +395,7 @@
 					}
 				} ).catch( function () {
 					if ( btn ) { btn.disabled = false; }
-					toast( 'Erreur réseau.', true );
+					toast( netErr, true );
 				} );
 			} );
 		}
@@ -418,7 +420,7 @@
 						}
 					} ).catch( function () {
 						saveBtn.disabled = false;
-						toast( 'Erreur réseau.', true );
+						toast( netErr, true );
 					} );
 					return;
 				}
@@ -436,7 +438,7 @@
 						}
 					} ).catch( function () {
 						delBtn.disabled = false;
-						toast( 'Erreur réseau.', true );
+						toast( netErr, true );
 					} );
 				}
 			} );
@@ -526,14 +528,14 @@
 					.then( function ( res ) {
 						if ( btn ) { btn.disabled = false; }
 						if ( res && res.success ) {
-							toast( res.data.message || 'Enregistré', false );
+							toast( res.data.message || CD.i18nSaved || 'Enregistré', false );
 						} else {
 							toast( ( res && res.data && res.data.message ) || 'Erreur.', true );
 						}
 					} )
 					.catch( function () {
 						if ( btn ) { btn.disabled = false; }
-						toast( 'Erreur réseau.', true );
+						toast( netErr, true );
 					} );
 			} );
 		} );
@@ -553,12 +555,12 @@
 				.then( function ( res ) {
 					btn.disabled = false;
 					if ( res && res.success ) {
-						toast( res.data.message || 'Envoyé', false );
+						toast( res.data.message || CD.i18nSent || 'Envoyé', false );
 					} else {
 						toast( ( res && res.data && res.data.message ) || 'Erreur.', true );
 					}
 				} )
-				.catch( function () { btn.disabled = false; toast( 'Erreur réseau.', true ); } );
+				.catch( function () { btn.disabled = false; toast( netErr, true ); } );
 		} );
 	}
 
@@ -602,7 +604,7 @@
 							toast( ( res && res.data && res.data.message ) || 'Erreur.', true );
 						}
 					} )
-					.catch( function () { close(); toast( 'Erreur réseau.', true ); } );
+					.catch( function () { close(); toast( netErr, true ); } );
 			} );
 		} );
 	}
@@ -696,7 +698,7 @@
 				} )
 				.catch( function () {
 					if ( btn ) { btn.disabled = false; }
-					toast( 'Erreur réseau.', true );
+					toast( netErr, true );
 				} );
 		} );
 	}
@@ -797,7 +799,7 @@
 					toast( ( res && res.data && res.data.message ) || 'Erreur.', true );
 				}
 			} )
-			.catch( function () { btn.disabled = false; toast( 'Erreur réseau.', true ); } );
+			.catch( function () { btn.disabled = false; toast( netErr, true ); } );
 	}
 
 	/* Livraison : checkbox « tout cocher » applique la gratuité à toutes les wilayas */

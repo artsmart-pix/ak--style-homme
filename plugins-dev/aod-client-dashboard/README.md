@@ -69,24 +69,31 @@ aod-client-dashboard/
 
 ## Internationalisation
 
-L'interface suit le **locale WordPress**. Pour l'afficher en arabe :
+L'espace de gestion est **bilingue FR ⇄ AR**. Un bouton dans l'en-tête (`AOD_CD_Lang`,
+`includes/class-aod-cd-lang.php`) bascule la langue ; le choix est mémorisé dans le
+cookie `aod_lang` (1 an), **partagé avec le sélecteur de la partie publique** — le
+gérant retrouve donc la même langue côté boutique et côté gestion. L'arabe passe
+automatiquement en RTL (`dir="rtl"` via `is_rtl()`).
 
-- **Site entier** : `Réglages → Général → Langue du site → العربية` ;
-- **Par utilisateur** (recommandé en bilingue) : profil du gérant → Langue → العربية
-  (le client a l'arabe RTL, l'administrateur garde le français).
+> À défaut de bouton, le locale WordPress est respecté (profil du gérant → Langue → العربية).
 
-Régénérer les traductions après modification des chaînes :
+### Régénérer les traductions après modification des chaînes
+
+**Lance ce script à chaque ajout/modification de texte** (PHP `__()/_e()…` ou clés
+`window.AOD_CD` injectées vers le JS). Il extrait, fusionne (en préservant l'existant),
+recompile le `.mo` et **liste ce qu'il reste à traduire** :
 
 ```bash
-# Extraction
-wp i18n make-pot wp-content/plugins/aod-client-dashboard \
-  wp-content/plugins/aod-client-dashboard/languages/aod-client-dashboard.pot \
-  --domain=aod-client-dashboard
-
-# Compilation .po → .mo
-wp i18n make-mo wp-content/plugins/aod-client-dashboard/languages/aod-client-dashboard-ar.po \
-  wp-content/plugins/aod-client-dashboard/languages/aod-client-dashboard-ar.mo
+plugins-dev/aod-client-dashboard/bin/make-translations.sh
 ```
+
+Puis édite `languages/aod-client-dashboard-ar.po` pour les chaînes signalées « à
+traduire » et relance le script (la traduction arabe reste manuelle). Détection
+auto de wp-cli (hôte ou conteneur Docker `wp_cli_c1`) ; `--strict` sort en erreur
+s'il manque des traductions (utile en CI/hook).
+
+> ⚠️ Oublier cette étape = des libellés qui restent en français quand on bascule
+> en arabe. C'est la cause classique d'un dashboard « à moitié traduit ».
 
 ## Développement local
 

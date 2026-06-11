@@ -191,7 +191,18 @@ class AOD_CD_Dashboard {
 			i18nCatRename:  <?php echo wp_json_encode( __( 'Renommer', 'aod-client-dashboard' ) ); ?>,
 			i18nCatDelete:  <?php echo wp_json_encode( __( 'Supprimer', 'aod-client-dashboard' ) ); ?>,
 			i18nCatDelConfirm: <?php echo wp_json_encode( __( 'Supprimer cette catégorie ? Les produits concernés perdront ce classement.', 'aod-client-dashboard' ) ); ?>,
-			i18nCatZero:    <?php echo wp_json_encode( __( '0 produit', 'aod-client-dashboard' ) ); ?>
+			i18nCatZero:    <?php echo wp_json_encode( __( '0 produit', 'aod-client-dashboard' ) ); ?>,
+			i18nNetErr:     <?php echo wp_json_encode( __( 'Erreur réseau.', 'aod-client-dashboard' ) ); ?>,
+			i18nDeleted:    <?php echo wp_json_encode( __( 'Supprimé', 'aod-client-dashboard' ) ); ?>,
+			i18nSaved:      <?php echo wp_json_encode( __( 'Enregistré', 'aod-client-dashboard' ) ); ?>,
+			i18nSent:       <?php echo wp_json_encode( __( 'Envoyé', 'aod-client-dashboard' ) ); ?>,
+			i18nProductDelConfirm: <?php echo wp_json_encode( __( 'Supprimer « %s » ? (déplacé dans la corbeille)', 'aod-client-dashboard' ) ); ?>,
+			i18nEco:        <?php echo wp_json_encode( __( 'Économie : %s', 'aod-client-dashboard' ) ); ?>,
+			i18nNoDiscount: <?php echo wp_json_encode( __( 'Aucune réduction (sera ignorée)', 'aod-client-dashboard' ) ); ?>,
+			i18nNoteTitle:  <?php echo wp_json_encode( __( 'Ajouter une note', 'aod-client-dashboard' ) ); ?>,
+			i18nSave:       <?php echo wp_json_encode( __( 'Enregistrer', 'aod-client-dashboard' ) ); ?>,
+			i18nCancel:     <?php echo wp_json_encode( __( 'Annuler', 'aod-client-dashboard' ) ); ?>,
+			i18nShipped:    <?php echo wp_json_encode( __( 'Colis créé', 'aod-client-dashboard' ) ); ?>
 		};
 	</script>
 </head>
@@ -217,7 +228,11 @@ class AOD_CD_Dashboard {
 	<main class="aod-cd-main">
 		<header class="aod-cd-top">
 			<h1 class="aod-cd-h1"><?php echo esc_html( $this->sections[ $section ][0] ); ?></h1>
-			<div class="aod-cd-user"><?php echo esc_html( $user->display_name ); ?></div>
+			<div class="aod-cd-top-right">
+				<?php if ( class_exists( 'AOD_CD_Lang' ) ) { echo AOD_CD_Lang::switcher(); // phpcs:ignore WordPress.Security.EscapeOutput
+				} ?>
+				<div class="aod-cd-user"><?php echo esc_html( $user->display_name ); ?></div>
+			</div>
 		</header>
 		<div class="aod-cd-content">
 			<?php $this->render_section( $section ); ?>
