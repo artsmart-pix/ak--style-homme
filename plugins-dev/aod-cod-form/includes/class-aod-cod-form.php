@@ -211,9 +211,10 @@ class AOD_COD_Form {
 					continue;
 				}
 				$out[] = array(
-					'label'  => isset( $sec['label'] ) ? (string) $sec['label'] : '',
-					'visual' => ! empty( $sec['visual'] ),
-					'values' => $values,
+					'label'   => isset( $sec['label'] ) ? (string) $sec['label'] : '',
+					'visual'  => ! empty( $sec['visual'] ),
+					'display' => ( isset( $sec['display'] ) && 'dropdown' === $sec['display'] ) ? 'dropdown' : 'cards',
+					'values'  => $values,
 				);
 			}
 			if ( $out ) {
@@ -253,7 +254,7 @@ class AOD_COD_Form {
 				);
 			}
 			if ( $values ) {
-				$out[] = array( 'label' => $label, 'visual' => true, 'values' => $values );
+				$out[] = array( 'label' => $label, 'visual' => true, 'display' => 'cards', 'values' => $values );
 			}
 		}
 		return $out;
@@ -473,9 +474,23 @@ class AOD_COD_Form {
 		ob_start();
 		foreach ( $options as $si => $sec ) :
 			$label_disp = $this->localize_variant( $sec['label'] );
+			$is_dropdown = ( isset( $sec['display'] ) && 'dropdown' === $sec['display'] );
 			?>
-			<div class="aod-cod__field aod-cod__optsec<?php echo $sec['visual'] ? ' is-visual' : ''; ?>" data-si="<?php echo esc_attr( $si ); ?>" data-label="<?php echo esc_attr( $sec['label'] ); ?>">
+			<div class="aod-cod__field aod-cod__optsec<?php echo $sec['visual'] ? ' is-visual' : ''; ?><?php echo $is_dropdown ? ' is-dropdown' : ''; ?>" data-si="<?php echo esc_attr( $si ); ?>" data-label="<?php echo esc_attr( $sec['label'] ); ?>">
 				<label class="aod-cod__optlabel"><?php echo esc_html( $label_disp ); ?> <span>*</span></label>
+				<?php if ( $is_dropdown ) : ?>
+					<select class="aod-cod__optselect" data-si="<?php echo esc_attr( $si ); ?>">
+						<option value=""><?php esc_html_e( '— Choisir —', 'aod-cod-form' ); ?></option>
+						<?php foreach ( $sec['values'] as $vi => $val ) :
+							$opt_label = $this->localize_variant( $val['name'] );
+							if ( $val['price'] > 0 ) {
+								$opt_label .= '  (+' . wp_strip_all_tags( wc_price( $val['price'] ) ) . ')';
+							}
+							?>
+							<option value="<?php echo esc_attr( $val['name'] ); ?>" data-si="<?php echo esc_attr( $si ); ?>" data-name="<?php echo esc_attr( $val['name'] ); ?>" data-price="<?php echo esc_attr( $val['price'] ); ?>" data-img="<?php echo esc_url( $val['img'] ); ?>" data-img-id="<?php echo esc_attr( $val['img_id'] ); ?>" data-img-full="<?php echo esc_url( $val['img_full'] ); ?>" data-img-w="<?php echo esc_attr( $val['img_w'] ); ?>" data-img-h="<?php echo esc_attr( $val['img_h'] ); ?>" data-srcset="<?php echo esc_attr( $val['srcset'] ); ?>"><?php echo esc_html( $opt_label ); ?></option>
+						<?php endforeach; ?>
+					</select>
+				<?php else : ?>
 				<div class="aod-cod__opts">
 					<?php
 					foreach ( $sec['values'] as $vi => $val ) :
@@ -508,6 +523,7 @@ class AOD_COD_Form {
 						</label>
 					<?php endforeach; ?>
 				</div>
+				<?php endif; ?>
 			</div>
 			<?php
 		endforeach;
@@ -577,11 +593,24 @@ class AOD_COD_Form {
 	 * @param array $options     Sections d'options (vide = produit sans variantes).
 	 * @return string
 	 */
+	/**
+	 * Palette d'accents pour différencier visuellement les offres entre elles et
+	 * les articles (unités) d'une même offre. Cyclée par index ; chaque couleur
+	 * est exposée via la variable CSS `--aod-c` sur la carte d'offre / l'unité.
+	 *
+	 * @return string[] Codes hex, contrastés sur fond blanc.
+	 */
+	protected function accent_palette() {
+		return array( '#2563eb', '#16a34a', '#f97316', '#7c3aed', '#db2777', '#0891b2', '#ca8a04', '#dc2626' );
+	}
+
 	protected function offer_cards_html( $product_id, $base_price, $offers, $options = array() ) {
 		// Carte « 1 produit » implicite en tête, puis les offres.
 		$cards       = array_merge( array( array( 'qty' => 1, 'price' => $base_price ) ), $offers );
 		$name        = 'aod-offer-' . (int) $product_id;
 		$has_options = ! empty( $options );
+		$palette     = $this->accent_palette();
+		$pcount      = count( $palette );
 		ob_start();
 		?>
 		<div class="aod-cod__offers" role="radiogroup" aria-label="<?php esc_attr_e( 'Choisissez votre offre', 'aod-cod-form' ); ?>">
@@ -591,8 +620,9 @@ class AOD_COD_Form {
 				$old   = $base_price * $qty;             // Prix « plein » (achat à l'unité).
 				$save  = $old - $total;                  // Économie du lot.
 				$oid   = 'aod-cod-offer-' . (int) $product_id . '-' . (int) $oi;
+				$accent = $palette[ $oi % $pcount ];
 				?>
-				<div class="aod-cod__offer-card<?php echo 0 === $oi ? ' is-selected' : ''; ?>" data-offer="<?php echo esc_attr( $oi ); ?>" data-qty="<?php echo esc_attr( $qty ); ?>" data-price="<?php echo esc_attr( $total ); ?>">
+				<div class="aod-cod__offer-card<?php echo 0 === $oi ? ' is-selected' : ''; ?>" data-offer="<?php echo esc_attr( $oi ); ?>" data-qty="<?php echo esc_attr( $qty ); ?>" data-price="<?php echo esc_attr( $total ); ?>" style="--aod-c:<?php echo esc_attr( $accent ); ?>">
 					<label class="aod-cod__offer-head" for="<?php echo esc_attr( $oid ); ?>">
 						<input type="radio" id="<?php echo esc_attr( $oid ); ?>" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $oi ); ?>" <?php checked( 0, $oi ); ?>>
 						<span class="aod-cod__offer-body">
@@ -617,9 +647,10 @@ class AOD_COD_Form {
 					<?php if ( $has_options ) : ?>
 						<div class="aod-cod__offer-panel" data-offer="<?php echo esc_attr( $oi ); ?>"<?php echo 0 === $oi ? '' : ' hidden'; ?>>
 							<?php for ( $u = 0; $u < $qty; $u++ ) :
-								$prefix = (int) $product_id . '-' . (int) $oi . '-' . (int) $u;
+								$prefix  = (int) $product_id . '-' . (int) $oi . '-' . (int) $u;
+								$uaccent = $palette[ $u % $pcount ];
 								?>
-								<div class="aod-cod__unit" data-unit="<?php echo esc_attr( $u ); ?>">
+								<div class="aod-cod__unit" data-unit="<?php echo esc_attr( $u ); ?>" style="--aod-c:<?php echo esc_attr( $uaccent ); ?>">
 									<?php if ( $qty > 1 ) : ?>
 										<div class="aod-cod__unit-head"><?php echo esc_html( sprintf( __( 'Article %d', 'aod-cod-form' ), $u + 1 ) ); ?></div>
 									<?php endif; ?>

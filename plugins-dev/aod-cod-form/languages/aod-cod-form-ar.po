@@ -118,3 +118,6 @@ msgstr "المنتج %d"
 
 msgid "Sélectionnez : %s"
 msgstr "اختر: %s"
+
+msgid "— Choisir —"
+msgstr "— اختر —"

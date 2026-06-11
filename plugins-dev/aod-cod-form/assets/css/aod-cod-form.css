@@ -345,6 +345,12 @@
 }
 .aod-cod__offer-card:hover{border-color:var(--sh-line-strong)}
 .aod-cod__offer-card.is-selected{border-color:var(--sh-accent);box-shadow:0 0 0 1px var(--sh-accent)}
+/* Différenciation des offres : liseré couleur à gauche (survit à l'état sélectionné). */
+.aod-cod__offer-card::before{
+	content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
+	background:var(--aod-c,transparent);z-index:1;pointer-events:none;
+}
+.rtl .aod-cod__offer-card::before{left:auto;right:0}
 /* En-tête cliquable de la carte (rangée titre / prix / coche). */
 .aod-cod__offer-head{
 	display:flex;align-items:center;gap:9px;margin:0;padding:8px 12px;cursor:pointer;
@@ -352,7 +358,7 @@
 .aod-cod__offer-card.is-selected .aod-cod__offer-head{background:var(--sh-bg-sub)}
 .aod-cod__offer-card input{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
 .aod-cod__offer-body{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
-.aod-cod__offer-title{font-size:13.5px;font-weight:700;color:var(--sh-text)}
+.aod-cod__offer-title{font-size:13.5px;font-weight:700;color:var(--aod-c,var(--sh-text))}
 .aod-cod__offer-badge{
 	align-self:flex-start;font-size:10.5px;font-weight:700;color:#fff;background:var(--sh-green,#16a34a);
 	border-radius:999px;padding:1px 7px;
@@ -376,10 +382,14 @@
 .aod-cod__offer-panel[hidden]{display:none}
 .aod-cod__unit{
 	border:1px solid var(--sh-line);border-radius:var(--sh-radius-sm);
+	/* Différenciation des articles : bordure de départ épaisse et colorée. */
+	border-inline-start:3px solid var(--aod-c,var(--sh-line));
 	background:#fff;padding:10px 12px;margin:0 0 8px;
 }
 .aod-cod__unit:last-child{margin-bottom:0}
-.aod-cod__unit-head{font-size:12px;font-weight:700;color:var(--sh-text);margin:0 0 9px}
+.aod-cod__unit-head{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--aod-c,var(--sh-text));margin:0 0 9px}
+/* Pastille de couleur de l'article devant son libellé. */
+.aod-cod__unit-head::before{content:"";flex-shrink:0;width:8px;height:8px;border-radius:50%;background:var(--aod-c,var(--sh-text))}
 .aod-cod__unit .aod-cod__optsec:last-child{margin-bottom:0}
 
 /* ---- Sections d'options (Taille, Couleur, Pointure…) — style Shopify ---- */

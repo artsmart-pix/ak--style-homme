@@ -54,6 +54,9 @@
 				$selectedPanel().find( '.aod-cod__optsec input[type="radio"]:checked' ).each( function () {
 					supp += parseFloat( $( this ).attr( 'data-price' ) ) || 0;
 				} );
+				$selectedPanel().find( '.aod-cod__optsec select.aod-cod__optselect' ).each( function () {
+					supp += parseFloat( $( this ).find( 'option:selected' ).attr( 'data-price' ) ) || 0;
+				} );
 				return supp;
 			}
 
@@ -162,6 +165,12 @@
 					}
 					render();
 				} );
+
+				// Variante choisie via une liste déroulante : photo de galerie + recalcul.
+				$offers.on( 'change', '.aod-cod__optsec select.aod-cod__optselect', function () {
+					swapGallery( $( this ).find( 'option:selected' ) );
+					render();
+				} );
 			}
 
 			// Cascade wilaya -> communes
@@ -240,10 +249,17 @@
 				$selectedPanel().find( '.aod-cod__unit' ).each( function () {
 					var opt = {};
 					$( this ).find( '.aod-cod__optsec' ).each( function () {
-						var si   = $( this ).data( 'si' );
-						var $sel = $( this ).find( 'input[type="radio"]:checked' );
-						if ( $sel.length ) {
-							opt[ si ] = $sel.val();
+						var si       = $( this ).data( 'si' );
+						var $select  = $( this ).find( 'select.aod-cod__optselect' );
+						var val;
+						if ( $select.length ) {
+							val = $select.val();
+						} else {
+							var $sel = $( this ).find( 'input[type="radio"]:checked' );
+							val = $sel.length ? $sel.val() : '';
+						}
+						if ( val ) {
+							opt[ si ] = val;
 						} else {
 							missing = true;
 						}

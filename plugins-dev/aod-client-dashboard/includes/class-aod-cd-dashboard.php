@@ -1594,9 +1594,10 @@ class AOD_CD_Dashboard {
 					continue;
 				}
 				$out[] = array(
-					'label'  => isset( $sec['label'] ) ? (string) $sec['label'] : '',
-					'visual' => ! empty( $sec['visual'] ),
-					'values' => $values,
+					'label'   => isset( $sec['label'] ) ? (string) $sec['label'] : '',
+					'visual'  => ! empty( $sec['visual'] ),
+					'display' => ( isset( $sec['display'] ) && 'dropdown' === $sec['display'] ) ? 'dropdown' : 'cards',
+					'values'  => $values,
 				);
 			}
 			if ( $out ) {
@@ -1643,10 +1644,11 @@ class AOD_CD_Dashboard {
 	 * @param array      $section label, visual, values[].
 	 */
 	protected function render_option_section( $si, $section ) {
-		$section = wp_parse_args( $section, array( 'label' => '', 'visual' => false, 'values' => array() ) );
-		$s       = esc_attr( (string) $si );
-		$visual  = ! empty( $section['visual'] );
-		$values  = is_array( $section['values'] ) ? $section['values'] : array();
+		$section  = wp_parse_args( $section, array( 'label' => '', 'visual' => false, 'display' => 'cards', 'values' => array() ) );
+		$s        = esc_attr( (string) $si );
+		$visual   = ! empty( $section['visual'] );
+		$dropdown = ( 'dropdown' === $section['display'] );
+		$values   = is_array( $section['values'] ) ? $section['values'] : array();
 		?>
 		<div class="aod-cd-opt-section" data-si="<?php echo $s; ?>">
 			<div class="aod-cd-opt-head">
@@ -1654,6 +1656,10 @@ class AOD_CD_Dashboard {
 				<label class="aod-cd-opt-visual">
 					<input type="checkbox" name="opt_visual[<?php echo $s; ?>]" value="1" class="aod-cd-opt-visual-cb" <?php checked( $visual ); ?>>
 					<?php esc_html_e( 'Avec photos', 'aod-client-dashboard' ); ?>
+				</label>
+				<label class="aod-cd-opt-visual aod-cd-opt-dropdown" title="<?php esc_attr_e( 'Affiche cette section en menu déroulant sur le formulaire de commande (idéal quand il y a beaucoup de valeurs).', 'aod-client-dashboard' ); ?>">
+					<input type="checkbox" name="opt_dropdown[<?php echo $s; ?>]" value="1" class="aod-cd-opt-dropdown-cb" <?php checked( $dropdown ); ?>>
+					<?php esc_html_e( 'Liste déroulante', 'aod-client-dashboard' ); ?>
 				</label>
 				<button type="button" class="aod-cd-color-del aod-cd-opt-sec-del" aria-label="<?php esc_attr_e( 'Supprimer cette section', 'aod-client-dashboard' ); ?>">&times;</button>
 			</div>
@@ -2063,8 +2069,9 @@ class AOD_CD_Dashboard {
 		$labels = wp_unslash( $_POST['opt_label'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 		$out    = array();
 		foreach ( $labels as $si => $raw_label ) {
-			$label  = sanitize_text_field( trim( (string) $raw_label ) );
-			$visual = ! empty( $_POST['opt_visual'][ $si ] );
+			$label    = sanitize_text_field( trim( (string) $raw_label ) );
+			$visual   = ! empty( $_POST['opt_visual'][ $si ] );
+			$dropdown = ! empty( $_POST['opt_dropdown'][ $si ] );
 			$names  = ( isset( $_POST['opt_value_name'][ $si ] ) && is_array( $_POST['opt_value_name'][ $si ] ) )
 				? wp_unslash( $_POST['opt_value_name'][ $si ] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 				: array();
@@ -2091,9 +2098,10 @@ class AOD_CD_Dashboard {
 				continue;
 			}
 			$out[ $si ] = array(
-				'label'  => $label,
-				'visual' => $visual,
-				'values' => $values,
+				'label'   => $label,
+				'visual'  => $visual,
+				'display' => $dropdown ? 'dropdown' : 'cards',
+				'values'  => $values,
 			);
 		}
 		return $out;
@@ -2165,9 +2173,10 @@ class AOD_CD_Dashboard {
 				continue;
 			}
 			$out[] = array(
-				'label'  => (string) $section['label'],
-				'visual' => ! empty( $section['visual'] ),
-				'values' => $values,
+				'label'   => (string) $section['label'],
+				'visual'  => ! empty( $section['visual'] ),
+				'display' => ( isset( $section['display'] ) && 'dropdown' === $section['display'] ) ? 'dropdown' : 'cards',
+				'values'  => $values,
 			);
 		}
 		return $out;
