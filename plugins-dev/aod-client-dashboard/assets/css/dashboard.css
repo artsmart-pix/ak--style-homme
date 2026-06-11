@@ -255,6 +255,8 @@ body.aod-cd{
 .aod-cd-settings-form .aod-cd-form-subtitle,
 .aod-cd-settings-form > .aod-cd-note,
 .aod-cd-settings-form .aod-cd-row2,
+.aod-cd-settings-form > .aod-cd-search,
+.aod-cd-settings-form > .aod-cd-scroll,
 .aod-cd-settings-form .aod-cd-form-foot{grid-column:1 / -1}
 @media(max-width:680px){.aod-cd-settings-form{grid-template-columns:1fr}}
 
