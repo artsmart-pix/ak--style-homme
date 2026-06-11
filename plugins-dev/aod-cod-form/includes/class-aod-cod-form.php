@@ -334,6 +334,126 @@ class AOD_COD_Form {
 	}
 
 	/**
+	 * Le visiteur consulte-t-il le site en arabe ? (locale forcée par AOD_COD_Lang).
+	 *
+	 * @return bool
+	 */
+	protected function is_arabic() {
+		return 0 === strpos( (string) get_locale(), 'ar' );
+	}
+
+	/**
+	 * Dictionnaire FR→AR des libellés/valeurs de variantes courants (clés en minuscules).
+	 * Utilisé en repli quand le gérant n'a pas saisi de traduction arabe explicite.
+	 *
+	 * @return array
+	 */
+	protected function variant_dictionary() {
+		return array(
+			// Phrases d'instruction par défaut (libellés des presets).
+			'sélectionner une couleur'  => 'اختر اللون',
+			'selectionner une couleur'  => 'اختر اللون',
+			'selectioner une couleur'   => 'اختر اللون',
+			'sélectionner une taille'   => 'اختر المقاس',
+			'selectionner une taille'   => 'اختر المقاس',
+			'selectioner une taille'    => 'اختر المقاس',
+			'sélectionner une pointure' => 'اختر القياس',
+			'selectionner une pointure' => 'اختر القياس',
+			'selectioner une pointure'  => 'اختر القياس',
+			// Libellés de section simples.
+			'taille'    => 'المقاس',
+			'tailles'   => 'المقاسات',
+			'pointure'  => 'القياس',
+			'pointures' => 'القياسات',
+			'couleur'   => 'اللون',
+			'couleurs'  => 'الألوان',
+			'matière'   => 'الخامة',
+			'matiere'   => 'الخامة',
+			'modèle'    => 'الموديل',
+			'modele'    => 'الموديل',
+			// Couleurs.
+			'noir'        => 'أسود',
+			'blanc'       => 'أبيض',
+			'gris'        => 'رمادي',
+			'rouge'       => 'أحمر',
+			'bleu'        => 'أزرق',
+			'bleu ciel'   => 'أزرق سماوي',
+			'bleu marine' => 'كحلي',
+			'vert'        => 'أخضر',
+			'jaune'       => 'أصفر',
+			'orange'      => 'برتقالي',
+			'rose'        => 'وردي',
+			'violet'      => 'بنفسجي',
+			'marron'      => 'بني',
+			'beige'       => 'بيج',
+			'doré'        => 'ذهبي',
+			'dore'        => 'ذهبي',
+			'or'          => 'ذهبي',
+			'argent'      => 'فضي',
+			'argenté'     => 'فضي',
+			'bordeaux'    => 'عنابي',
+			'turquoise'   => 'فيروزي',
+			'kaki'        => 'كاكي',
+			'fuchsia'     => 'فوشيا',
+			'corail'      => 'مرجاني',
+			'ciel'        => 'سماوي',
+			'marine'      => 'كحلي',
+			// Nuances (servent au repli mot-à-mot : « Gris clair » → « رمادي فاتح »).
+			'clair'  => 'فاتح',
+			'claire' => 'فاتح',
+			'foncé'  => 'غامق',
+			'fonce'  => 'غامق',
+			'foncée' => 'غامق',
+			'foncee' => 'غامق',
+			'pâle'   => 'باهت',
+			'pale'   => 'باهت',
+			'vif'    => 'زاهي',
+			'vive'   => 'زاهي',
+		);
+	}
+
+	/**
+	 * Traduit un libellé/valeur de variante pour l'AFFICHAGE en mode arabe.
+	 *
+	 * Priorité : dictionnaire intégré (correspondance exacte, puis mot-à-mot pour les
+	 * valeurs composées comme « Gris clair ») > texte d'origine (français) si inconnu.
+	 * Ne modifie JAMAIS la valeur soumise : le nom canonique reste le français, afin que
+	 * le matching serveur et la commande enregistrée restent cohérents.
+	 *
+	 * @param string $fr Texte d'origine (français).
+	 * @return string
+	 */
+	protected function localize_variant( $fr ) {
+		if ( ! $this->is_arabic() ) {
+			return (string) $fr;
+		}
+		$fr   = (string) $fr;
+		$dict = $this->variant_dictionary();
+		$key  = strtolower( trim( $fr ) );
+		if ( isset( $dict[ $key ] ) ) {
+			return $dict[ $key ];
+		}
+		// Repli mot-à-mot pour les valeurs composées (« Gris clair » → « رمادي فاتح »).
+		// L'adjectif suit le nom en arabe comme en français : on garde le même ordre.
+		// On ne traduit que si TOUS les mots sont connus, sinon on garde le français.
+		$tokens = preg_split( '/[\s\-\/]+/u', $key, -1, PREG_SPLIT_NO_EMPTY );
+		if ( is_array( $tokens ) && count( $tokens ) > 1 ) {
+			$parts = array();
+			foreach ( $tokens as $t ) {
+				if ( ! isset( $dict[ $t ] ) ) {
+					$parts = array();
+					break;
+				}
+				$parts[] = $dict[ $t ];
+			}
+			if ( $parts ) {
+				return implode( ' ', $parts );
+			}
+		}
+		return $fr;
+	}
+
+	/**
 	 * Sections d'options du configurateur (Taille, Couleur…), en boutons style Shopify.
 	 *
 	 * Ces champs ne sont PAS soumis directement : le JS lit la sélection au clic sur
@@ -352,9 +472,10 @@ class AOD_COD_Form {
 		$prefix = '' !== (string) $prefix ? (string) $prefix : (string) (int) $product_id;
 		ob_start();
 		foreach ( $options as $si => $sec ) :
+			$label_disp = $this->localize_variant( $sec['label'] );
 			?>
 			<div class="aod-cod__field aod-cod__optsec<?php echo $sec['visual'] ? ' is-visual' : ''; ?>" data-si="<?php echo esc_attr( $si ); ?>" data-label="<?php echo esc_attr( $sec['label'] ); ?>">
-				<label class="aod-cod__optlabel"><?php echo esc_html( $sec['label'] ); ?> <span>*</span></label>
+				<label class="aod-cod__optlabel"><?php echo esc_html( $label_disp ); ?> <span>*</span></label>
 				<div class="aod-cod__opts">
 					<?php
 					foreach ( $sec['values'] as $vi => $val ) :
@@ -379,7 +500,7 @@ class AOD_COD_Form {
 								<?php elseif ( $has_hex ) : ?>
 									<span class="aod-cod__opt-thumb aod-cod__opt-thumb--color" style="background-color:<?php echo esc_attr( $val['hex'] ); ?>"></span>
 								<?php endif; ?>
-								<span class="aod-cod__opt-name"><?php echo esc_html( $val['name'] ); ?></span>
+								<span class="aod-cod__opt-name"><?php echo esc_html( $this->localize_variant( $val['name'] ) ); ?></span>
 								<?php if ( $val['price'] > 0 ) : ?>
 									<span class="aod-cod__opt-plus">+<?php echo wp_strip_all_tags( wc_price( $val['price'] ) ); ?></span>
 								<?php endif; ?>

@@ -115,3 +115,6 @@ msgstr "وفّر %s"
 
 msgid "Article %d"
 msgstr "المنتج %d"
+
+msgid "Sélectionnez : %s"
+msgstr "اختر: %s"

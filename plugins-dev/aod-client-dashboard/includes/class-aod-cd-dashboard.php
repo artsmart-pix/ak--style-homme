@@ -1423,9 +1423,9 @@ class AOD_CD_Dashboard {
 
 						<div class="aod-cd-size-presets">
 							<span class="aod-cd-label" style="margin:0"><?php esc_html_e( 'Sections rapides :', 'aod-client-dashboard' ); ?></span>
-							<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-opt-preset" data-label="<?php esc_attr_e( 'Taille', 'aod-client-dashboard' ); ?>" data-visual="0" data-values="S,M,L,XL,XXL"><?php esc_html_e( 'Tailles S–XXL', 'aod-client-dashboard' ); ?></button>
-							<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-opt-preset" data-label="<?php esc_attr_e( 'Pointure', 'aod-client-dashboard' ); ?>" data-visual="0" data-values="35,36,37,38,39,40,41,42,43,44,45,46"><?php esc_html_e( 'Pointures 35–46', 'aod-client-dashboard' ); ?></button>
-							<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-opt-preset" data-label="<?php esc_attr_e( 'Couleur', 'aod-client-dashboard' ); ?>" data-visual="1" data-values=""><?php esc_html_e( 'Couleur (avec photos)', 'aod-client-dashboard' ); ?></button>
+							<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-opt-preset" data-label="<?php esc_attr_e( 'Sélectionner une taille', 'aod-client-dashboard' ); ?>" data-visual="0" data-values="S,M,L,XL,XXL"><?php esc_html_e( 'Tailles S–XXL', 'aod-client-dashboard' ); ?></button>
+							<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-opt-preset" data-label="<?php esc_attr_e( 'Sélectionner une pointure', 'aod-client-dashboard' ); ?>" data-visual="0" data-values="35,36,37,38,39,40,41,42,43,44,45,46"><?php esc_html_e( 'Pointures 35–46', 'aod-client-dashboard' ); ?></button>
+							<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-opt-preset" data-label="<?php esc_attr_e( 'Sélectionner une couleur', 'aod-client-dashboard' ); ?>" data-visual="1" data-values=""><?php esc_html_e( 'Couleur (avec photos)', 'aod-client-dashboard' ); ?></button>
 						</div>
 
 						<div class="aod-cd-opt-sections">
@@ -1583,7 +1583,7 @@ class AOD_CD_Dashboard {
 		?>
 		<div class="aod-cd-opt-section" data-si="<?php echo $s; ?>">
 			<div class="aod-cd-opt-head">
-				<input type="text" name="opt_label[<?php echo $s; ?>]" class="aod-cd-opt-label" value="<?php echo esc_attr( $section['label'] ); ?>" placeholder="<?php esc_attr_e( 'ex : Taille, Couleur, Pointure…', 'aod-client-dashboard' ); ?>">
+				<input type="text" name="opt_label[<?php echo $s; ?>]" class="aod-cd-opt-label" value="<?php echo esc_attr( $section['label'] ); ?>" placeholder="<?php esc_attr_e( 'ex : Sélectionner une couleur, une taille…', 'aod-client-dashboard' ); ?>">
 				<label class="aod-cd-opt-visual">
 					<input type="checkbox" name="opt_visual[<?php echo $s; ?>]" value="1" class="aod-cd-opt-visual-cb" <?php checked( $visual ); ?>>
 					<?php esc_html_e( 'Avec photos', 'aod-client-dashboard' ); ?>
