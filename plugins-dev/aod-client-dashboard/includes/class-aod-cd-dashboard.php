@@ -1199,7 +1199,7 @@ class AOD_CD_Dashboard {
 			$edit_url = $this->products_url( array( 'action' => 'edit', 'product' => $p->get_id() ) );
 			echo '<tr data-product="' . esc_attr( $p->get_id() ) . '">';
 			echo '<td><span class="aod-cd-prod">' . wp_kses_post( $img ) . '<a href="' . esc_url( $edit_url ) . '">' . esc_html( $p->get_name() ) . '</a></span></td>';
-			echo '<td>' . wp_kses_post( $p->get_price_html() ? $p->get_price_html() : '&mdash;' ) . '</td>';
+			echo '<td>' . $this->render_price_cell( $p ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- HTML déjà échappé dans le helper.
 			echo '<td>' . esc_html( $p->managing_stock() ? (string) $p->get_stock_quantity() : '—' ) . '</td>';
 			echo '<td>' . esc_html( 'publish' === $p->get_status() ? __( 'En ligne', 'aod-client-dashboard' ) : __( 'Brouillon', 'aod-client-dashboard' ) ) . '</td>';
 			echo '<td class="aod-cd-rowactions">';
@@ -1211,6 +1211,44 @@ class AOD_CD_Dashboard {
 		echo '</tbody></table></div>';
 
 		$this->render_pagination( $base_url, $paged, (int) $result->max_num_pages, array( 's' => $search ) );
+	}
+
+	/**
+	 * Rend la cellule « Prix » de la liste produits sur plusieurs lignes :
+	 * prix normal (barré si une promo est active), prix actuel mis en évidence,
+	 * puis le prix d'achat (`_aod_cost_price`). Évite le `get_price_html()` natif
+	 * qui injecte du texte « Original price was… » destiné aux lecteurs d'écran.
+	 *
+	 * @param WC_Product $p Produit.
+	 * @return string HTML de la cellule (déjà échappé).
+	 */
+	protected function render_price_cell( $p ) {
+		$cost = (string) $p->get_meta( '_aod_cost_price' );
+		$out  = '<div class="aod-cd-price">';
+
+		if ( $p->is_type( 'variable' ) ) {
+			// Produit variable : on conserve la fourchette de prix native de WooCommerce.
+			$html = $p->get_price_html();
+			$out .= '<span class="aod-cd-price-now">' . ( $html ? wp_kses_post( $html ) : '&mdash;' ) . '</span>';
+		} else {
+			$regular = $p->get_regular_price();
+			$sale    = $p->get_sale_price();
+
+			if ( $p->is_on_sale() && '' !== (string) $sale ) {
+				$out .= '<span class="aod-cd-price-was"><span class="aod-cd-price-tag">' . esc_html__( 'Prix', 'aod-client-dashboard' ) . '</span> <del>' . wp_kses_post( wc_price( $regular ) ) . '</del></span>';
+				$out .= '<span class="aod-cd-price-now"><span class="aod-cd-price-tag">' . esc_html__( 'Promo', 'aod-client-dashboard' ) . '</span> ' . wp_kses_post( wc_price( $sale ) ) . '</span>';
+			} else {
+				$price = ( '' !== (string) $regular ) ? $regular : $p->get_price();
+				$out  .= '<span class="aod-cd-price-now">' . ( '' !== (string) $price ? wp_kses_post( wc_price( $price ) ) : '&mdash;' ) . '</span>';
+			}
+		}
+
+		if ( '' !== $cost ) {
+			$out .= '<span class="aod-cd-price-cost"><span class="aod-cd-price-tag">' . esc_html__( 'Achat', 'aod-client-dashboard' ) . '</span> ' . wp_kses_post( wc_price( $cost ) ) . '</span>';
+		}
+
+		$out .= '</div>';
+		return $out;
 	}
 
 	/**
