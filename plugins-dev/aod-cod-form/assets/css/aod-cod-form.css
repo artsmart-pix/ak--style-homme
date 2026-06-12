@@ -98,30 +98,39 @@
 .aod-cod__float { position: relative; }
 .aod-cod__float > input,
 .aod-cod__float > select {
-	height: 54px;
-	padding-top: 20px;
+	height: 56px;
+	padding-top: 24px;
 	padding-bottom: 6px;
+	line-height: 1.2;
 }
 .aod-cod__float > label {
 	position: absolute;
 	inset-inline-start: 14px;
-	top: 16px;
+	/* Repos : centré verticalement (robuste quelle que soit la hauteur de
+	   glyphes, ex. arabe) — pas de chevauchement avec la valeur saisie. */
+	top: 50%;
+	transform: translateY(-50%);
 	margin: 0;
 	font-size: 1em;
+	line-height: 1;
 	font-weight: 400;
 	color: var(--sh-text-2);
+	background: transparent;
 	pointer-events: none;
-	transition: top .12s ease, font-size .12s ease, color .12s ease;
+	transition: top .12s ease, transform .12s ease, font-size .12s ease, color .12s ease;
 	max-width: calc(100% - 40px);
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
-/* État « flottant » : focus, champ rempli, ou select (toujours) */
+/* État « flottant » : focus, champ rempli, ou select (toujours).
+   Épinglé en haut (line-height:1) avec une marge nette sous le label, le
+   texte/la sélection occupant le bas du champ (padding-top:24px). */
 .aod-cod__float > input:focus + label,
 .aod-cod__float > input:not(:placeholder-shown) + label,
 .aod-cod__float--sel > select + label {
-	top: 8px;
+	top: 9px;
+	transform: translateY(0);
 	font-size: .72em;
 	color: var(--sh-text-2);
 }
