@@ -560,6 +560,42 @@
 		} );
 	}
 
+	/* Période de promotion : bouton effacer par date + garde-fou fin ≥ début */
+	function bindPromoRange() {
+		document.querySelectorAll( '.aod-cd-promo-range' ).forEach( function ( range ) {
+			var from = range.querySelector( 'input[name="sale_from"]' );
+			var to   = range.querySelector( 'input[name="sale_to"]' );
+
+			// La date de fin ne peut pas précéder la date de début.
+			function syncMin() {
+				if ( ! from || ! to ) { return; }
+				to.min = from.value || '';
+				if ( from.value && to.value && to.value < from.value ) { to.value = from.value; }
+			}
+
+			range.querySelectorAll( '.aod-cd-datewrap' ).forEach( function ( wrap ) {
+				var input = wrap.querySelector( 'input[type="date"]' );
+				var clear = wrap.querySelector( '.aod-cd-date-clear' );
+				if ( ! input || ! clear ) { return; }
+
+				function refresh() { clear.hidden = ! input.value; }
+
+				input.addEventListener( 'change', function () { refresh(); syncMin(); } );
+				input.addEventListener( 'input', refresh );
+				clear.addEventListener( 'click', function ( e ) {
+					e.preventDefault();
+					input.value = '';
+					refresh();
+					syncMin();
+					input.focus();
+				} );
+				refresh();
+			} );
+
+			syncMin();
+		} );
+	}
+
 	/* Formulaires de réglages génériques (Livraison, Pixels, WhatsApp…) */
 	function bindSettingsForms() {
 		document.querySelectorAll( '.aod-cd-settings-form' ).forEach( function ( form ) {
@@ -1034,6 +1070,7 @@
 		bindProducts();
 		try { bindCategories(); }   catch ( err ) { /* catégories */ }
 		try { bindCatDropdown(); }  catch ( err ) { /* déroulant catégories */ }
+		try { bindPromoRange(); }   catch ( err ) { /* période promo */ }
 		try { bindColorPalette(); } catch ( err ) { /* palette */ }
 		try { bindCharts(); }       catch ( err ) { /* graphe stats */ }
 		bindSettingsForms();

@@ -235,6 +235,36 @@ body.aod-cd{
 	outline:none;border-color:var(--cd-ink);box-shadow:var(--cd-focus);
 }
 .aod-cd-row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* Période de promotion : deux dates groupées (début → fin) */
+.aod-cd-promo-range{
+	display:flex;align-items:flex-end;gap:12px;
+	padding:14px;border:1px solid var(--cd-line);border-radius:var(--cd-radius);background:var(--cd-bg);
+}
+.aod-cd-promo-cell{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
+.aod-cd-promo-cap{display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;color:var(--cd-muted);text-transform:uppercase;letter-spacing:.3px}
+.aod-cd-promo-arrow{flex:none;padding-bottom:11px;font-size:17px;color:var(--cd-muted);line-height:1}
+.aod-cd-datewrap{position:relative}
+.aod-cd-date{
+	width:100%;padding:11px 13px;padding-right:38px;
+	border:1px solid var(--cd-line);border-radius:var(--cd-radius-sm);
+	font-size:14px;font-family:inherit;background:#fff;color:var(--cd-ink);transition:.15s;
+}
+.aod-cd-date:focus{outline:none;border-color:var(--cd-ink);box-shadow:var(--cd-focus)}
+/* Tout le champ ouvre le calendrier (indicateur natif rendu transparent, plein cadre) */
+.aod-cd-date::-webkit-calendar-picker-indicator{position:absolute;inset:0;width:auto;height:auto;margin:0;padding:0;opacity:0;cursor:pointer}
+.aod-cd-date::-webkit-inner-spin-button{display:none}
+.aod-cd-date-clear{
+	position:absolute;right:8px;top:50%;transform:translateY(-50%);z-index:2;
+	display:flex;align-items:center;justify-content:center;width:20px;height:20px;padding:0;
+	border:none;border-radius:50%;background:rgba(0,0,0,.06);color:var(--cd-ink);
+	font-size:11px;line-height:1;cursor:pointer;transition:.15s;
+}
+.aod-cd-date-clear:hover{background:rgba(0,0,0,.14)}
+@media (max-width:560px){
+	.aod-cd-promo-range{flex-direction:column;align-items:stretch}
+	.aod-cd-promo-arrow{display:none}
+}
 .aod-cd-check{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--cd-ink);cursor:pointer}
 .aod-cd-check input{width:auto;accent-color:var(--cd-ink)}
 .aod-cd-stock-qty{margin-top:10px}

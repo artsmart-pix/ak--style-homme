@@ -1413,15 +1413,26 @@ class AOD_CD_Dashboard {
 						</label>
 					</div>
 
-					<div class="aod-cd-row2">
-						<label class="aod-cd-field">
-							<span class="aod-cd-label"><?php esc_html_e( 'Date début promo (optionnel)', 'aod-client-dashboard' ); ?></span>
-							<input type="date" name="sale_from" value="<?php echo esc_attr( $sale_from ); ?>">
-						</label>
-						<label class="aod-cd-field">
-							<span class="aod-cd-label"><?php esc_html_e( 'Date fin promo (optionnel)', 'aod-client-dashboard' ); ?></span>
-							<input type="date" name="sale_to" value="<?php echo esc_attr( $sale_to ); ?>">
-						</label>
+					<div class="aod-cd-field">
+						<span class="aod-cd-label"><?php esc_html_e( 'Période de promotion (optionnel)', 'aod-client-dashboard' ); ?></span>
+						<div class="aod-cd-promo-range">
+							<div class="aod-cd-promo-cell">
+								<span class="aod-cd-promo-cap"><span aria-hidden="true">📅</span> <?php esc_html_e( 'Début', 'aod-client-dashboard' ); ?></span>
+								<div class="aod-cd-datewrap">
+									<input type="date" name="sale_from" class="aod-cd-date" value="<?php echo esc_attr( $sale_from ); ?>">
+									<button type="button" class="aod-cd-date-clear" aria-label="<?php esc_attr_e( 'Effacer la date', 'aod-client-dashboard' ); ?>" hidden>✕</button>
+								</div>
+							</div>
+							<span class="aod-cd-promo-arrow" aria-hidden="true">→</span>
+							<div class="aod-cd-promo-cell">
+								<span class="aod-cd-promo-cap"><span aria-hidden="true">📅</span> <?php esc_html_e( 'Fin', 'aod-client-dashboard' ); ?></span>
+								<div class="aod-cd-datewrap">
+									<input type="date" name="sale_to" class="aod-cd-date" value="<?php echo esc_attr( $sale_to ); ?>">
+									<button type="button" class="aod-cd-date-clear" aria-label="<?php esc_attr_e( 'Effacer la date', 'aod-client-dashboard' ); ?>" hidden>✕</button>
+								</div>
+							</div>
+						</div>
+						<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'La promo s’activera et s’arrêtera automatiquement à ces dates.', 'aod-client-dashboard' ); ?></span>
 					</div>
 
 					<label class="aod-cd-field" style="max-width:280px">
