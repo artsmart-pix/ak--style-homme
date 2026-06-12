@@ -550,7 +550,7 @@ body.aod-cd{
 .aod-cd-page-gap{padding:0 4px;color:var(--cd-soft)}
 
 /* ---- Formulaire produit en accordéon (sections thématiques) ---- */
-.aod-cd-acc-form{max-width:860px}
+.aod-cd-acc-form{max-width:none}
 .aod-cd-acc{
 	border:1px solid var(--cd-line);border-radius:var(--cd-radius);background:#fff;
 	margin:0 0 12px;overflow:hidden;transition:box-shadow .15s,border-color .15s;
