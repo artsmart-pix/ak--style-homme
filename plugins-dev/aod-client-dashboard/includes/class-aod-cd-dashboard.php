@@ -203,7 +203,9 @@ class AOD_CD_Dashboard {
 			i18nSave:       <?php echo wp_json_encode( __( 'Enregistrer', 'aod-client-dashboard' ) ); ?>,
 			i18nCancel:     <?php echo wp_json_encode( __( 'Annuler', 'aod-client-dashboard' ) ); ?>,
 			i18nShipped:    <?php echo wp_json_encode( __( 'Colis créé', 'aod-client-dashboard' ) ); ?>,
-			i18nCatPlaceholder: <?php echo wp_json_encode( __( 'Sélectionner des catégories', 'aod-client-dashboard' ) ); ?>
+			i18nCatPlaceholder: <?php echo wp_json_encode( __( 'Sélectionner des catégories', 'aod-client-dashboard' ) ); ?>,
+			i18nGalNew:     <?php echo wp_json_encode( __( 'Nouveau', 'aod-client-dashboard' ) ); ?>,
+			i18nGalRemove:  <?php echo wp_json_encode( __( 'Retirer cette photo', 'aod-client-dashboard' ) ); ?>
 		};
 	</script>
 </head>
@@ -1458,22 +1460,26 @@ class AOD_CD_Dashboard {
 
 					<div class="aod-cd-field">
 						<span class="aod-cd-label"><?php esc_html_e( 'Galerie (photos supplémentaires)', 'aod-client-dashboard' ); ?></span>
-						<?php if ( $gallery_ids ) : ?>
-							<div class="aod-cd-gallery">
-								<?php foreach ( $gallery_ids as $gid ) :
+						<div class="aod-cd-gal" id="aod-cd-gallery">
+							<?php if ( $gallery_ids ) :
+								foreach ( $gallery_ids as $gid ) :
 									$gurl = wp_get_attachment_image_url( $gid, 'thumbnail' );
 									if ( ! $gurl ) { continue; } ?>
-									<label class="aod-cd-gallery-item">
+									<div class="aod-cd-gal-item" data-existing="<?php echo esc_attr( $gid ); ?>">
 										<img src="<?php echo esc_url( $gurl ); ?>" alt="">
-										<span class="aod-cd-gallery-rm">
-											<input type="checkbox" name="gallery_remove[]" value="<?php echo esc_attr( $gid ); ?>"> <?php esc_html_e( 'Retirer', 'aod-client-dashboard' ); ?>
-										</span>
-									</label>
-								<?php endforeach; ?>
-							</div>
-						<?php endif; ?>
-						<input type="file" name="gallery_images[]" accept="image/*" multiple class="aod-cd-galleryfile">
-						<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Ajoutez une ou plusieurs photos. Cochez « Retirer » pour enlever une photo existante.', 'aod-client-dashboard' ); ?></span>
+										<input type="checkbox" name="gallery_remove[]" value="<?php echo esc_attr( $gid ); ?>" class="aod-cd-gal-rmcheck" hidden>
+										<button type="button" class="aod-cd-gal-rm" aria-label="<?php esc_attr_e( 'Retirer cette photo', 'aod-client-dashboard' ); ?>">✕</button>
+										<span class="aod-cd-gal-badge"><?php esc_html_e( 'À retirer', 'aod-client-dashboard' ); ?></span>
+									</div>
+								<?php endforeach;
+							endif; ?>
+							<button type="button" class="aod-cd-gal-add" id="aod-cd-gal-add">
+								<span class="aod-cd-gal-add-ic" aria-hidden="true">＋</span>
+								<span class="aod-cd-gal-add-txt"><?php esc_html_e( 'Ajouter', 'aod-client-dashboard' ); ?></span>
+							</button>
+						</div>
+						<input type="file" name="gallery_images[]" accept="image/*" multiple class="aod-cd-galleryfile" hidden>
+						<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Cliquez sur « Ajouter » (ou glissez vos fichiers) pour choisir des photos. Cliquez sur ✕ pour en retirer une.', 'aod-client-dashboard' ); ?></span>
 					</div>
 				</div>
 			</details>

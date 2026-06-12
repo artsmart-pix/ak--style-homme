@@ -596,6 +596,111 @@
 		} );
 	}
 
+	/* Galerie produit : tuile d'ajout, aperçu en direct, glisser-déposer, retrait */
+	function bindGallery() {
+		var grid  = document.getElementById( 'aod-cd-gallery' );
+		var input = document.querySelector( '.aod-cd-galleryfile' );
+		if ( ! grid || ! input ) { return; }
+		var addBtn = document.getElementById( 'aod-cd-gal-add' );
+		var hasDT  = ( typeof DataTransfer === 'function' );
+		var store  = hasDT ? new DataTransfer() : null; // accumulateur des fichiers ajoutés.
+
+		// (Re)génère les vignettes d'aperçu des fichiers nouvellement choisis.
+		function renderNew() {
+			grid.querySelectorAll( '.aod-cd-gal-new' ).forEach( function ( n ) {
+				if ( n.dataset.url ) { URL.revokeObjectURL( n.dataset.url ); }
+				n.remove();
+			} );
+			Array.prototype.forEach.call( input.files, function ( f, i ) {
+				var url  = URL.createObjectURL( f );
+				var tile = document.createElement( 'div' );
+				tile.className   = 'aod-cd-gal-item aod-cd-gal-new';
+				tile.dataset.idx = String( i );
+				tile.dataset.url = url;
+
+				var img = document.createElement( 'img' );
+				img.src = url; img.alt = '';
+
+				var tag = document.createElement( 'span' );
+				tag.className = 'aod-cd-gal-tag';
+				tag.textContent = CD.i18nGalNew || 'Nouveau';
+
+				var rm = document.createElement( 'button' );
+				rm.type = 'button';
+				rm.className = 'aod-cd-gal-rmnew';
+				rm.setAttribute( 'aria-label', CD.i18nGalRemove || 'Retirer' );
+				rm.textContent = '✕';
+
+				tile.appendChild( img );
+				tile.appendChild( tag );
+				tile.appendChild( rm );
+				grid.insertBefore( tile, addBtn );
+			} );
+		}
+
+		// Ajoute des fichiers à la sélection (cumulatif si DataTransfer dispo).
+		function addFiles( files ) {
+			if ( ! files || ! files.length ) { return; }
+			if ( store ) {
+				Array.prototype.forEach.call( files, function ( f ) {
+					if ( f.type && f.type.indexOf( 'image/' ) === 0 ) { store.items.add( f ); }
+				} );
+				input.files = store.files;
+			}
+			renderNew();
+		}
+
+		if ( addBtn ) {
+			addBtn.addEventListener( 'click', function () { input.click(); } );
+
+			// Glisser-déposer sur la tuile d'ajout.
+			[ 'dragover', 'dragenter' ].forEach( function ( ev ) {
+				addBtn.addEventListener( ev, function ( e ) { e.preventDefault(); addBtn.classList.add( 'is-drop' ); } );
+			} );
+			[ 'dragleave', 'dragend', 'drop' ].forEach( function ( ev ) {
+				addBtn.addEventListener( ev, function () { addBtn.classList.remove( 'is-drop' ); } );
+			} );
+			addBtn.addEventListener( 'drop', function ( e ) {
+				e.preventDefault();
+				if ( e.dataTransfer ) { addFiles( e.dataTransfer.files ); }
+			} );
+		}
+
+		input.addEventListener( 'change', function () {
+			// Sans DataTransfer : pas de cumul, on affiche simplement la sélection courante.
+			if ( store ) { addFiles( input.files ); } else { renderNew(); }
+		} );
+
+		// Délégation : retrait d'une photo (existante = marquage ; nouvelle = suppression).
+		grid.addEventListener( 'click', function ( e ) {
+			var rm = e.target.closest( '.aod-cd-gal-rm' );
+			if ( rm ) {
+				var item = rm.closest( '.aod-cd-gal-item' );
+				if ( ! item ) { return; }
+				var check = item.querySelector( '.aod-cd-gal-rmcheck' );
+				var on    = item.classList.toggle( 'is-removing' );
+				if ( check ) { check.checked = on; }
+				return;
+			}
+			var rmNew = e.target.closest( '.aod-cd-gal-rmnew' );
+			if ( rmNew ) {
+				var tile = rmNew.closest( '.aod-cd-gal-new' );
+				if ( ! tile ) { return; }
+				if ( store ) {
+					var drop = parseInt( tile.dataset.idx, 10 );
+					var keep = new DataTransfer();
+					Array.prototype.forEach.call( store.files, function ( f, i ) { if ( i !== drop ) { keep.items.add( f ); } } );
+					store = keep;
+					input.files = store.files;
+					renderNew();
+				} else {
+					if ( tile.dataset.url ) { URL.revokeObjectURL( tile.dataset.url ); }
+					tile.remove();
+				}
+			}
+		} );
+	}
+
 	/* Formulaires de réglages génériques (Livraison, Pixels, WhatsApp…) */
 	function bindSettingsForms() {
 		document.querySelectorAll( '.aod-cd-settings-form' ).forEach( function ( form ) {
@@ -1071,6 +1176,7 @@
 		try { bindCategories(); }   catch ( err ) { /* catégories */ }
 		try { bindCatDropdown(); }  catch ( err ) { /* déroulant catégories */ }
 		try { bindPromoRange(); }   catch ( err ) { /* période promo */ }
+		try { bindGallery(); }      catch ( err ) { /* galerie produit */ }
 		try { bindColorPalette(); } catch ( err ) { /* palette */ }
 		try { bindCharts(); }       catch ( err ) { /* graphe stats */ }
 		bindSettingsForms();
