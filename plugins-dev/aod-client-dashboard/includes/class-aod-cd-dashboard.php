@@ -2560,10 +2560,10 @@ class AOD_CD_Dashboard {
 
 		$fields = array(
 			array( 'meta', __( 'Meta (Facebook) Pixel ID', 'aod-client-dashboard' ), '1234567890', __( 'Gestionnaire d’événements Meta → Paramètres → ID du pixel.', 'aod-client-dashboard' ) ),
-			array( 'tiktok', __( 'TikTok Pixel ID', 'aod-client-dashboard' ), 'CXXXXXXXXXXXXXXXXXXX', __( 'TikTok Ads → Outils → Événements → Pixel Web.', 'aod-client-dashboard' ) ),
+			array( 'google_label', __( 'Google Ads — Libellé de conversion', 'aod-client-dashboard' ), 'AbC-D_efG-h12', __( 'La partie après « / » dans send_to. Sans elle, seule la balise de base est posée.', 'aod-client-dashboard' ) ),
 			array( 'snapchat', __( 'Snapchat Pixel ID', 'aod-client-dashboard' ), '00000000-0000-0000-0000-000000000000', __( 'Snapchat Ads → Gestionnaire d’événements → Pixel ID.', 'aod-client-dashboard' ) ),
 			array( 'google_ads', __( 'Google Ads — ID de conversion', 'aod-client-dashboard' ), 'AW-123456789', __( 'Commence par AW-. Google Ads → Objectifs → Conversions.', 'aod-client-dashboard' ) ),
-			array( 'google_label', __( 'Google Ads — Libellé de conversion', 'aod-client-dashboard' ), 'AbC-D_efG-h12', __( 'La partie après « / » dans send_to. Sans elle, seule la balise de base est posée.', 'aod-client-dashboard' ) ),
+			array( 'tiktok', __( 'TikTok Pixel ID', 'aod-client-dashboard' ), 'CXXXXXXXXXXXXXXXXXXX', __( 'TikTok Ads → Outils → Événements → Pixel Web.', 'aod-client-dashboard' ) ),
 		);
 		?>
 		<form class="aod-cd-form aod-cd-settings-form" data-action="aod_cd_save_pixels">
