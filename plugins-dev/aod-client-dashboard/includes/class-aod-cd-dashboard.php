@@ -202,7 +202,8 @@ class AOD_CD_Dashboard {
 			i18nNoteTitle:  <?php echo wp_json_encode( __( 'Ajouter une note', 'aod-client-dashboard' ) ); ?>,
 			i18nSave:       <?php echo wp_json_encode( __( 'Enregistrer', 'aod-client-dashboard' ) ); ?>,
 			i18nCancel:     <?php echo wp_json_encode( __( 'Annuler', 'aod-client-dashboard' ) ); ?>,
-			i18nShipped:    <?php echo wp_json_encode( __( 'Colis créé', 'aod-client-dashboard' ) ); ?>
+			i18nShipped:    <?php echo wp_json_encode( __( 'Colis créé', 'aod-client-dashboard' ) ); ?>,
+			i18nCatPlaceholder: <?php echo wp_json_encode( __( 'Sélectionner des catégories', 'aod-client-dashboard' ) ); ?>
 		};
 	</script>
 </head>
@@ -1356,18 +1357,29 @@ class AOD_CD_Dashboard {
 					</label>
 
 					<div class="aod-cd-row2">
-						<label class="aod-cd-field">
+						<div class="aod-cd-field">
 							<span class="aod-cd-label"><?php esc_html_e( 'Catégories', 'aod-client-dashboard' ); ?></span>
-							<select name="category[]" multiple size="5" class="aod-cd-catselect">
-								<?php if ( ! is_wp_error( $categories ) ) :
-									foreach ( $categories as $cat ) :
-										$sel = in_array( $cat->term_id, (array) $cat_ids, true ) ? ' selected' : '';
-										echo '<option value="' . esc_attr( $cat->term_id ) . '"' . esc_attr( $sel ) . '>' . esc_html( $cat->name ) . '</option>';
-									endforeach;
-								endif; ?>
-							</select>
-							<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Maintenez Ctrl (Cmd sur Mac) pour en sélectionner plusieurs.', 'aod-client-dashboard' ); ?></span>
-						</label>
+							<div class="aod-cd-catdd" data-placeholder="<?php esc_attr_e( 'Sélectionner des catégories', 'aod-client-dashboard' ); ?>">
+								<button type="button" class="aod-cd-catdd-btn" aria-haspopup="true" aria-expanded="false">
+									<span class="aod-cd-catdd-text"><?php esc_html_e( 'Sélectionner des catégories', 'aod-client-dashboard' ); ?></span>
+									<span class="aod-cd-catdd-caret" aria-hidden="true">▾</span>
+								</button>
+								<div class="aod-cd-catdd-panel" hidden>
+									<?php if ( ! is_wp_error( $categories ) && $categories ) :
+										foreach ( $categories as $cat ) :
+											$checked = in_array( $cat->term_id, (array) $cat_ids, true ) ? ' checked' : ''; ?>
+										<label class="aod-cd-catdd-opt">
+											<input type="checkbox" name="category[]" value="<?php echo esc_attr( $cat->term_id ); ?>"<?php echo $checked; // phpcs:ignore ?>>
+											<span><?php echo esc_html( $cat->name ); ?></span>
+										</label>
+									<?php endforeach;
+									else : ?>
+										<span class="aod-cd-catdd-empty"><?php esc_html_e( 'Aucune catégorie pour le moment.', 'aod-client-dashboard' ); ?></span>
+									<?php endif; ?>
+								</div>
+							</div>
+							<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Cliquez pour ouvrir la liste et cochez une ou plusieurs catégories.', 'aod-client-dashboard' ); ?></span>
+						</div>
 						<div class="aod-cd-field">
 							<label class="aod-cd-field" style="margin:0">
 								<span class="aod-cd-label"><?php esc_html_e( 'Nouvelle catégorie (optionnel)', 'aod-client-dashboard' ); ?></span>

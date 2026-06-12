@@ -509,6 +509,57 @@
 		} );
 	}
 
+	/* Catégories du produit : liste déroulante sous forme de bouton (multi-sélection) */
+	function bindCatDropdown() {
+		var dropdowns = document.querySelectorAll( '.aod-cd-catdd' );
+		if ( ! dropdowns.length ) { return; }
+
+		dropdowns.forEach( function ( dd ) {
+			var btn   = dd.querySelector( '.aod-cd-catdd-btn' );
+			var panel = dd.querySelector( '.aod-cd-catdd-panel' );
+			var text  = dd.querySelector( '.aod-cd-catdd-text' );
+			if ( ! btn || ! panel || ! text ) { return; }
+			var placeholder = dd.dataset.placeholder || ( CD && CD.i18nCatPlaceholder ) || '';
+
+			function updateLabel() {
+				var names = [];
+				panel.querySelectorAll( 'input[type="checkbox"]:checked' ).forEach( function ( cb ) {
+					var lbl = cb.closest( '.aod-cd-catdd-opt' );
+					names.push( lbl ? lbl.textContent.trim() : cb.value );
+				} );
+				if ( names.length ) {
+					text.textContent = names.join( ', ' );
+					text.classList.remove( 'is-placeholder' );
+				} else {
+					text.textContent = placeholder;
+					text.classList.add( 'is-placeholder' );
+				}
+			}
+
+			function setOpen( on ) {
+				panel.hidden = ! on;
+				btn.setAttribute( 'aria-expanded', on ? 'true' : 'false' );
+			}
+
+			btn.addEventListener( 'click', function ( e ) {
+				e.preventDefault();
+				setOpen( panel.hidden );
+			} );
+
+			panel.addEventListener( 'change', updateLabel );
+
+			// Clic en dehors : on referme.
+			document.addEventListener( 'click', function ( e ) {
+				if ( ! panel.hidden && ! e.target.closest( '.aod-cd-catdd' ) ) { setOpen( false ); }
+			} );
+			document.addEventListener( 'keydown', function ( e ) {
+				if ( 'Escape' === e.key && ! panel.hidden ) { setOpen( false ); }
+			} );
+
+			updateLabel();
+		} );
+	}
+
 	/* Formulaires de réglages génériques (Livraison, Pixels, WhatsApp…) */
 	function bindSettingsForms() {
 		document.querySelectorAll( '.aod-cd-settings-form' ).forEach( function ( form ) {
@@ -982,6 +1033,7 @@
 		bindStatus();
 		bindProducts();
 		try { bindCategories(); }   catch ( err ) { /* catégories */ }
+		try { bindCatDropdown(); }  catch ( err ) { /* déroulant catégories */ }
 		try { bindColorPalette(); } catch ( err ) { /* palette */ }
 		try { bindCharts(); }       catch ( err ) { /* graphe stats */ }
 		bindSettingsForms();
