@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: AOD Client Dashboard 0.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/aod-client-"
 "dashboard\n"
-"POT-Creation-Date: 2026-06-12T00:55:39+00:00\n"
+"POT-Creation-Date: 2026-06-13T17:00:40+00:00\n"
 "PO-Revision-Date: 2026-06-06T10:09:42+00:00\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -65,19 +65,20 @@ msgid "Accès Gérant"
 msgstr "وصول المدير"
 
 #: includes/class-aod-cd-account.php:52 includes/class-aod-cd-account.php:154
-#: includes/class-aod-cd-dashboard.php:1890
-#: includes/class-aod-cd-dashboard.php:2309
-#: includes/class-aod-cd-dashboard.php:2331
-#: includes/class-aod-cd-dashboard.php:2368
-#: includes/class-aod-cd-dashboard.php:2520
-#: includes/class-aod-cd-dashboard.php:2623
-#: includes/class-aod-cd-dashboard.php:2699
-#: includes/class-aod-cd-dashboard.php:2714
-#: includes/class-aod-cd-dashboard.php:2800
-#: includes/class-aod-cd-dashboard.php:2865
-#: includes/class-aod-cd-dashboard.php:2898
-#: includes/class-aod-cd-dashboard.php:2930
-#: includes/class-aod-cd-dashboard.php:2955
+#: includes/class-aod-cd-dashboard.php:1902
+#: includes/class-aod-cd-dashboard.php:2321
+#: includes/class-aod-cd-dashboard.php:2343
+#: includes/class-aod-cd-dashboard.php:2380
+#: includes/class-aod-cd-dashboard.php:2532
+#: includes/class-aod-cd-dashboard.php:2635
+#: includes/class-aod-cd-dashboard.php:2711
+#: includes/class-aod-cd-dashboard.php:2726
+#: includes/class-aod-cd-dashboard.php:2845
+#: includes/class-aod-cd-dashboard.php:2908
+#: includes/class-aod-cd-dashboard.php:3076
+#: includes/class-aod-cd-dashboard.php:3109
+#: includes/class-aod-cd-dashboard.php:3141
+#: includes/class-aod-cd-dashboard.php:3166
 msgid "Accès refusé."
 msgstr "تم رفض الوصول."
 
@@ -105,12 +106,12 @@ msgid "requis"
 msgstr "مطلوب"
 
 #: includes/class-aod-cd-account.php:94
-#: includes/class-aod-cd-dashboard.php:2758
+#: includes/class-aod-cd-dashboard.php:2770
 msgid "Nom affiché"
 msgstr "الاسم الظاهر"
 
 #: includes/class-aod-cd-account.php:98
-#: includes/class-aod-cd-dashboard.php:2763
+#: includes/class-aod-cd-dashboard.php:2775
 msgid "Adresse e-mail"
 msgstr "البريد الإلكتروني"
 
@@ -145,12 +146,12 @@ msgid "E-mail"
 msgstr "البريد الإلكتروني"
 
 #: includes/class-aod-cd-account.php:122
-#: includes/class-aod-cd-dashboard.php:1209
+#: includes/class-aod-cd-dashboard.php:1221
 msgid "Actions"
 msgstr "إجراءات"
 
 #: includes/class-aod-cd-account.php:132
-#: includes/class-aod-cd-dashboard.php:3336
+#: includes/class-aod-cd-dashboard.php:3547
 msgid "Modifier"
 msgstr "تعديل"
 
@@ -163,7 +164,7 @@ msgid "L’identifiant et le mot de passe sont obligatoires."
 msgstr "اسم المستخدم وكلمة المرور إلزاميان."
 
 #: includes/class-aod-cd-account.php:166
-#: includes/class-aod-cd-dashboard.php:2830
+#: includes/class-aod-cd-dashboard.php:2875
 msgid "Le mot de passe doit faire au moins 8 caractères."
 msgstr "يجب أن تتكوّن كلمة المرور من 8 أحرف على الأقل."
 
@@ -172,7 +173,7 @@ msgid "Cet identifiant existe déjà."
 msgstr "اسم المستخدم هذا موجود بالفعل."
 
 #: includes/class-aod-cd-account.php:172
-#: includes/class-aod-cd-dashboard.php:2816
+#: includes/class-aod-cd-dashboard.php:2861
 msgid "Adresse e-mail invalide."
 msgstr "بريد إلكتروني غير صالح."
 
@@ -190,371 +191,387 @@ msgstr ""
 "تم إنشاء حساب المدير « %s ». يمكنه تسجيل الدخول وسيُوجَّه إلى مساحة الإدارة "
 "الخاصة به."
 
-#: includes/class-aod-cd-dashboard.php:33
+#: includes/class-aod-cd-dashboard.php:41
 msgid "Commandes"
 msgstr "الطلبات"
 
-#: includes/class-aod-cd-dashboard.php:34
-#: includes/class-aod-cd-dashboard.php:3371
+#: includes/class-aod-cd-dashboard.php:42
+#: includes/class-aod-cd-dashboard.php:3582
 msgid "Produits"
 msgstr "المنتجات"
 
-#: includes/class-aod-cd-dashboard.php:35
-#: includes/class-aod-cd-dashboard.php:1363
+#: includes/class-aod-cd-dashboard.php:43
+#: includes/class-aod-cd-dashboard.php:1375
 msgid "Catégories"
 msgstr "الفئات"
 
-#: includes/class-aod-cd-dashboard.php:36
-#: includes/class-aod-cd-dashboard.php:3348
-#: includes/class-aod-cd-dashboard.php:3389
+#: includes/class-aod-cd-dashboard.php:44
+#: includes/class-aod-cd-dashboard.php:3559
+#: includes/class-aod-cd-dashboard.php:3600
 msgid "Livraison"
 msgstr "التوصيل"
 
-#: includes/class-aod-cd-dashboard.php:37
+#: includes/class-aod-cd-dashboard.php:45
 msgid "Statistiques"
 msgstr "الإحصائيات"
 
-#: includes/class-aod-cd-dashboard.php:38
+#: includes/class-aod-cd-dashboard.php:46
 msgid "Pixels & Tracking"
 msgstr "البيكسلات والتتبّع"
 
-#: includes/class-aod-cd-dashboard.php:39
+#: includes/class-aod-cd-dashboard.php:47
 msgid "WhatsApp"
 msgstr "واتساب"
 
-#: includes/class-aod-cd-dashboard.php:40
-#: includes/class-aod-cd-dashboard.php:2749
+#: includes/class-aod-cd-dashboard.php:48
+#: includes/class-aod-cd-dashboard.php:2761
 msgid "Mon compte"
 msgstr "حسابي"
 
-#: includes/class-aod-cd-dashboard.php:148
+#: includes/class-aod-cd-dashboard.php:157
 msgid "Vous n'avez pas accès à l'espace de gestion."
 msgstr "ليس لديك صلاحية الوصول إلى مساحة الإدارة."
 
-#: includes/class-aod-cd-dashboard.php:149
+#: includes/class-aod-cd-dashboard.php:158
 msgid "Accès refusé"
 msgstr "تم رفض الوصول"
 
-#: includes/class-aod-cd-dashboard.php:180
+#: includes/class-aod-cd-dashboard.php:189
 msgid "Gestion"
 msgstr "الإدارة"
 
-#: includes/class-aod-cd-dashboard.php:190
+#: includes/class-aod-cd-dashboard.php:199
 msgid "Note pour cette commande :"
 msgstr "ملاحظة لهذا الطلب:"
 
-#: includes/class-aod-cd-dashboard.php:191
-#: includes/class-aod-cd-dashboard.php:1159
+#: includes/class-aod-cd-dashboard.php:200
+#: includes/class-aod-cd-dashboard.php:1171
 msgid "Renommer"
 msgstr "إعادة تسمية"
 
-#: includes/class-aod-cd-dashboard.php:192
-#: includes/class-aod-cd-dashboard.php:1225
+#: includes/class-aod-cd-dashboard.php:201
+#: includes/class-aod-cd-dashboard.php:1237
 msgid "Supprimer"
 msgstr "حذف"
 
-#: includes/class-aod-cd-dashboard.php:193
+#: includes/class-aod-cd-dashboard.php:202
 msgid ""
 "Supprimer cette catégorie ? Les produits concernés perdront ce classement."
 msgstr "حذف هذه الفئة؟ ستفقد المنتجات المعنية هذا التصنيف."
 
-#: includes/class-aod-cd-dashboard.php:194
+#: includes/class-aod-cd-dashboard.php:203
 msgid "0 produit"
 msgstr "0 منتج"
 
-#: includes/class-aod-cd-dashboard.php:195
+#: includes/class-aod-cd-dashboard.php:204
 msgid "Erreur réseau."
 msgstr "خطأ في الشبكة."
 
-#: includes/class-aod-cd-dashboard.php:196
+#: includes/class-aod-cd-dashboard.php:205
 msgid "Supprimé"
 msgstr "تم الحذف"
 
-#: includes/class-aod-cd-dashboard.php:197
+#: includes/class-aod-cd-dashboard.php:206
 msgid "Enregistré"
 msgstr "تم الحفظ"
 
-#: includes/class-aod-cd-dashboard.php:198
+#: includes/class-aod-cd-dashboard.php:207
 msgid "Envoyé"
 msgstr "تم الإرسال"
 
-#: includes/class-aod-cd-dashboard.php:199
+#: includes/class-aod-cd-dashboard.php:208
 #, php-format
 msgid "Supprimer « %s » ? (déplacé dans la corbeille)"
 msgstr "حذف «%s»؟ (يُنقَل إلى سلة المهملات)"
 
-#: includes/class-aod-cd-dashboard.php:200
+#: includes/class-aod-cd-dashboard.php:209
 #, php-format
 msgid "Économie : %s"
 msgstr "التوفير: %s"
 
-#: includes/class-aod-cd-dashboard.php:201
+#: includes/class-aod-cd-dashboard.php:210
 msgid "Aucune réduction (sera ignorée)"
 msgstr "لا يوجد تخفيض (سيُهمَل)"
 
-#: includes/class-aod-cd-dashboard.php:202
-#: includes/class-aod-cd-dashboard.php:512
+#: includes/class-aod-cd-dashboard.php:211
+#: includes/class-aod-cd-dashboard.php:524
 msgid "Ajouter une note"
 msgstr "إضافة ملاحظة"
 
-#: includes/class-aod-cd-dashboard.php:203
-#: includes/class-aod-cd-dashboard.php:1578
-#: includes/class-aod-cd-dashboard.php:2687
-#: includes/class-aod-cd-dashboard.php:2781
-#: includes/class-aod-cd-dashboard.php:3303
+#: includes/class-aod-cd-dashboard.php:212
+#: includes/class-aod-cd-dashboard.php:1590
+#: includes/class-aod-cd-dashboard.php:2699
+#: includes/class-aod-cd-dashboard.php:2793
+#: includes/class-aod-cd-dashboard.php:3514
 msgid "Enregistrer"
 msgstr "حفظ"
 
-#: includes/class-aod-cd-dashboard.php:204
-#: includes/class-aod-cd-dashboard.php:1579
-#: includes/class-aod-cd-dashboard.php:3304
+#: includes/class-aod-cd-dashboard.php:213
+#: includes/class-aod-cd-dashboard.php:1591
+#: includes/class-aod-cd-dashboard.php:3515
 msgid "Annuler"
 msgstr "إلغاء"
 
-#: includes/class-aod-cd-dashboard.php:205
+#: includes/class-aod-cd-dashboard.php:214
 msgid "Colis créé"
 msgstr "تم إنشاء الطرد"
 
-#: includes/class-aod-cd-dashboard.php:206
-#: includes/class-aod-cd-dashboard.php:1364
-#: includes/class-aod-cd-dashboard.php:1366
+#: includes/class-aod-cd-dashboard.php:215
+#: includes/class-aod-cd-dashboard.php:1376
+#: includes/class-aod-cd-dashboard.php:1378
 msgid "Sélectionner des catégories"
 msgstr "اختر الفئات"
 
-#: includes/class-aod-cd-dashboard.php:207
+#: includes/class-aod-cd-dashboard.php:216
 msgid "Nouveau"
 msgstr "جديد"
 
-#: includes/class-aod-cd-dashboard.php:208
-#: includes/class-aod-cd-dashboard.php:1471
+#: includes/class-aod-cd-dashboard.php:217
+#: includes/class-aod-cd-dashboard.php:1483
 msgid "Retirer cette photo"
 msgstr "إزالة هذه الصورة"
 
-#: includes/class-aod-cd-dashboard.php:226
+#: includes/class-aod-cd-dashboard.php:218
+msgid ""
+"Dernière confirmation : supprimer définitivement TOUS les produits et TOUTES "
+"les commandes ? Cette action est irréversible."
+msgstr ""
+"تأكيد أخير: هل تريد حذف جميع المنتجات وجميع الطلبات نهائيًا؟ هذا الإجراء لا "
+"يمكن التراجع عنه."
+
+#: includes/class-aod-cd-dashboard.php:219
+msgid "Réinitialisation en cours… ne fermez pas cette page."
+msgstr "جارٍ إعادة التهيئة… لا تغلق هذه الصفحة."
+
+#: includes/class-aod-cd-dashboard.php:220
+msgid "Boutique réinitialisée."
+msgstr "تمت إعادة تهيئة المتجر."
+
+#: includes/class-aod-cd-dashboard.php:238
 msgid "Voir la boutique"
 msgstr "عرض المتجر"
 
-#: includes/class-aod-cd-dashboard.php:227
+#: includes/class-aod-cd-dashboard.php:239
 msgid "Déconnexion"
 msgstr "تسجيل الخروج"
 
-#: includes/class-aod-cd-dashboard.php:250
+#: includes/class-aod-cd-dashboard.php:262
 msgid "Fermer"
 msgstr "إغلاق"
 
-#: includes/class-aod-cd-dashboard.php:307
+#: includes/class-aod-cd-dashboard.php:319
 msgid "Toutes"
 msgstr "الكل"
 
-#: includes/class-aod-cd-dashboard.php:308
-#: includes/class-aod-cd-dashboard.php:617
+#: includes/class-aod-cd-dashboard.php:320
+#: includes/class-aod-cd-dashboard.php:629
 msgid "En attente"
 msgstr "قيد الانتظار"
 
-#: includes/class-aod-cd-dashboard.php:309
+#: includes/class-aod-cd-dashboard.php:321
 msgid "Confirmées"
 msgstr "مؤكَّدة"
 
-#: includes/class-aod-cd-dashboard.php:310
+#: includes/class-aod-cd-dashboard.php:322
 msgid "Terminées"
 msgstr "مكتملة"
 
-#: includes/class-aod-cd-dashboard.php:311
-#: includes/class-aod-cd-dashboard.php:801
+#: includes/class-aod-cd-dashboard.php:323
+#: includes/class-aod-cd-dashboard.php:813
 msgid "Annulées"
 msgstr "ملغاة"
 
-#: includes/class-aod-cd-dashboard.php:336
+#: includes/class-aod-cd-dashboard.php:348
 msgid "Rechercher : n°, nom, téléphone…"
 msgstr "بحث: رقم، اسم، هاتف…"
 
-#: includes/class-aod-cd-dashboard.php:353
+#: includes/class-aod-cd-dashboard.php:365
 msgid "Aucune commande dans cette catégorie."
 msgstr "لا توجد طلبات في هذه الفئة."
 
-#: includes/class-aod-cd-dashboard.php:361
+#: includes/class-aod-cd-dashboard.php:373
 msgid "N°"
 msgstr "رقم"
 
-#: includes/class-aod-cd-dashboard.php:362
+#: includes/class-aod-cd-dashboard.php:374
 msgid "Date"
 msgstr "التاريخ"
 
-#: includes/class-aod-cd-dashboard.php:363
-#: includes/class-aod-cd-dashboard.php:3343
+#: includes/class-aod-cd-dashboard.php:375
+#: includes/class-aod-cd-dashboard.php:3554
 msgid "Client"
 msgstr "الزبون"
 
-#: includes/class-aod-cd-dashboard.php:364
-#: includes/class-aod-cd-dashboard.php:3197
+#: includes/class-aod-cd-dashboard.php:376
+#: includes/class-aod-cd-dashboard.php:3408
 msgid "Téléphone"
 msgstr "الهاتف"
 
-#: includes/class-aod-cd-dashboard.php:365
-#: includes/class-aod-cd-dashboard.php:2418
-#: includes/class-aod-cd-dashboard.php:3212
+#: includes/class-aod-cd-dashboard.php:377
+#: includes/class-aod-cd-dashboard.php:2430
+#: includes/class-aod-cd-dashboard.php:3423
 msgid "Wilaya"
 msgstr "الولاية"
 
-#: includes/class-aod-cd-dashboard.php:366
-#: includes/class-aod-cd-dashboard.php:3225
+#: includes/class-aod-cd-dashboard.php:378
+#: includes/class-aod-cd-dashboard.php:3436
 msgid "Commune"
 msgstr "البلدية"
 
-#: includes/class-aod-cd-dashboard.php:367
-#: includes/class-aod-cd-dashboard.php:3244
+#: includes/class-aod-cd-dashboard.php:379
+#: includes/class-aod-cd-dashboard.php:3455
 msgid "Articles"
 msgstr "المنتجات"
 
-#: includes/class-aod-cd-dashboard.php:368
+#: includes/class-aod-cd-dashboard.php:380
 msgid "Prix produit"
 msgstr "سعر المنتج"
 
-#: includes/class-aod-cd-dashboard.php:369
+#: includes/class-aod-cd-dashboard.php:381
 msgid "Prix livraison"
 msgstr "سعر التوصيل"
 
-#: includes/class-aod-cd-dashboard.php:370
-#: includes/class-aod-cd-dashboard.php:974
-#: includes/class-aod-cd-dashboard.php:3373
-#: includes/class-aod-cd-dashboard.php:3391
+#: includes/class-aod-cd-dashboard.php:382
+#: includes/class-aod-cd-dashboard.php:986
+#: includes/class-aod-cd-dashboard.php:3584
+#: includes/class-aod-cd-dashboard.php:3602
 msgid "Total"
 msgstr "المجموع"
 
-#: includes/class-aod-cd-dashboard.php:371
-#: includes/class-aod-cd-dashboard.php:3364
+#: includes/class-aod-cd-dashboard.php:383
+#: includes/class-aod-cd-dashboard.php:3575
 msgid "Suivi"
 msgstr "التتبّع"
 
-#: includes/class-aod-cd-dashboard.php:372
-#: includes/class-aod-cd-dashboard.php:1208
-#: includes/class-aod-cd-dashboard.php:1391
-#: includes/class-aod-cd-dashboard.php:2473
+#: includes/class-aod-cd-dashboard.php:384
+#: includes/class-aod-cd-dashboard.php:1220
+#: includes/class-aod-cd-dashboard.php:1403
+#: includes/class-aod-cd-dashboard.php:2485
 msgid "Statut"
 msgstr "الحالة"
 
-#: includes/class-aod-cd-dashboard.php:373
+#: includes/class-aod-cd-dashboard.php:385
 msgid "Note"
 msgstr "ملاحظة"
 
-#: includes/class-aod-cd-dashboard.php:408
+#: includes/class-aod-cd-dashboard.php:420
 msgid "Rechercher"
 msgstr "بحث"
 
-#: includes/class-aod-cd-dashboard.php:411
+#: includes/class-aod-cd-dashboard.php:423
 msgid "Réinitialiser"
 msgstr "إعادة تعيين"
 
-#: includes/class-aod-cd-dashboard.php:433
+#: includes/class-aod-cd-dashboard.php:445
 msgid "Pagination"
 msgstr "ترقيم الصفحات"
 
-#: includes/class-aod-cd-dashboard.php:618
+#: includes/class-aod-cd-dashboard.php:630
 msgid "En cours"
 msgstr "قيد المعالجة"
 
-#: includes/class-aod-cd-dashboard.php:619
+#: includes/class-aod-cd-dashboard.php:631
 msgid "Confirmée"
 msgstr "مؤكَّدة"
 
-#: includes/class-aod-cd-dashboard.php:620
+#: includes/class-aod-cd-dashboard.php:632
 msgid "En pause"
 msgstr "متوقفة"
 
-#: includes/class-aod-cd-dashboard.php:621
+#: includes/class-aod-cd-dashboard.php:633
 msgid "Terminée"
 msgstr "مكتملة"
 
-#: includes/class-aod-cd-dashboard.php:622
+#: includes/class-aod-cd-dashboard.php:634
 msgid "Annulée"
 msgstr "ملغاة"
 
-#: includes/class-aod-cd-dashboard.php:623
+#: includes/class-aod-cd-dashboard.php:635
 msgid "Remboursée"
 msgstr "مُسترَدّة"
 
-#: includes/class-aod-cd-dashboard.php:624
+#: includes/class-aod-cd-dashboard.php:636
 msgid "Échouée"
 msgstr "فاشلة"
 
-#: includes/class-aod-cd-dashboard.php:625
-#: includes/class-aod-cd-dashboard.php:1222
-#: includes/class-aod-cd-dashboard.php:1394
+#: includes/class-aod-cd-dashboard.php:637
+#: includes/class-aod-cd-dashboard.php:1234
+#: includes/class-aod-cd-dashboard.php:1406
 msgid "Brouillon"
 msgstr "مسوّدة"
 
-#: includes/class-aod-cd-dashboard.php:704
+#: includes/class-aod-cd-dashboard.php:716
 msgid "7 jours"
 msgstr "7 أيام"
 
-#: includes/class-aod-cd-dashboard.php:705
+#: includes/class-aod-cd-dashboard.php:717
 msgid "30 jours"
 msgstr "30 يومًا"
 
-#: includes/class-aod-cd-dashboard.php:706
+#: includes/class-aod-cd-dashboard.php:718
 msgid "Cette année"
 msgstr "هذا العام"
 
-#: includes/class-aod-cd-dashboard.php:707
+#: includes/class-aod-cd-dashboard.php:719
 msgid "Tout"
 msgstr "الكل"
 
-#: includes/class-aod-cd-dashboard.php:795
+#: includes/class-aod-cd-dashboard.php:807
 msgid "Chiffre d’affaires"
 msgstr "رقم الأعمال"
 
-#: includes/class-aod-cd-dashboard.php:796
+#: includes/class-aod-cd-dashboard.php:808
 msgid "Commandes encaissées"
 msgstr "الطلبات المحصّلة"
 
-#: includes/class-aod-cd-dashboard.php:797
+#: includes/class-aod-cd-dashboard.php:809
 msgid "Panier moyen"
 msgstr "متوسط قيمة الطلب"
 
-#: includes/class-aod-cd-dashboard.php:798
+#: includes/class-aod-cd-dashboard.php:810
 msgid "Marge estimée"
 msgstr "الهامش التقديري"
 
-#: includes/class-aod-cd-dashboard.php:799
+#: includes/class-aod-cd-dashboard.php:811
 msgid "Taux de marge"
 msgstr "نسبة الهامش"
 
-#: includes/class-aod-cd-dashboard.php:800
+#: includes/class-aod-cd-dashboard.php:812
 msgid "En attente (en cours)"
 msgstr "قيد الانتظار (حاليًا)"
 
-#: includes/class-aod-cd-dashboard.php:802
+#: includes/class-aod-cd-dashboard.php:814
 msgid "Produits en ligne"
 msgstr "المنتجات المنشورة"
 
-#: includes/class-aod-cd-dashboard.php:831
+#: includes/class-aod-cd-dashboard.php:843
 msgid "Top produits"
 msgstr "أفضل المنتجات"
 
-#: includes/class-aod-cd-dashboard.php:833
-#: includes/class-aod-cd-dashboard.php:978
+#: includes/class-aod-cd-dashboard.php:845
+#: includes/class-aod-cd-dashboard.php:990
 msgid "Aucune vente sur cette période."
 msgstr "لا توجد مبيعات في هذه الفترة."
 
-#: includes/class-aod-cd-dashboard.php:845
-#: includes/class-aod-cd-dashboard.php:1205
+#: includes/class-aod-cd-dashboard.php:857
+#: includes/class-aod-cd-dashboard.php:1217
 msgid "Produit"
 msgstr "المنتج"
 
-#: includes/class-aod-cd-dashboard.php:846
+#: includes/class-aod-cd-dashboard.php:858
 msgid "Quantité vendue"
 msgstr "الكمية المباعة"
 
-#: includes/class-aod-cd-dashboard.php:847
+#: includes/class-aod-cd-dashboard.php:859
 msgid "CA généré"
 msgstr "الإيرادات المحققة"
 
-#: includes/class-aod-cd-dashboard.php:848
-#: includes/class-aod-cd-dashboard.php:1278
+#: includes/class-aod-cd-dashboard.php:860
+#: includes/class-aod-cd-dashboard.php:1290
 msgid "Marge"
 msgstr "الهامش"
 
-#: includes/class-aod-cd-dashboard.php:872
+#: includes/class-aod-cd-dashboard.php:884
 msgid ""
 "CA = total des commandes en cours, confirmées et terminées sur la période "
 "sélectionnée. « En attente » et « Produits en ligne » reflètent l’état "
@@ -564,7 +581,7 @@ msgstr ""
 "«قيد الانتظار» و«المنتجات المنشورة» تعكسان الحالة الحالية بغض النظر عن "
 "الفترة."
 
-#: includes/class-aod-cd-dashboard.php:873
+#: includes/class-aod-cd-dashboard.php:885
 msgid ""
 "Marge = CA produits (hors livraison) − prix d’achat. Renseignez le « Prix "
 "d’achat » d’un produit pour qu’il compte dans la marge ; les produits sans "
@@ -573,7 +590,7 @@ msgstr ""
 "الهامش = رقم أعمال المنتجات (دون التوصيل) − سعر الشراء. أدخل «سعر الشراء» "
 "لمنتج لكي يُحتسب في الهامش؛ المنتجات بدون سعر شراء تُهمَل (يظهر «—»)."
 
-#: includes/class-aod-cd-dashboard.php:875
+#: includes/class-aod-cd-dashboard.php:887
 msgid ""
 "Note : certains produits vendus n’ont pas de prix d’achat renseigné — la "
 "marge affichée est donc une estimation partielle."
@@ -581,19 +598,19 @@ msgstr ""
 "ملاحظة: بعض المنتجات المباعة ليس لها سعر شراء مُدخَل — لذا فالهامش المعروض "
 "تقدير جزئي."
 
-#: includes/class-aod-cd-dashboard.php:973
+#: includes/class-aod-cd-dashboard.php:985
 msgid "Évolution du chiffre d’affaires"
 msgstr "تطوّر رقم الأعمال"
 
-#: includes/class-aod-cd-dashboard.php:1029
+#: includes/class-aod-cd-dashboard.php:1041
 msgid "Chiffre d’affaires sur la période"
 msgstr "رقم الأعمال خلال الفترة"
 
-#: includes/class-aod-cd-dashboard.php:1122
+#: includes/class-aod-cd-dashboard.php:1134
 msgid "Catégories de produits"
 msgstr "فئات المنتجات"
 
-#: includes/class-aod-cd-dashboard.php:1123
+#: includes/class-aod-cd-dashboard.php:1135
 msgid ""
 "Créez, renommez ou supprimez les catégories qui servent à classer vos "
 "produits. Supprimer une catégorie n’efface aucun produit : les produits "
@@ -602,22 +619,22 @@ msgstr ""
 "أنشئ الفئات أو أعد تسميتها أو احذفها لتصنيف منتجاتك. حذف فئة لا يحذف أي "
 "منتج: المنتجات المعنية تفقد فقط هذا التصنيف."
 
-#: includes/class-aod-cd-dashboard.php:1126
+#: includes/class-aod-cd-dashboard.php:1138
 msgid "Nom de la nouvelle catégorie"
 msgstr "اسم الفئة الجديدة"
 
-#: includes/class-aod-cd-dashboard.php:1127
-#: includes/class-aod-cd-dashboard.php:1478
+#: includes/class-aod-cd-dashboard.php:1139
+#: includes/class-aod-cd-dashboard.php:1490
 msgid "Ajouter"
 msgstr "إضافة"
 
-#: includes/class-aod-cd-dashboard.php:1132
-#: includes/class-aod-cd-dashboard.php:1379
+#: includes/class-aod-cd-dashboard.php:1144
+#: includes/class-aod-cd-dashboard.php:1391
 msgid "Aucune catégorie pour le moment."
 msgstr "لا توجد فئات حتى الآن."
 
 #. translators: %d: nombre de produits
-#: includes/class-aod-cd-dashboard.php:1157
+#: includes/class-aod-cd-dashboard.php:1169
 #, php-format
 msgid "%d produit"
 msgid_plural "%d produits"
@@ -628,121 +645,121 @@ msgstr[3] "%d منتجات"
 msgstr[4] "%d منتجًا"
 msgstr[5] "%d منتج"
 
-#: includes/class-aod-cd-dashboard.php:1160
+#: includes/class-aod-cd-dashboard.php:1172
 msgid "Supprimer la catégorie"
 msgstr "حذف الفئة"
 
-#: includes/class-aod-cd-dashboard.php:1170
+#: includes/class-aod-cd-dashboard.php:1182
 msgid "Ajouter un produit"
 msgstr "إضافة منتج"
 
-#: includes/class-aod-cd-dashboard.php:1179
+#: includes/class-aod-cd-dashboard.php:1191
 msgid "Rechercher un produit…"
 msgstr "ابحث عن منتج…"
 
-#: includes/class-aod-cd-dashboard.php:1197
+#: includes/class-aod-cd-dashboard.php:1209
 msgid "Aucun produit ne correspond à cette recherche."
 msgstr "لا يوجد منتج يطابق هذا البحث."
 
-#: includes/class-aod-cd-dashboard.php:1198
+#: includes/class-aod-cd-dashboard.php:1210
 msgid ""
 "Aucun produit pour le moment. Cliquez sur « Ajouter un produit » pour "
 "commencer."
 msgstr "لا يوجد منتج حتى الآن. انقر على « إضافة منتج » للبدء."
 
-#: includes/class-aod-cd-dashboard.php:1206
-#: includes/class-aod-cd-dashboard.php:1259
+#: includes/class-aod-cd-dashboard.php:1218
+#: includes/class-aod-cd-dashboard.php:1271
 msgid "Prix"
 msgstr "السعر"
 
-#: includes/class-aod-cd-dashboard.php:1207
+#: includes/class-aod-cd-dashboard.php:1219
 msgid "Stock"
 msgstr "المخزون"
 
-#: includes/class-aod-cd-dashboard.php:1222
-#: includes/class-aod-cd-dashboard.php:1393
+#: includes/class-aod-cd-dashboard.php:1234
+#: includes/class-aod-cd-dashboard.php:1405
 msgid "En ligne"
 msgstr "منشور"
 
-#: includes/class-aod-cd-dashboard.php:1224
+#: includes/class-aod-cd-dashboard.php:1236
 msgid "Éditer"
 msgstr "تعديل"
 
-#: includes/class-aod-cd-dashboard.php:1260
+#: includes/class-aod-cd-dashboard.php:1272
 msgid "Promo"
 msgstr "تخفيض"
 
-#: includes/class-aod-cd-dashboard.php:1271
+#: includes/class-aod-cd-dashboard.php:1283
 msgid "Achat"
 msgstr "الشراء"
 
-#: includes/class-aod-cd-dashboard.php:1294
-#: includes/class-aod-cd-dashboard.php:1904
-#: includes/class-aod-cd-dashboard.php:2314
+#: includes/class-aod-cd-dashboard.php:1306
+#: includes/class-aod-cd-dashboard.php:1916
+#: includes/class-aod-cd-dashboard.php:2326
 msgid "Produit introuvable."
 msgstr "المنتج غير موجود."
 
-#: includes/class-aod-cd-dashboard.php:1331
+#: includes/class-aod-cd-dashboard.php:1343
 msgid "Modifier le produit"
 msgstr "تعديل المنتج"
 
-#: includes/class-aod-cd-dashboard.php:1331
+#: includes/class-aod-cd-dashboard.php:1343
 msgid "Nouveau produit"
 msgstr "منتج جديد"
 
-#: includes/class-aod-cd-dashboard.php:1334
+#: includes/class-aod-cd-dashboard.php:1346
 msgid "Retour à la liste"
 msgstr "العودة إلى القائمة"
 
-#: includes/class-aod-cd-dashboard.php:1343
+#: includes/class-aod-cd-dashboard.php:1355
 msgid "Informations générales"
 msgstr "معلومات عامة"
 
-#: includes/class-aod-cd-dashboard.php:1346
+#: includes/class-aod-cd-dashboard.php:1358
 msgid "Nom du produit"
 msgstr "اسم المنتج"
 
-#: includes/class-aod-cd-dashboard.php:1351
+#: includes/class-aod-cd-dashboard.php:1363
 msgid "Description"
 msgstr "الوصف"
 
-#: includes/class-aod-cd-dashboard.php:1356
+#: includes/class-aod-cd-dashboard.php:1368
 msgid "Arguments de vente (un par ligne)"
 msgstr "نقاط البيع (واحدة في كل سطر)"
 
-#: includes/class-aod-cd-dashboard.php:1357
+#: includes/class-aod-cd-dashboard.php:1369
 msgid ""
 "Livraison rapide\n"
 "Garantie 1 an\n"
 "Qualité premium"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1358
+#: includes/class-aod-cd-dashboard.php:1370
 msgid "Affichés en liste à puces sur la page produit."
 msgstr "تُعرَض كقائمة نقطية في صفحة المنتج."
 
-#: includes/class-aod-cd-dashboard.php:1383
+#: includes/class-aod-cd-dashboard.php:1395
 msgid "Cliquez pour ouvrir la liste et cochez une ou plusieurs catégories."
 msgstr "انقر لفتح القائمة وحدّد فئة واحدة أو أكثر."
 
-#: includes/class-aod-cd-dashboard.php:1387
+#: includes/class-aod-cd-dashboard.php:1399
 msgid "Nouvelle catégorie (optionnel)"
 msgstr "فئة جديدة (اختياري)"
 
-#: includes/class-aod-cd-dashboard.php:1388
+#: includes/class-aod-cd-dashboard.php:1400
 msgid "Crée et assigne une catégorie"
 msgstr "ينشئ فئة ويعيّنها"
 
-#: includes/class-aod-cd-dashboard.php:1404
+#: includes/class-aod-cd-dashboard.php:1416
 msgid "Prix & promotion"
 msgstr "السعر والتخفيض"
 
-#: includes/class-aod-cd-dashboard.php:1408
+#: includes/class-aod-cd-dashboard.php:1420
 #, php-format
 msgid "Prix (%s)"
 msgstr "السعر (%s)"
 
-#: includes/class-aod-cd-dashboard.php:1410
+#: includes/class-aod-cd-dashboard.php:1422
 msgid ""
 "Si vous ajoutez des variantes, ce prix sert de prix par défaut (utilisé "
 "quand une variante n’a pas son propre prix)."
@@ -750,108 +767,108 @@ msgstr ""
 "إذا أضفت متغيّرات، يُستخدَم هذا السعر كسعر افتراضي (عندما لا يكون للمتغيّر سعره "
 "الخاص)."
 
-#: includes/class-aod-cd-dashboard.php:1413
+#: includes/class-aod-cd-dashboard.php:1425
 msgid "Prix promo (optionnel)"
 msgstr "سعر التخفيض (اختياري)"
 
-#: includes/class-aod-cd-dashboard.php:1419
+#: includes/class-aod-cd-dashboard.php:1431
 msgid "Période de promotion (optionnel)"
 msgstr "فترة العرض الترويجي (اختياري)"
 
-#: includes/class-aod-cd-dashboard.php:1422
+#: includes/class-aod-cd-dashboard.php:1434
 msgid "Début"
 msgstr "البداية"
 
-#: includes/class-aod-cd-dashboard.php:1425
-#: includes/class-aod-cd-dashboard.php:1433
+#: includes/class-aod-cd-dashboard.php:1437
+#: includes/class-aod-cd-dashboard.php:1445
 msgid "Effacer la date"
 msgstr "مسح التاريخ"
 
-#: includes/class-aod-cd-dashboard.php:1430
+#: includes/class-aod-cd-dashboard.php:1442
 msgid "Fin"
 msgstr "النهاية"
 
-#: includes/class-aod-cd-dashboard.php:1437
+#: includes/class-aod-cd-dashboard.php:1449
 msgid "La promo s’activera et s’arrêtera automatiquement à ces dates."
 msgstr "سيبدأ العرض وينتهي تلقائيًا في هذه التواريخ."
 
-#: includes/class-aod-cd-dashboard.php:1441
+#: includes/class-aod-cd-dashboard.php:1453
 #, php-format
 msgid "Prix d’achat (%s, optionnel)"
 msgstr "سعر الشراء (%s، اختياري)"
 
-#: includes/class-aod-cd-dashboard.php:1443
+#: includes/class-aod-cd-dashboard.php:1455
 msgid "Sert au calcul de la marge (non affiché au client)."
 msgstr "يُستخدَم لحساب الهامش (لا يظهر للعميل)."
 
-#: includes/class-aod-cd-dashboard.php:1450
+#: includes/class-aod-cd-dashboard.php:1462
 msgid "Images"
 msgstr "الصور"
 
-#: includes/class-aod-cd-dashboard.php:1450
+#: includes/class-aod-cd-dashboard.php:1462
 msgid "photo principale & galerie"
 msgstr "الصورة الرئيسية والمعرض"
 
-#: includes/class-aod-cd-dashboard.php:1453
+#: includes/class-aod-cd-dashboard.php:1465
 msgid "Photo principale"
 msgstr "الصورة الرئيسية"
 
-#: includes/class-aod-cd-dashboard.php:1456
+#: includes/class-aod-cd-dashboard.php:1468
 msgid "Aucune image"
 msgstr "لا توجد صورة"
 
-#: includes/class-aod-cd-dashboard.php:1462
+#: includes/class-aod-cd-dashboard.php:1474
 msgid "Galerie (photos supplémentaires)"
 msgstr "المعرض (صور إضافية)"
 
-#: includes/class-aod-cd-dashboard.php:1472
+#: includes/class-aod-cd-dashboard.php:1484
 msgid "À retirer"
 msgstr "سيُزال"
 
-#: includes/class-aod-cd-dashboard.php:1482
+#: includes/class-aod-cd-dashboard.php:1494
 msgid ""
 "Cliquez sur « Ajouter » (ou glissez vos fichiers) pour choisir des photos. "
 "Cliquez sur ✕ pour en retirer une."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1489
+#: includes/class-aod-cd-dashboard.php:1501
 msgid "Stock & logistique"
 msgstr "المخزون واللوجستيك"
 
-#: includes/class-aod-cd-dashboard.php:1494
+#: includes/class-aod-cd-dashboard.php:1506
 msgid "Gérer le stock"
 msgstr "إدارة المخزون"
 
-#: includes/class-aod-cd-dashboard.php:1496
-#: includes/class-aod-cd-dashboard.php:3277
+#: includes/class-aod-cd-dashboard.php:1508
+#: includes/class-aod-cd-dashboard.php:3488
 msgid "Quantité"
 msgstr "الكمية"
 
-#: includes/class-aod-cd-dashboard.php:1497
+#: includes/class-aod-cd-dashboard.php:1509
 msgid "Alerte stock bas (optionnel)"
 msgstr "تنبيه انخفاض المخزون (اختياري)"
 
-#: includes/class-aod-cd-dashboard.php:1502
+#: includes/class-aod-cd-dashboard.php:1514
 msgid "Référence / SKU (optionnel)"
 msgstr "المرجع / SKU (اختياري)"
 
-#: includes/class-aod-cd-dashboard.php:1506
+#: includes/class-aod-cd-dashboard.php:1518
 msgid "Poids (kg, optionnel)"
 msgstr "الوزن (كغ، اختياري)"
 
-#: includes/class-aod-cd-dashboard.php:1507
+#: includes/class-aod-cd-dashboard.php:1519
 msgid "ex : 0.5"
 msgstr "مثال: 0.5"
 
-#: includes/class-aod-cd-dashboard.php:1515
+#: includes/class-aod-cd-dashboard.php:1527
 msgid "Variantes"
 msgstr "المتغيّرات"
 
-#: includes/class-aod-cd-dashboard.php:1515
+#: includes/class-aod-cd-dashboard.php:1527
 msgid "Taille, Couleur, Pointure… (optionnel)"
 msgstr "المقاس، اللون، القياس… (اختياري)"
 
-#: includes/class-aod-cd-dashboard.php:1518
+#: includes/class-aod-cd-dashboard.php:1530
 msgid ""
 "Crée une section par caractéristique (Taille, Pointure, Couleur…). Pour "
 "chaque section, ajoute les valeurs que le client pourra choisir. Une section "
@@ -863,47 +880,47 @@ msgstr ""
 "منها العميل. القسم «بصور» يعرض أزرارًا قابلة للنقر (ألوان، نماذج…)؛ ويمكن لكل "
 "قيمة إضافة زيادة في السعر. اتركه فارغًا لمنتج بسيط."
 
-#: includes/class-aod-cd-dashboard.php:1521
+#: includes/class-aod-cd-dashboard.php:1533
 msgid "Sections rapides :"
 msgstr "أقسام سريعة:"
 
-#: includes/class-aod-cd-dashboard.php:1522
+#: includes/class-aod-cd-dashboard.php:1534
 msgid "Sélectionner une taille"
 msgstr "اختر مقاسًا"
 
-#: includes/class-aod-cd-dashboard.php:1522
+#: includes/class-aod-cd-dashboard.php:1534
 msgid "Tailles S–XXL"
 msgstr "مقاسات S–XXL"
 
-#: includes/class-aod-cd-dashboard.php:1523
+#: includes/class-aod-cd-dashboard.php:1535
 msgid "Sélectionner une pointure"
 msgstr "اختر قياسًا"
 
-#: includes/class-aod-cd-dashboard.php:1523
+#: includes/class-aod-cd-dashboard.php:1535
 msgid "Pointures 35–46"
 msgstr "قياسات 35–46"
 
-#: includes/class-aod-cd-dashboard.php:1524
+#: includes/class-aod-cd-dashboard.php:1536
 msgid "Sélectionner une couleur"
 msgstr "اختر لونًا"
 
-#: includes/class-aod-cd-dashboard.php:1524
+#: includes/class-aod-cd-dashboard.php:1536
 msgid "Couleur (avec photos)"
 msgstr "اللون (بصور)"
 
-#: includes/class-aod-cd-dashboard.php:1537
+#: includes/class-aod-cd-dashboard.php:1549
 msgid "Ajouter une section"
 msgstr "إضافة قسم"
 
-#: includes/class-aod-cd-dashboard.php:1547
+#: includes/class-aod-cd-dashboard.php:1559
 msgid "Offres"
 msgstr "العروض"
 
-#: includes/class-aod-cd-dashboard.php:1547
+#: includes/class-aod-cd-dashboard.php:1559
 msgid "packs « 2 produits », « 3 produits »… (optionnel)"
 msgstr "عروض «منتجان»، «3 منتجات»… (اختياري)"
 
-#: includes/class-aod-cd-dashboard.php:1550
+#: includes/class-aod-cd-dashboard.php:1562
 msgid ""
 "Proposez d’acheter plusieurs unités de ce produit à un prix de lot "
 "avantageux. Indiquez le NOMBRE d’unités et le PRIX TOTAL du lot (ex. : 2 → "
@@ -919,228 +936,228 @@ msgstr ""
 "صفحة المنتج، سيرى العميل بطاقة «منتج واحد» افتراضيًا، ثم بطاقة لكل عرض؛ وعند "
 "النقر يختار متغيّرًا لكل وحدة."
 
-#: includes/class-aod-cd-dashboard.php:1553
+#: includes/class-aod-cd-dashboard.php:1565
 msgid "Nombre d’unités"
 msgstr "عدد القطع"
 
-#: includes/class-aod-cd-dashboard.php:1554
+#: includes/class-aod-cd-dashboard.php:1566
 #, php-format
 msgid "Prix total du lot (%s)"
 msgstr "السعر الإجمالي للعرض (%s)"
 
-#: includes/class-aod-cd-dashboard.php:1568
+#: includes/class-aod-cd-dashboard.php:1580
 msgid "Ajouter une offre"
 msgstr "إضافة عرض"
 
-#: includes/class-aod-cd-dashboard.php:1641
+#: includes/class-aod-cd-dashboard.php:1653
 msgid "Couleur"
 msgstr "اللون"
 
-#: includes/class-aod-cd-dashboard.php:1684
+#: includes/class-aod-cd-dashboard.php:1696
 msgid "ex : Sélectionner une couleur, une taille…"
 msgstr "مثال: اختر لونًا، مقاسًا…"
 
-#: includes/class-aod-cd-dashboard.php:1687
+#: includes/class-aod-cd-dashboard.php:1699
 msgid "Avec photos"
 msgstr "بصور"
 
-#: includes/class-aod-cd-dashboard.php:1689
+#: includes/class-aod-cd-dashboard.php:1701
 msgid ""
 "Affiche cette section en menu déroulant sur le formulaire de commande (idéal "
 "quand il y a beaucoup de valeurs)."
 msgstr ""
 "يعرض هذا القسم كقائمة منسدلة في نموذج الطلب (مثالي عند وجود قيم كثيرة)."
 
-#: includes/class-aod-cd-dashboard.php:1691
+#: includes/class-aod-cd-dashboard.php:1703
 msgid "Liste déroulante"
 msgstr "قائمة منسدلة"
 
-#: includes/class-aod-cd-dashboard.php:1693
+#: includes/class-aod-cd-dashboard.php:1705
 msgid "Supprimer cette section"
 msgstr "حذف هذا القسم"
 
-#: includes/class-aod-cd-dashboard.php:1704
+#: includes/class-aod-cd-dashboard.php:1716
 msgid "Ajouter une valeur"
 msgstr "إضافة قيمة"
 
-#: includes/class-aod-cd-dashboard.php:1730
+#: includes/class-aod-cd-dashboard.php:1742
 msgid "Choisir une couleur"
 msgstr "اختر لونًا"
 
-#: includes/class-aod-cd-dashboard.php:1730
+#: includes/class-aod-cd-dashboard.php:1742
 msgid "Choisir une couleur prédéfinie"
 msgstr "اختر لونًا جاهزًا"
 
-#: includes/class-aod-cd-dashboard.php:1732
+#: includes/class-aod-cd-dashboard.php:1744
 msgid "ex : Rouge, L, 42…"
 msgstr "مثال: أحمر، L، 42…"
 
-#: includes/class-aod-cd-dashboard.php:1734
+#: includes/class-aod-cd-dashboard.php:1746
 msgid "supplément"
 msgstr "زيادة"
 
-#: includes/class-aod-cd-dashboard.php:1735
+#: includes/class-aod-cd-dashboard.php:1747
 msgid "Supprimer cette valeur"
 msgstr "حذف هذه القيمة"
 
-#: includes/class-aod-cd-dashboard.php:1749
+#: includes/class-aod-cd-dashboard.php:1761
 msgid "Noir"
 msgstr "أسود"
 
-#: includes/class-aod-cd-dashboard.php:1750
+#: includes/class-aod-cd-dashboard.php:1762
 msgid "Blanc"
 msgstr "أبيض"
 
-#: includes/class-aod-cd-dashboard.php:1751
+#: includes/class-aod-cd-dashboard.php:1763
 msgid "Gris"
 msgstr "رمادي"
 
-#: includes/class-aod-cd-dashboard.php:1752
+#: includes/class-aod-cd-dashboard.php:1764
 msgid "Gris clair"
 msgstr "رمادي فاتح"
 
-#: includes/class-aod-cd-dashboard.php:1753
+#: includes/class-aod-cd-dashboard.php:1765
 msgid "Gris foncé"
 msgstr "رمادي غامق"
 
-#: includes/class-aod-cd-dashboard.php:1754
+#: includes/class-aod-cd-dashboard.php:1766
 msgid "Beige"
 msgstr "بيج"
 
-#: includes/class-aod-cd-dashboard.php:1755
+#: includes/class-aod-cd-dashboard.php:1767
 msgid "Crème"
 msgstr "كريمي"
 
-#: includes/class-aod-cd-dashboard.php:1756
+#: includes/class-aod-cd-dashboard.php:1768
 msgid "Marron"
 msgstr "بنّي"
 
-#: includes/class-aod-cd-dashboard.php:1757
+#: includes/class-aod-cd-dashboard.php:1769
 msgid "Bordeaux"
 msgstr "خمري"
 
-#: includes/class-aod-cd-dashboard.php:1758
+#: includes/class-aod-cd-dashboard.php:1770
 msgid "Rouge"
 msgstr "أحمر"
 
-#: includes/class-aod-cd-dashboard.php:1759
+#: includes/class-aod-cd-dashboard.php:1771
 msgid "Rouge foncé"
 msgstr "أحمر غامق"
 
-#: includes/class-aod-cd-dashboard.php:1760
+#: includes/class-aod-cd-dashboard.php:1772
 msgid "Rose"
 msgstr "وردي"
 
-#: includes/class-aod-cd-dashboard.php:1761
+#: includes/class-aod-cd-dashboard.php:1773
 msgid "Fuchsia"
 msgstr "فوشيا"
 
-#: includes/class-aod-cd-dashboard.php:1762
+#: includes/class-aod-cd-dashboard.php:1774
 msgid "Corail"
 msgstr "مرجاني"
 
-#: includes/class-aod-cd-dashboard.php:1763
+#: includes/class-aod-cd-dashboard.php:1775
 msgid "Orange"
 msgstr "برتقالي"
 
-#: includes/class-aod-cd-dashboard.php:1764
+#: includes/class-aod-cd-dashboard.php:1776
 msgid "Moutarde"
 msgstr "خردلي"
 
-#: includes/class-aod-cd-dashboard.php:1765
+#: includes/class-aod-cd-dashboard.php:1777
 msgid "Jaune"
 msgstr "أصفر"
 
-#: includes/class-aod-cd-dashboard.php:1766
+#: includes/class-aod-cd-dashboard.php:1778
 msgid "Or"
 msgstr "ذهبي"
 
-#: includes/class-aod-cd-dashboard.php:1767
+#: includes/class-aod-cd-dashboard.php:1779
 msgid "Vert clair"
 msgstr "أخضر فاتح"
 
-#: includes/class-aod-cd-dashboard.php:1768
+#: includes/class-aod-cd-dashboard.php:1780
 msgid "Vert"
 msgstr "أخضر"
 
-#: includes/class-aod-cd-dashboard.php:1769
+#: includes/class-aod-cd-dashboard.php:1781
 msgid "Vert foncé"
 msgstr "أخضر غامق"
 
-#: includes/class-aod-cd-dashboard.php:1770
+#: includes/class-aod-cd-dashboard.php:1782
 msgid "Kaki"
 msgstr "كاكي"
 
-#: includes/class-aod-cd-dashboard.php:1771
+#: includes/class-aod-cd-dashboard.php:1783
 msgid "Turquoise"
 msgstr "فيروزي"
 
-#: includes/class-aod-cd-dashboard.php:1772
+#: includes/class-aod-cd-dashboard.php:1784
 msgid "Cyan"
 msgstr "سماوي"
 
-#: includes/class-aod-cd-dashboard.php:1773
+#: includes/class-aod-cd-dashboard.php:1785
 msgid "Bleu ciel"
 msgstr "أزرق سماوي"
 
-#: includes/class-aod-cd-dashboard.php:1774
+#: includes/class-aod-cd-dashboard.php:1786
 msgid "Bleu"
 msgstr "أزرق"
 
-#: includes/class-aod-cd-dashboard.php:1775
+#: includes/class-aod-cd-dashboard.php:1787
 msgid "Bleu marine"
 msgstr "كحلي"
 
-#: includes/class-aod-cd-dashboard.php:1776
+#: includes/class-aod-cd-dashboard.php:1788
 msgid "Mauve"
 msgstr "بنفسجي فاتح"
 
-#: includes/class-aod-cd-dashboard.php:1777
+#: includes/class-aod-cd-dashboard.php:1789
 msgid "Violet"
 msgstr "بنفسجي"
 
-#: includes/class-aod-cd-dashboard.php:1778
+#: includes/class-aod-cd-dashboard.php:1790
 msgid "Argent"
 msgstr "فضّي"
 
-#: includes/class-aod-cd-dashboard.php:1876
+#: includes/class-aod-cd-dashboard.php:1888
 msgid "ex : 2"
 msgstr "مثال: 2"
 
-#: includes/class-aod-cd-dashboard.php:1877
+#: includes/class-aod-cd-dashboard.php:1889
 msgid "ex : 2500 (pour 2)"
 msgstr "مثال: 2500 (لـ 2)"
 
-#: includes/class-aod-cd-dashboard.php:1878
+#: includes/class-aod-cd-dashboard.php:1890
 msgid "Supprimer cette offre"
 msgstr "حذف هذا العرض"
 
-#: includes/class-aod-cd-dashboard.php:1896
+#: includes/class-aod-cd-dashboard.php:1908
 msgid "Le nom du produit est obligatoire."
 msgstr "اسم المنتج إلزامي."
 
-#: includes/class-aod-cd-dashboard.php:1915
+#: includes/class-aod-cd-dashboard.php:1927
 msgid "Le prix promo doit être inférieur ou égal au prix normal."
 msgstr "يجب أن يكون سعر التخفيض أقل من السعر العادي أو مساويًا له."
 
-#: includes/class-aod-cd-dashboard.php:1924
+#: includes/class-aod-cd-dashboard.php:1936
 msgid "Cette référence (SKU) est déjà utilisée."
 msgstr "هذا المرجع (SKU) مستخدم بالفعل."
 
-#: includes/class-aod-cd-dashboard.php:2051
+#: includes/class-aod-cd-dashboard.php:2063
 msgid "Produit enregistré, mais échec de l’image : "
 msgstr "تم حفظ المنتج، لكن فشل تحميل الصورة: "
 
-#: includes/class-aod-cd-dashboard.php:2067
+#: includes/class-aod-cd-dashboard.php:2079
 msgid "Produit mis à jour."
 msgstr "تم تحديث المنتج."
 
-#: includes/class-aod-cd-dashboard.php:2067
+#: includes/class-aod-cd-dashboard.php:2079
 msgid "Produit créé."
 msgstr "تم إنشاء المنتج."
 
 #. translators: %d: nombre d'offres ignorées
-#: includes/class-aod-cd-dashboard.php:2073
+#: includes/class-aod-cd-dashboard.php:2085
 #, php-format
 msgid ""
 "%d offre a été ignorée : le prix total du lot doit être INFÉRIEUR au prix "
@@ -1169,61 +1186,61 @@ msgstr[5] ""
 "تم تجاهل %d عرض: يجب أن يكون السعر الإجمالي للعرض أقل من السعر العادي مضروبًا "
 "في عدد الوحدات (وإلا فلن يقدّم العرض أي تخفيض)."
 
-#: includes/class-aod-cd-dashboard.php:2317
+#: includes/class-aod-cd-dashboard.php:2329
 msgid "Produit déplacé dans la corbeille."
 msgstr "تم نقل المنتج إلى سلة المهملات."
 
-#: includes/class-aod-cd-dashboard.php:2336
+#: includes/class-aod-cd-dashboard.php:2348
 msgid "Le nom de la catégorie est obligatoire."
 msgstr "اسم الفئة إلزامي."
 
-#: includes/class-aod-cd-dashboard.php:2347
+#: includes/class-aod-cd-dashboard.php:2359
 msgid "Cette catégorie existe déjà."
 msgstr "هذه الفئة موجودة بالفعل."
 
-#: includes/class-aod-cd-dashboard.php:2355
+#: includes/class-aod-cd-dashboard.php:2367
 msgid "Catégorie renommée."
 msgstr "تمت إعادة تسمية الفئة."
 
-#: includes/class-aod-cd-dashboard.php:2355
+#: includes/class-aod-cd-dashboard.php:2367
 msgid "Catégorie créée."
 msgstr "تم إنشاء الفئة."
 
-#: includes/class-aod-cd-dashboard.php:2372
+#: includes/class-aod-cd-dashboard.php:2384
 msgid "Catégorie introuvable."
 msgstr "الفئة غير موجودة."
 
-#: includes/class-aod-cd-dashboard.php:2376
+#: includes/class-aod-cd-dashboard.php:2388
 msgid "Suppression impossible."
 msgstr "تعذّر الحذف."
 
-#: includes/class-aod-cd-dashboard.php:2378
+#: includes/class-aod-cd-dashboard.php:2390
 msgid "Catégorie supprimée."
 msgstr "تم حذف الفئة."
 
-#: includes/class-aod-cd-dashboard.php:2387
+#: includes/class-aod-cd-dashboard.php:2399
 msgid "Le module de livraison (AOD COD Form) n’est pas actif."
 msgstr "وحدة التوصيل (AOD COD Form) غير مفعّلة."
 
-#: includes/class-aod-cd-dashboard.php:2398
-#: includes/class-aod-cd-dashboard.php:2424
+#: includes/class-aod-cd-dashboard.php:2410
+#: includes/class-aod-cd-dashboard.php:2436
 msgid "Livraison gratuite"
 msgstr "توصيل مجاني"
 
-#: includes/class-aod-cd-dashboard.php:2402
+#: includes/class-aod-cd-dashboard.php:2414
 msgid "Offrir la livraison à partir d’un certain montant de produits"
 msgstr "تقديم التوصيل مجانًا ابتداءً من مبلغ معيّن من المنتجات"
 
-#: includes/class-aod-cd-dashboard.php:2406
+#: includes/class-aod-cd-dashboard.php:2418
 #, php-format
 msgid "Seuil (%s)"
 msgstr "العتبة (%s)"
 
-#: includes/class-aod-cd-dashboard.php:2410
+#: includes/class-aod-cd-dashboard.php:2422
 msgid "Tarifs par wilaya"
 msgstr "الأسعار حسب الولاية"
 
-#: includes/class-aod-cd-dashboard.php:2411
+#: includes/class-aod-cd-dashboard.php:2423
 msgid ""
 "Laissez une wilaya vide pour la rendre non livrable. Domicile = livraison à "
 "l’adresse ; Stop-desk = retrait au bureau du livreur."
@@ -1231,117 +1248,117 @@ msgstr ""
 "اترك الولاية فارغة لجعلها غير قابلة للتوصيل. المنزل = التوصيل إلى العنوان؛ "
 "مكتب التوصيل = الاستلام من مكتب الناقل."
 
-#: includes/class-aod-cd-dashboard.php:2413
+#: includes/class-aod-cd-dashboard.php:2425
 msgid "Rechercher une wilaya…"
 msgstr "ابحث عن ولاية…"
 
-#: includes/class-aod-cd-dashboard.php:2419
+#: includes/class-aod-cd-dashboard.php:2431
 #, php-format
 msgid "Domicile (%s)"
 msgstr "المنزل (%s)"
 
-#: includes/class-aod-cd-dashboard.php:2420
+#: includes/class-aod-cd-dashboard.php:2432
 #, php-format
 msgid "Stop-desk (%s)"
 msgstr "مكتب التوصيل (%s)"
 
-#: includes/class-aod-cd-dashboard.php:2446
+#: includes/class-aod-cd-dashboard.php:2458
 msgid "Transporteurs"
 msgstr "شركات التوصيل"
 
-#: includes/class-aod-cd-dashboard.php:2447
+#: includes/class-aod-cd-dashboard.php:2459
 msgid ""
 "Cliquez sur un transporteur pour saisir vos identifiants API et le connecter."
 msgstr "انقر على شركة توصيل لإدخال بيانات API وربطها."
 
-#: includes/class-aod-cd-dashboard.php:2452
+#: includes/class-aod-cd-dashboard.php:2464
 msgid ""
 "Envoyer automatiquement au livreur quand une commande passe à « Confirmée »"
 msgstr "الإرسال تلقائيًا إلى الناقل عندما تتحوّل حالة الطلب إلى « مؤكَّد »"
 
-#: includes/class-aod-cd-dashboard.php:2456
+#: includes/class-aod-cd-dashboard.php:2468
 msgid "Livreur par défaut (envoi auto)"
 msgstr "الناقل الافتراضي (الإرسال التلقائي)"
 
-#: includes/class-aod-cd-dashboard.php:2460
+#: includes/class-aod-cd-dashboard.php:2472
 msgid "(non configuré)"
 msgstr "(غير مُعدّ)"
 
-#: includes/class-aod-cd-dashboard.php:2467
+#: includes/class-aod-cd-dashboard.php:2479
 msgid "Rechercher un transporteur…"
 msgstr "ابحث عن شركة توصيل…"
 
-#: includes/class-aod-cd-dashboard.php:2472
+#: includes/class-aod-cd-dashboard.php:2484
 msgid "Transporteur"
 msgstr "شركة التوصيل"
 
-#: includes/class-aod-cd-dashboard.php:2486
+#: includes/class-aod-cd-dashboard.php:2498
 msgid "Connecté"
 msgstr "مُتّصل"
 
-#: includes/class-aod-cd-dashboard.php:2488
+#: includes/class-aod-cd-dashboard.php:2500
 msgid "Non connecté"
 msgstr "غير متّصل"
 
-#: includes/class-aod-cd-dashboard.php:2507
+#: includes/class-aod-cd-dashboard.php:2519
 msgid "Enregistrer la livraison"
 msgstr "حفظ إعدادات التوصيل"
 
-#: includes/class-aod-cd-dashboard.php:2523
+#: includes/class-aod-cd-dashboard.php:2535
 msgid "Module de livraison indisponible."
 msgstr "وحدة التوصيل غير متوفرة."
 
-#: includes/class-aod-cd-dashboard.php:2563
+#: includes/class-aod-cd-dashboard.php:2575
 msgid "Réglages de livraison enregistrés."
 msgstr "تم حفظ إعدادات التوصيل."
 
-#: includes/class-aod-cd-dashboard.php:2591
+#: includes/class-aod-cd-dashboard.php:2603
 msgid "Meta (Facebook) Pixel ID"
 msgstr "معرّف بيكسل ميتا (فيسبوك)"
 
-#: includes/class-aod-cd-dashboard.php:2591
+#: includes/class-aod-cd-dashboard.php:2603
 msgid "Gestionnaire d’événements Meta → Paramètres → ID du pixel."
 msgstr "مدير أحداث ميتا ← الإعدادات ← معرّف البيكسل."
 
-#: includes/class-aod-cd-dashboard.php:2592
+#: includes/class-aod-cd-dashboard.php:2604
 msgid "Google Ads — Libellé de conversion"
 msgstr "إعلانات جوجل — تسمية التحويل"
 
-#: includes/class-aod-cd-dashboard.php:2592
+#: includes/class-aod-cd-dashboard.php:2604
 msgid ""
 "La partie après « / » dans send_to. Sans elle, seule la balise de base est "
 "posée."
 msgstr "الجزء الذي يلي « / » في send_to. بدونه، يتم وضع الوسم الأساسي فقط."
 
-#: includes/class-aod-cd-dashboard.php:2593
+#: includes/class-aod-cd-dashboard.php:2605
 msgid "Snapchat Pixel ID"
 msgstr "معرّف بيكسل سناب شات"
 
-#: includes/class-aod-cd-dashboard.php:2593
+#: includes/class-aod-cd-dashboard.php:2605
 msgid "Snapchat Ads → Gestionnaire d’événements → Pixel ID."
 msgstr "إعلانات سناب شات ← مدير الأحداث ← معرّف البيكسل."
 
-#: includes/class-aod-cd-dashboard.php:2594
+#: includes/class-aod-cd-dashboard.php:2606
 msgid "Google Ads — ID de conversion"
 msgstr "إعلانات جوجل — معرّف التحويل"
 
-#: includes/class-aod-cd-dashboard.php:2594
+#: includes/class-aod-cd-dashboard.php:2606
 msgid "Commence par AW-. Google Ads → Objectifs → Conversions."
 msgstr "يبدأ بـ AW-. إعلانات جوجل ← الأهداف ← التحويلات."
 
-#: includes/class-aod-cd-dashboard.php:2595
+#: includes/class-aod-cd-dashboard.php:2607
 msgid "TikTok Pixel ID"
 msgstr "معرّف بيكسل تيك توك"
 
-#: includes/class-aod-cd-dashboard.php:2595
+#: includes/class-aod-cd-dashboard.php:2607
 msgid "TikTok Ads → Outils → Événements → Pixel Web."
 msgstr "إعلانات تيك توك ← الأدوات ← الأحداث ← بيكسل الويب."
 
-#: includes/class-aod-cd-dashboard.php:2599
+#: includes/class-aod-cd-dashboard.php:2611
 msgid "Pixels publicitaires"
 msgstr "بيكسلات الإعلانات"
 
-#: includes/class-aod-cd-dashboard.php:2600
+#: includes/class-aod-cd-dashboard.php:2612
 msgid ""
 "Colle l’identifiant de chaque régie. Laisse vide pour désactiver. Le "
 "PageView est suivi sur tout le site ; l’achat est mesuré sur la page de "
@@ -1350,255 +1367,298 @@ msgstr ""
 "الصق معرّف كل منصة إعلانية. اتركه فارغًا للتعطيل. يتم تتبّع PageView على كامل "
 "الموقع؛ ويُقاس الشراء في صفحة الشكر (مرة واحدة لكل طلب)."
 
-#: includes/class-aod-cd-dashboard.php:2612
+#: includes/class-aod-cd-dashboard.php:2624
 msgid "Enregistrer les pixels"
 msgstr "حفظ البيكسلات"
 
-#: includes/class-aod-cd-dashboard.php:2633
+#: includes/class-aod-cd-dashboard.php:2645
 msgid "Pixels enregistrés."
 msgstr "تم حفظ البيكسلات."
 
-#: includes/class-aod-cd-dashboard.php:2655
+#: includes/class-aod-cd-dashboard.php:2667
 msgid "Notification WhatsApp des commandes"
 msgstr "إشعار واتساب بالطلبات"
 
-#: includes/class-aod-cd-dashboard.php:2656
+#: includes/class-aod-cd-dashboard.php:2668
 msgid ""
 "Reçois un message WhatsApp instantané à chaque nouvelle commande. Service "
 "gratuit via CallMeBot."
 msgstr "استقبل رسالة واتساب فورية مع كل طلب جديد. خدمة مجانية عبر CallMeBot."
 
-#: includes/class-aod-cd-dashboard.php:2659
+#: includes/class-aod-cd-dashboard.php:2671
 msgid "Mise en route (une seule fois) :"
 msgstr "الإعداد (مرة واحدة فقط):"
 
-#: includes/class-aod-cd-dashboard.php:2661
+#: includes/class-aod-cd-dashboard.php:2673
 #, php-format
 msgid "Enregistre le numéro %s dans tes contacts (nom : CallMeBot)."
 msgstr "احفظ الرقم %s في جهات اتصالك (الاسم: CallMeBot)."
 
-#: includes/class-aod-cd-dashboard.php:2662
+#: includes/class-aod-cd-dashboard.php:2674
 #, php-format
 msgid "Sur WhatsApp, envoie-lui : %s"
 msgstr "على واتساب، أرسل له: %s"
 
-#: includes/class-aod-cd-dashboard.php:2663
+#: includes/class-aod-cd-dashboard.php:2675
 msgid "Tu reçois ta clé API (apikey). Colle-la ci-dessous."
 msgstr "ستستقبل مفتاح API (apikey). الصقه أدناه."
 
-#: includes/class-aod-cd-dashboard.php:2670
+#: includes/class-aod-cd-dashboard.php:2682
 msgid "Envoyer un WhatsApp à chaque commande"
 msgstr "إرسال واتساب مع كل طلب"
 
-#: includes/class-aod-cd-dashboard.php:2675
+#: includes/class-aod-cd-dashboard.php:2687
 msgid "Ton numéro WhatsApp"
 msgstr "رقم واتساب الخاص بك"
 
-#: includes/class-aod-cd-dashboard.php:2677
+#: includes/class-aod-cd-dashboard.php:2689
 msgid ""
 "Avec l’indicatif pays, sans « + » ni espaces. Algérie = 213. Ex : "
 "213550123456."
 msgstr "مع رمز الدولة، دون « + » أو مسافات. الجزائر = 213. مثال: 213550123456."
 
-#: includes/class-aod-cd-dashboard.php:2681
+#: includes/class-aod-cd-dashboard.php:2693
 msgid "Clé API (apikey)"
 msgstr "مفتاح API (apikey)"
 
-#: includes/class-aod-cd-dashboard.php:2683
+#: includes/class-aod-cd-dashboard.php:2695
 msgid "Fournie par CallMeBot dans sa réponse WhatsApp."
 msgstr "يوفّره CallMeBot في ردّه على واتساب."
 
-#: includes/class-aod-cd-dashboard.php:2688
+#: includes/class-aod-cd-dashboard.php:2700
 msgid "Envoyer un message test"
 msgstr "إرسال رسالة اختبار"
 
-#: includes/class-aod-cd-dashboard.php:2707
+#: includes/class-aod-cd-dashboard.php:2719
 msgid "Réglages WhatsApp enregistrés."
 msgstr "تم حفظ إعدادات واتساب."
 
-#: includes/class-aod-cd-dashboard.php:2718
+#: includes/class-aod-cd-dashboard.php:2730
 msgid ""
 "Active et renseigne le numéro + la clé, puis enregistre avant de tester."
 msgstr "فعّل وأدخل الرقم والمفتاح، ثم احفظ قبل الاختبار."
 
-#: includes/class-aod-cd-dashboard.php:2724
+#: includes/class-aod-cd-dashboard.php:2736
 msgid "✅ Test : la notification WhatsApp de votre boutique fonctionne."
 msgstr "✅ اختبار: إشعار واتساب لمتجرك يعمل."
 
-#: includes/class-aod-cd-dashboard.php:2732
+#: includes/class-aod-cd-dashboard.php:2744
 msgid "Échec de l’envoi : "
 msgstr "فشل الإرسال: "
 
-#: includes/class-aod-cd-dashboard.php:2736
+#: includes/class-aod-cd-dashboard.php:2748
 msgid "Message test envoyé. Vérifie ton WhatsApp."
 msgstr "تم إرسال رسالة الاختبار. تحقق من واتساب الخاص بك."
 
-#: includes/class-aod-cd-dashboard.php:2738
+#: includes/class-aod-cd-dashboard.php:2750
 #, php-format
 msgid "Réponse inattendue (HTTP %d). Vérifie ton numéro et ta clé."
 msgstr "استجابة غير متوقعة (HTTP %d). تحقق من رقمك ومفتاحك."
 
-#: includes/class-aod-cd-dashboard.php:2752
+#: includes/class-aod-cd-dashboard.php:2764
 msgid "Identifiant de connexion"
 msgstr "اسم تسجيل الدخول"
 
-#: includes/class-aod-cd-dashboard.php:2754
+#: includes/class-aod-cd-dashboard.php:2766
 msgid "L’identifiant ne peut pas être modifié."
 msgstr "لا يمكن تعديل اسم المستخدم."
 
-#: includes/class-aod-cd-dashboard.php:2767
+#: includes/class-aod-cd-dashboard.php:2779
 msgid "Changer le mot de passe"
 msgstr "تغيير كلمة المرور"
 
-#: includes/class-aod-cd-dashboard.php:2768
+#: includes/class-aod-cd-dashboard.php:2780
 msgid "Laissez ces deux champs vides pour conserver le mot de passe actuel."
 msgstr "اترك هذين الحقلين فارغين للاحتفاظ بكلمة المرور الحالية."
 
-#: includes/class-aod-cd-dashboard.php:2771
+#: includes/class-aod-cd-dashboard.php:2783
 msgid "Nouveau mot de passe"
 msgstr "كلمة مرور جديدة"
 
-#: includes/class-aod-cd-dashboard.php:2775
+#: includes/class-aod-cd-dashboard.php:2787
 msgid "Confirmer"
 msgstr "تأكيد"
 
-#: includes/class-aod-cd-dashboard.php:2797
+#: includes/class-aod-cd-dashboard.php:2815
+msgid "Zone de danger"
+msgstr "منطقة خطرة"
+
+#: includes/class-aod-cd-dashboard.php:2816
+msgid ""
+"Réinitialiser la boutique supprime définitivement TOUS les produits (avec "
+"leurs photos) et TOUTES les commandes, puis remet le compteur des numéros de "
+"commande à #1. Les pages, réglages et votre compte ne sont pas touchés. "
+"Cette action est irréversible."
+msgstr ""
+"إعادة تهيئة المتجر تحذف نهائيًا جميع المنتجات (مع صورها) وجميع الطلبات، ثم "
+"تعيد عدّاد أرقام الطلبات إلى ‎#1. لا تتأثر الصفحات ولا الإعدادات ولا حسابك. "
+"هذا الإجراء لا يمكن التراجع عنه."
+
+#: includes/class-aod-cd-dashboard.php:2820
+msgid "Pour confirmer, recopiez exactement la phrase ci-dessous :"
+msgstr "للتأكيد، انسخ العبارة التالية حرفيًا:"
+
+#: includes/class-aod-cd-dashboard.php:2825
+msgid "Réinitialiser la boutique"
+msgstr "إعادة تهيئة المتجر"
+
+#: includes/class-aod-cd-dashboard.php:2842
 msgid "Session expirée, reconnectez-vous."
 msgstr "انتهت الجلسة، يرجى إعادة تسجيل الدخول."
 
-#: includes/class-aod-cd-dashboard.php:2820
+#: includes/class-aod-cd-dashboard.php:2865
 msgid "Cette adresse e-mail est déjà utilisée par un autre compte."
 msgstr "هذا البريد الإلكتروني مستخدم بالفعل من قبل حساب آخر."
 
-#: includes/class-aod-cd-dashboard.php:2827
+#: includes/class-aod-cd-dashboard.php:2872
 msgid "Les deux mots de passe ne correspondent pas."
 msgstr "كلمتا المرور غير متطابقتين."
 
-#: includes/class-aod-cd-dashboard.php:2847
+#: includes/class-aod-cd-dashboard.php:2892
 msgid "Compte mis à jour."
 msgstr "تم تحديث الحساب."
 
-#: includes/class-aod-cd-dashboard.php:2855
+#: includes/class-aod-cd-dashboard.php:2913
+msgid "La phrase de confirmation ne correspond pas. Réinitialisation annulée."
+msgstr "عبارة التأكيد غير مطابقة. تم إلغاء إعادة التهيئة."
+
+#. translators: 1: nb produits, 2: nb images, 3: nb commandes.
+#: includes/class-aod-cd-dashboard.php:2941
+#, php-format
+msgid ""
+"Boutique réinitialisée : %1$d produit(s), %2$d image(s) et %3$d commande(s) "
+"supprimés. La prochaine commande portera le n° #1."
+msgstr ""
+"تمت إعادة تهيئة المتجر: تم حذف %1$d منتج و%2$d صورة و%3$d طلب. سيحمل الطلب "
+"التالي الرقم ‎#1."
+
+#. translators: %d: nb de prospects (leads) supprimés.
+#: includes/class-aod-cd-dashboard.php:2949
+#, php-format
+msgid "%d prospect(s) du formulaire également supprimés."
+msgstr "تم أيضًا حذف %d عميل محتمل من النموذج."
+
+#: includes/class-aod-cd-dashboard.php:3066
 msgid "Cette section arrive bientôt."
 msgstr "هذا القسم قريبًا."
 
-#: includes/class-aod-cd-dashboard.php:2874
-#: includes/class-aod-cd-dashboard.php:2910
-#: includes/class-aod-cd-dashboard.php:2935
-#: includes/class-aod-cd-dashboard.php:2961
+#: includes/class-aod-cd-dashboard.php:3085
+#: includes/class-aod-cd-dashboard.php:3121
+#: includes/class-aod-cd-dashboard.php:3146
+#: includes/class-aod-cd-dashboard.php:3172
 msgid "Commande introuvable."
 msgstr "الطلب غير موجود."
 
-#: includes/class-aod-cd-dashboard.php:2877
+#: includes/class-aod-cd-dashboard.php:3088
 msgid "Statut invalide."
 msgstr "حالة غير صالحة."
 
-#: includes/class-aod-cd-dashboard.php:2880
+#: includes/class-aod-cd-dashboard.php:3091
 msgid "Statut modifié depuis l’espace de gestion."
 msgstr "تم تغيير الحالة من مساحة الإدارة."
 
-#: includes/class-aod-cd-dashboard.php:2887
+#: includes/class-aod-cd-dashboard.php:3098
 msgid "Statut mis à jour."
 msgstr "تم تحديث الحالة."
 
-#: includes/class-aod-cd-dashboard.php:2905
+#: includes/class-aod-cd-dashboard.php:3116
 msgid "La note est vide."
 msgstr "الملاحظة فارغة."
 
-#: includes/class-aod-cd-dashboard.php:2918
+#: includes/class-aod-cd-dashboard.php:3129
 msgid "Note ajoutée."
 msgstr "تمت إضافة الملاحظة."
 
-#: includes/class-aod-cd-dashboard.php:2943
-#: includes/class-aod-cd-dashboard.php:3141
+#: includes/class-aod-cd-dashboard.php:3154
+#: includes/class-aod-cd-dashboard.php:3352
 #, php-format
 msgid "Commande #%s"
 msgstr "الطلب رقم %s"
 
-#: includes/class-aod-cd-dashboard.php:2972
+#: includes/class-aod-cd-dashboard.php:3183
 msgid "Le téléphone est obligatoire."
 msgstr "رقم الهاتف إلزامي."
 
-#: includes/class-aod-cd-dashboard.php:2981
+#: includes/class-aod-cd-dashboard.php:3192
 msgid "Wilaya invalide."
 msgstr "ولاية غير صالحة."
 
-#: includes/class-aod-cd-dashboard.php:2984
+#: includes/class-aod-cd-dashboard.php:3195
 msgid "Commune invalide pour cette wilaya."
 msgstr "بلدية غير صالحة لهذه الولاية."
 
-#: includes/class-aod-cd-dashboard.php:3085
+#: includes/class-aod-cd-dashboard.php:3296
 msgid "Une commande doit contenir au moins un article."
 msgstr "يجب أن يحتوي الطلب على منتج واحد على الأقل."
 
-#: includes/class-aod-cd-dashboard.php:3128
+#: includes/class-aod-cd-dashboard.php:3339
 msgid ""
 "Infos client / livraison et articles modifiés depuis l’espace de gestion."
 msgstr "تم تعديل معلومات العميل/التوصيل والمنتجات من مساحة الإدارة."
 
-#: includes/class-aod-cd-dashboard.php:3129
+#: includes/class-aod-cd-dashboard.php:3340
 msgid "Infos client / livraison modifiées depuis l’espace de gestion."
 msgstr "تم تعديل معلومات العميل/التوصيل من مساحة الإدارة."
 
-#: includes/class-aod-cd-dashboard.php:3140
+#: includes/class-aod-cd-dashboard.php:3351
 msgid "Commande mise à jour."
 msgstr "تم تحديث الطلب."
 
-#: includes/class-aod-cd-dashboard.php:3193
+#: includes/class-aod-cd-dashboard.php:3404
 msgid "Nom du client"
 msgstr "اسم العميل"
 
-#: includes/class-aod-cd-dashboard.php:3199
+#: includes/class-aod-cd-dashboard.php:3410
 msgid "Type de livraison"
 msgstr "نوع التوصيل"
 
-#: includes/class-aod-cd-dashboard.php:3201
-#: includes/class-aod-cd-dashboard.php:3354
+#: includes/class-aod-cd-dashboard.php:3412
+#: includes/class-aod-cd-dashboard.php:3565
 msgid "À domicile"
 msgstr "إلى المنزل"
 
-#: includes/class-aod-cd-dashboard.php:3202
-#: includes/class-aod-cd-dashboard.php:3354
+#: includes/class-aod-cd-dashboard.php:3413
+#: includes/class-aod-cd-dashboard.php:3565
 msgid "Stop-desk (bureau)"
 msgstr "مكتب التوصيل"
 
-#: includes/class-aod-cd-dashboard.php:3206
+#: includes/class-aod-cd-dashboard.php:3417
 msgid "Adresse"
 msgstr "العنوان"
 
-#: includes/class-aod-cd-dashboard.php:3214
-#: includes/class-aod-cd-dashboard.php:3227
+#: includes/class-aod-cd-dashboard.php:3425
+#: includes/class-aod-cd-dashboard.php:3438
 msgid "—"
 msgstr "—"
 
-#: includes/class-aod-cd-dashboard.php:3253
+#: includes/class-aod-cd-dashboard.php:3464
 msgid "Retirer"
 msgstr "إزالة"
 
-#: includes/class-aod-cd-dashboard.php:3283
+#: includes/class-aod-cd-dashboard.php:3494
 msgid ""
 "Le total est recalculé automatiquement (prix de base + suppléments des "
 "variantes)."
 msgstr "يُعاد حساب الإجمالي تلقائيًا (السعر الأساسي + زيادات المتغيّرات)."
 
-#: includes/class-aod-cd-dashboard.php:3373
+#: includes/class-aod-cd-dashboard.php:3584
 msgid "Article"
 msgstr "المنتج"
 
-#: includes/class-aod-cd-dashboard.php:3373
+#: includes/class-aod-cd-dashboard.php:3584
 msgid "Qté"
 msgstr "الكمية"
 
-#: includes/class-aod-cd-dashboard.php:3402
-#: includes/class-aod-cd-dashboard.php:3414
+#: includes/class-aod-cd-dashboard.php:3613
+#: includes/class-aod-cd-dashboard.php:3625
 msgid "Notes & historique"
 msgstr "الملاحظات والسجلّ"
 
-#: includes/class-aod-cd-dashboard.php:3406
+#: includes/class-aod-cd-dashboard.php:3617
 msgid "Système"
 msgstr "النظام"
 
-#: includes/class-aod-cd-dashboard.php:3415
+#: includes/class-aod-cd-dashboard.php:3626
 msgid "Aucune note pour le moment."
 msgstr "لا توجد ملاحظات حتى الآن."
 

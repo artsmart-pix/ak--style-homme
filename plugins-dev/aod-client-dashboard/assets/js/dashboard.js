@@ -756,6 +756,63 @@
 		} );
 	}
 
+	/* Zone de danger : réinitialisation complète de la boutique */
+	function bindResetShop() {
+		var form = document.getElementById( 'aod-cd-reset-form' );
+		if ( ! form ) { return; }
+		var input  = form.querySelector( '.aod-cd-reset-input' );
+		var btn    = form.querySelector( 'button[type="submit"]' );
+		var msg    = form.querySelector( '.aod-cd-form-msg' );
+		var phrase = form.dataset.phrase || '';
+		if ( ! input || ! btn ) { return; }
+
+		// Le bouton ne s'active que si la phrase est recopiée à l'identique.
+		function sync() {
+			btn.disabled = ( input.value.trim() !== phrase );
+		}
+		input.addEventListener( 'input', sync );
+		sync();
+
+		form.addEventListener( 'submit', function ( e ) {
+			e.preventDefault();
+			if ( input.value.trim() !== phrase ) { return; }
+			// Double garde-fou : confirmation native avant la purge irréversible.
+			if ( ! window.confirm( CD.i18nResetConfirm || 'Tout supprimer ?' ) ) { return; }
+
+			btn.disabled = true;
+			input.disabled = true;
+			if ( msg ) { msg.textContent = CD.i18nResetting || 'Réinitialisation…'; msg.classList.remove( 'is-bad' ); }
+
+			var body = new URLSearchParams();
+			body.append( 'action', 'aod_cd_reset_shop' );
+			body.append( 'nonce', CD.nonce );
+			body.append( 'phrase', input.value.trim() );
+
+			fetch( CD.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body } )
+				.then( function ( r ) { return r.json(); } )
+				.then( function ( res ) {
+					if ( res && res.success ) {
+						if ( msg ) { msg.textContent = res.data.message || CD.i18nResetDone || 'OK'; }
+						toast( res.data.message || CD.i18nResetDone || 'OK', false );
+						// Recharge pour repartir d'une boutique vide (stats, compteurs…).
+						setTimeout( function () { window.location.href = CD.base + 'account'; }, 1800 );
+					} else {
+						input.disabled = false;
+						sync();
+						var m = ( res && res.data && res.data.message ) || 'Erreur.';
+						if ( msg ) { msg.textContent = m; msg.classList.add( 'is-bad' ); }
+						toast( m, true );
+					}
+				} )
+				.catch( function () {
+					input.disabled = false;
+					sync();
+					if ( msg ) { msg.textContent = netErr; msg.classList.add( 'is-bad' ); }
+					toast( netErr, true );
+				} );
+		} );
+	}
+
 	/* Modale de détail de commande */
 	function bindOrderDetail() {
 		var modal = document.getElementById( 'aod-cd-modal' );
@@ -1186,5 +1243,6 @@
 		bindWhatsappTest();
 		bindOrderDetail();
 		bindOrderNote();
+		try { bindResetShop(); } catch ( err ) { /* zone de danger */ }
 	} );
 }() );

@@ -664,3 +664,27 @@ body.aod-cd{
 	.aod-cd-cat-row{grid-template-columns:1fr auto 32px}
 	.aod-cd-cat-count{display:none}
 }
+
+/* ---- Zone de danger : réinitialisation de la boutique ---- */
+.aod-cd-danger{
+	margin-top:34px;max-width:620px;
+	background:#fff7f6;border:1px solid #f3c9c5;border-radius:var(--cd-radius);
+	padding:20px 22px;
+}
+.aod-cd-danger-title{margin:0 0 8px;font-size:16px;font-weight:800;color:var(--cd-bad)}
+.aod-cd-danger-lead{margin:0 0 16px;font-size:13.5px;line-height:1.6;color:var(--cd-ink-2)}
+.aod-cd-danger-phrase{
+	display:block;margin:2px 0 4px;padding:9px 12px;
+	background:#fff;border:1px dashed #e0a9a3;border-radius:var(--cd-radius-sm);
+	font-size:13px;font-weight:700;color:var(--cd-bad);letter-spacing:.3px;
+	user-select:all;word-break:break-word;
+}
+.aod-cd-reset-input{
+	padding:10px 12px;border:1px solid var(--cd-line);border-radius:var(--cd-radius-sm);
+	font-size:14px;font-family:inherit;
+}
+.aod-cd-reset-input:focus{outline:none;border-color:var(--cd-bad);box-shadow:0 0 0 3px rgba(217,45,32,.18)}
+.aod-cd-btn-danger:disabled{opacity:.45;cursor:not-allowed}
+.aod-cd-btn-danger:disabled:hover{background:transparent;color:var(--cd-bad);border-color:#f3c9c5}
+.aod-cd-danger .aod-cd-form-msg{color:var(--cd-ink-2)}
+.aod-cd-danger .aod-cd-form-msg.is-bad{color:var(--cd-bad)}
