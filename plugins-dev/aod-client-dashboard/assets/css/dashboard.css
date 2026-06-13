@@ -665,6 +665,29 @@ body.aod-cd{
 	.aod-cd-cat-count{display:none}
 }
 
+/* ---- Commandes : sélection multiple + suppression groupée ---- */
+.aod-cd-col-check{width:38px;text-align:center;padding-left:10px;padding-right:6px}
+.aod-cd-col-check input[type="checkbox"]{width:16px;height:16px;cursor:pointer;accent-color:var(--cd-ink);margin:0;vertical-align:middle}
+.aod-cd-table tbody tr.is-selected{background:#fffdf0}
+.aod-cd-bulkbar{
+	display:flex;align-items:center;gap:14px;margin:0 0 12px;
+	padding:10px 14px;background:var(--cd-ink);border-radius:var(--cd-radius-sm);
+	color:#fff;
+}
+.aod-cd-bulkbar-count{font-weight:700;font-size:13.5px}
+.aod-cd-order-bulk-del{
+	margin-left:auto;display:inline-flex;align-items:center;gap:7px;
+	background:var(--cd-bad);border:1px solid var(--cd-bad);color:#fff;
+	font-weight:700;letter-spacing:.2px;
+	box-shadow:0 2px 8px rgba(217,45,32,.35);
+	transition:background .15s ease,box-shadow .15s ease,transform .05s ease;
+}
+.aod-cd-order-bulk-del:hover{background:#b21f14;border-color:#b21f14;box-shadow:0 4px 12px rgba(217,45,32,.45)}
+.aod-cd-order-bulk-del:active{transform:translateY(1px)}
+.aod-cd-order-bulk-del:disabled{opacity:.6;cursor:default;box-shadow:none;background:var(--cd-bad);border-color:var(--cd-bad)}
+.aod-cd-order-bulk-del .aod-cd-bulk-ico{font-size:15px;line-height:1}
+.aod-cd-order-bulk-del .aod-cd-bulkbar-btnn{font-variant-numeric:tabular-nums;opacity:.9}
+
 /* ---- Zone de danger : réinitialisation de la boutique ---- */
 .aod-cd-danger{
 	margin-top:34px;max-width:620px;

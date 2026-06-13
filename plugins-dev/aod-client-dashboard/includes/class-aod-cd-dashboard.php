@@ -57,6 +57,7 @@ class AOD_CD_Dashboard {
 		add_action( 'wp_ajax_aod_cd_order_detail', array( $this, 'ajax_order_detail' ) );
 		add_action( 'wp_ajax_aod_cd_order_note', array( $this, 'ajax_order_note' ) );
 		add_action( 'wp_ajax_aod_cd_order_save_info', array( $this, 'ajax_order_save_info' ) );
+		add_action( 'wp_ajax_aod_cd_delete_orders', array( $this, 'ajax_delete_orders' ) );
 		add_action( 'wp_ajax_aod_cd_save_product', array( $this, 'ajax_save_product' ) );
 		add_action( 'wp_ajax_aod_cd_delete_product', array( $this, 'ajax_delete_product' ) );
 		add_action( 'wp_ajax_aod_cd_save_category', array( $this, 'ajax_save_category' ) );
@@ -217,7 +218,8 @@ class AOD_CD_Dashboard {
 			i18nGalRemove:  <?php echo wp_json_encode( __( 'Retirer cette photo', 'aod-client-dashboard' ) ); ?>,
 			i18nResetConfirm: <?php echo wp_json_encode( __( 'Dernière confirmation : supprimer définitivement TOUS les produits et TOUTES les commandes ? Cette action est irréversible.', 'aod-client-dashboard' ) ); ?>,
 			i18nResetting:  <?php echo wp_json_encode( __( 'Réinitialisation en cours… ne fermez pas cette page.', 'aod-client-dashboard' ) ); ?>,
-			i18nResetDone:  <?php echo wp_json_encode( __( 'Boutique réinitialisée.', 'aod-client-dashboard' ) ); ?>
+			i18nResetDone:  <?php echo wp_json_encode( __( 'Boutique réinitialisée.', 'aod-client-dashboard' ) ); ?>,
+			i18nOrderBulkDelConfirm: <?php echo wp_json_encode( __( 'Supprimer définitivement %d commande(s) sélectionnée(s) ? Cette action est irréversible.', 'aod-client-dashboard' ) ); ?>
 		};
 	</script>
 </head>
@@ -368,7 +370,24 @@ class AOD_CD_Dashboard {
 
 		$status_options = $this->status_labels(); // Libellés de statut forcés en français.
 
+		// Suppression groupée : disponible seulement si l'utilisateur peut supprimer
+		// des commandes (le gérant possède delete_shop_orders).
+		$can_delete = current_user_can( 'delete_shop_orders' ) || current_user_can( 'manage_woocommerce' );
+
+		if ( $can_delete ) {
+			echo '<div class="aod-cd-bulkbar" id="aod-cd-order-bulk" hidden>';
+			echo '<span class="aod-cd-bulkbar-count"><strong class="aod-cd-bulkbar-n">0</strong> ' . esc_html__( 'sélectionnée(s)', 'aod-client-dashboard' ) . '</span>';
+			echo '<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-order-bulk-del">'
+				. '<span class="aod-cd-bulk-ico" aria-hidden="true">🗑️</span> '
+				. esc_html__( 'Supprimer', 'aod-client-dashboard' )
+				. ' <span class="aod-cd-bulkbar-btnn">(0)</span></button>';
+			echo '</div>';
+		}
+
 		echo '<div class="aod-cd-tablewrap"><table class="aod-cd-table"><thead><tr>';
+		if ( $can_delete ) {
+			echo '<th class="aod-cd-col-check"><input type="checkbox" class="aod-cd-ordercheck-all" title="' . esc_attr__( 'Tout sélectionner', 'aod-client-dashboard' ) . '"></th>';
+		}
 		foreach ( array(
 			__( 'N°', 'aod-client-dashboard' ),
 			__( 'Date', 'aod-client-dashboard' ),
@@ -389,7 +408,7 @@ class AOD_CD_Dashboard {
 		echo '</tr></thead><tbody>';
 
 		foreach ( $orders as $order ) {
-			$this->render_order_row( $order, $status_options );
+			$this->render_order_row( $order, $status_options, $can_delete );
 		}
 		echo '</tbody></table></div>';
 
@@ -482,7 +501,7 @@ class AOD_CD_Dashboard {
 	 * @param WC_Order $order
 	 * @param array    $status_options
 	 */
-	protected function render_order_row( $order, $status_options ) {
+	protected function render_order_row( $order, $status_options, $can_delete = false ) {
 		$wilaya_code = (int) $order->get_meta( '_aod_wilaya_code' );
 		$wilaya      = $wilaya_code && class_exists( 'AOD_COD_Data' )
 			? AOD_COD_Data::wilaya_name( $wilaya_code )
@@ -499,6 +518,9 @@ class AOD_CD_Dashboard {
 		$products_cost = (float) $order->get_total() - $shipping_cost;
 
 		echo '<tr>';
+		if ( $can_delete ) {
+			echo '<td class="aod-cd-col-check"><input type="checkbox" class="aod-cd-ordercheck" value="' . esc_attr( $order->get_id() ) . '" title="' . esc_attr__( 'Sélectionner cette commande', 'aod-client-dashboard' ) . '"></td>';
+		}
 		echo '<td><button type="button" class="aod-cd-order-detail" data-order="' . esc_attr( $order->get_id() ) . '"><strong>#' . esc_html( $order->get_order_number() ) . '</strong></button></td>';
 		echo '<td>' . esc_html( wc_format_datetime( $order->get_date_created(), 'd/m/Y H:i' ) ) . '</td>';
 		echo '<td>' . esc_html( trim( $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() ) ) . '</td>';
@@ -3099,6 +3121,63 @@ class AOD_CD_Dashboard {
 		wp_send_json_success( array(
 			'message'  => __( 'Statut mis à jour.', 'aod-client-dashboard' ),
 			'tracking' => $tracking,
+		) );
+	}
+
+	/**
+	 * Supprime définitivement une sélection de commandes (suppression groupée).
+	 *
+	 * Reçoit une liste d'IDs ; vérifie la capacité de suppression sur chacune,
+	 * puis force la suppression via l'API WooCommerce (HPOS-safe).
+	 */
+	public function ajax_delete_orders() {
+		check_ajax_referer( 'aod_cd', 'nonce' );
+		if ( ! current_user_can( 'delete_shop_orders' ) && ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Accès refusé.', 'aod-client-dashboard' ) ), 403 );
+		}
+
+		$raw = isset( $_POST['order_ids'] ) ? (array) wp_unslash( $_POST['order_ids'] ) : array();
+		$ids = array_filter( array_map( 'absint', $raw ) );
+		if ( empty( $ids ) ) {
+			wp_send_json_error( array( 'message' => __( 'Aucune commande sélectionnée.', 'aod-client-dashboard' ) ), 400 );
+		}
+
+		$deleted = array();
+		$failed  = 0;
+		foreach ( $ids as $id ) {
+			$order = wc_get_order( $id );
+			// Garde-fou par commande : on ne supprime que ce que l'utilisateur a le droit de supprimer.
+			if ( ! $order || ! current_user_can( 'delete_shop_order', $id ) && ! current_user_can( 'manage_woocommerce' ) ) {
+				$failed++;
+				continue;
+			}
+			if ( $order->delete( true ) ) {
+				$deleted[] = $id;
+			} else {
+				$failed++;
+			}
+		}
+
+		if ( empty( $deleted ) ) {
+			wp_send_json_error( array( 'message' => __( 'Aucune commande n’a pu être supprimée.', 'aod-client-dashboard' ) ), 400 );
+		}
+
+		$message = sprintf(
+			/* translators: %d: nombre de commandes supprimées. */
+			_n( '%d commande supprimée.', '%d commandes supprimées.', count( $deleted ), 'aod-client-dashboard' ),
+			count( $deleted )
+		);
+		if ( $failed > 0 ) {
+			$message .= ' ' . sprintf(
+				/* translators: %d: nombre de commandes non supprimées. */
+				_n( '%d commande n’a pas pu être supprimée.', '%d commandes n’ont pas pu être supprimées.', $failed, 'aod-client-dashboard' ),
+				$failed
+			);
+		}
+
+		wp_send_json_success( array(
+			'message' => $message,
+			'deleted' => $deleted,
 		) );
 	}
 

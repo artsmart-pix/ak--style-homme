@@ -756,6 +756,97 @@
 		} );
 	}
 
+	/* Commandes : sélection multiple + suppression groupée */
+	function bindOrderBulkDelete() {
+		var master = document.querySelector( '.aod-cd-ordercheck-all' );
+		var bar    = document.getElementById( 'aod-cd-order-bulk' );
+		var table  = document.querySelector( '.aod-cd-table' );
+		if ( ! table ) { return; }
+
+		function boxes() {
+			return Array.prototype.slice.call( table.querySelectorAll( '.aod-cd-ordercheck' ) );
+		}
+		function checked() {
+			return boxes().filter( function ( c ) { return c.checked; } );
+		}
+
+		// Met à jour la barre d'action (visible + compteur) et l'état du « tout cocher ».
+		function sync() {
+			var all = boxes();
+			var sel = checked();
+			if ( bar ) {
+				bar.hidden = sel.length === 0;
+				var n = bar.querySelector( '.aod-cd-bulkbar-n' );
+				if ( n ) { n.textContent = String( sel.length ); }
+				var bn = bar.querySelector( '.aod-cd-bulkbar-btnn' );
+				if ( bn ) { bn.textContent = '(' + sel.length + ')'; }
+			}
+			if ( master ) {
+				master.checked = all.length > 0 && sel.length === all.length;
+				master.indeterminate = sel.length > 0 && sel.length < all.length;
+			}
+			boxes().forEach( function ( c ) {
+				var row = c.closest( 'tr' );
+				if ( row ) { row.classList.toggle( 'is-selected', c.checked ); }
+			} );
+		}
+
+		if ( master ) {
+			master.addEventListener( 'change', function () {
+				boxes().forEach( function ( c ) { c.checked = master.checked; } );
+				sync();
+			} );
+		}
+
+		// Délégation : cocher/décocher une ligne.
+		table.addEventListener( 'change', function ( e ) {
+			if ( e.target && e.target.classList.contains( 'aod-cd-ordercheck' ) ) { sync(); }
+		} );
+
+		// Suppression groupée.
+		var delBtn = bar ? bar.querySelector( '.aod-cd-order-bulk-del' ) : null;
+		if ( delBtn ) {
+			delBtn.addEventListener( 'click', function () {
+				var sel = checked();
+				if ( ! sel.length ) { return; }
+				var ids = sel.map( function ( c ) { return c.value; } );
+				var msg = ( CD.i18nOrderBulkDelConfirm || 'Supprimer %d commande(s) ?' ).replace( '%d', ids.length );
+				if ( ! window.confirm( msg ) ) { return; }
+
+				delBtn.disabled = true;
+				var body = new URLSearchParams();
+				body.append( 'action', 'aod_cd_delete_orders' );
+				body.append( 'nonce', CD.nonce );
+				ids.forEach( function ( id ) { body.append( 'order_ids[]', id ); } );
+
+				fetch( CD.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body } )
+					.then( function ( r ) { return r.json(); } )
+					.then( function ( res ) {
+						delBtn.disabled = false;
+						if ( res && res.success ) {
+							( res.data.deleted || [] ).forEach( function ( id ) {
+								var cb = table.querySelector( '.aod-cd-ordercheck[value="' + id + '"]' );
+								var row = cb ? cb.closest( 'tr' ) : null;
+								if ( row ) { row.remove(); }
+							} );
+							if ( master ) { master.checked = false; master.indeterminate = false; }
+							sync();
+							toast( res.data.message || CD.i18nDeleted || 'Supprimé', false );
+							// Plus aucune ligne ? On recharge pour afficher l'état vide / la pagination.
+							if ( ! table.querySelectorAll( '.aod-cd-ordercheck' ).length ) {
+								setTimeout( function () { window.location.reload(); }, 900 );
+							}
+						} else {
+							toast( ( res && res.data && res.data.message ) || 'Erreur.', true );
+						}
+					} )
+					.catch( function () { delBtn.disabled = false; toast( netErr, true ); } );
+			} );
+		}
+
+		sync();
+	}
+
 	/* Zone de danger : réinitialisation complète de la boutique */
 	function bindResetShop() {
 		var form = document.getElementById( 'aod-cd-reset-form' );
@@ -1243,6 +1334,7 @@
 		bindWhatsappTest();
 		bindOrderDetail();
 		bindOrderNote();
+		try { bindOrderBulkDelete(); } catch ( err ) { /* sélection commandes */ }
 		try { bindResetShop(); } catch ( err ) { /* zone de danger */ }
 	} );
 }() );
