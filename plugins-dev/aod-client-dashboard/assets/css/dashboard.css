@@ -472,15 +472,145 @@ body.aod-cd{
 .aod-cd-toast.show{opacity:1;transform:translateY(0)}
 .aod-cd-toast.bad{background:var(--cd-bad);border-inline-start-color:#fff}
 
-/* ---- Responsive ---- */
+/* ---- Responsive : mise en page générale ----
+   (La barre latérale en menu déroulant est gérée plus haut, bloc « Sidebar
+   en menu déroulant sur mobile ». Ici on ajuste uniquement la zone principale.) */
 @media(max-width:780px){
-	body.aod-cd{flex-direction:column}
-	.aod-cd-side{width:100%;flex:none;height:auto;position:static;flex-direction:row;flex-wrap:wrap;align-items:center}
-	.aod-cd-brand{border:0;flex:1}
-	.aod-cd-nav{flex-direction:row;flex-wrap:wrap;flex:1 0 100%;order:3}
-	.aod-cd-side-foot{flex-direction:row;border:0}
-	.aod-cd-content{padding:18px}
-	.aod-cd-top{padding:16px 18px}
+	.aod-cd-content{padding:16px}
+	.aod-cd-top{padding:14px 16px;gap:10px}
+	.aod-cd-h1{font-size:19px}
+	/* La barre du haut reste sticky sous le menu : on l'empêche de coller au
+	   menu déroulant ouvert en la laissant défiler avec le contenu. */
+	.aod-cd-top{position:static}
+	.aod-cd-top-right{gap:10px}
+	.aod-cd-user{padding:6px 11px}
+	/* Onglets de filtre : défilement horizontal plutôt que retour à la ligne
+	   pour garder une barre compacte et balayable au doigt. */
+	.aod-cd-tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none}
+	.aod-cd-tabs::-webkit-scrollbar{display:none}
+	.aod-cd-tab{flex:0 0 auto}
+	/* Recherche : champ + boutons sur toute la largeur. */
+	.aod-cd-search input[type="search"]{max-width:none;flex:1 1 100%}
+}
+@media(max-width:480px){
+	.aod-cd-content{padding:13px}
+	.aod-cd-top{padding:12px 13px}
+	.aod-cd-h1{font-size:18px}
+	/* Barre du haut : titre sur une ligne, langue + utilisateur dessous. */
+	.aod-cd-top{flex-wrap:wrap}
+	.aod-cd-h1{flex:1 1 100%}
+}
+
+/* ---- Tableaux empilés en cartes sur mobile ----
+   En dessous du point de rupture, chaque ligne devient une carte autonome ;
+   l'en-tête de colonne est rappelé via l'attribut data-label de chaque cellule.
+   S'applique aux tableaux portant la classe .aod-cd-table--cards. */
+@media(max-width:780px){
+	.aod-cd-tablewrap:has(.aod-cd-table--cards){border:0;background:none;overflow:visible}
+	.aod-cd-table--cards{min-width:0;border-collapse:separate}
+	.aod-cd-table--cards thead{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+	.aod-cd-table--cards tbody,
+	.aod-cd-table--cards tr,
+	.aod-cd-table--cards td{display:block;width:100%}
+	.aod-cd-table--cards tr{
+		position:relative;
+		background:#fff;border:1px solid var(--cd-line);border-radius:var(--cd-radius);
+		margin:0 0 12px;padding:4px 2px;box-shadow:0 1px 2px rgba(24,24,24,.04);
+	}
+	.aod-cd-table--cards tr:last-child{margin-bottom:0}
+	/* On neutralise l'alternance/survol de fond hérités du tableau. */
+	.aod-cd-table--cards tbody tr:nth-child(even) td,
+	.aod-cd-table--cards tbody tr:hover td,
+	.aod-cd-table--cards tbody tr.is-selected{background:transparent}
+	.aod-cd-table--cards tbody tr.is-selected{box-shadow:0 0 0 2px var(--cd-yellow)}
+	.aod-cd-table--cards td{
+		display:flex;align-items:center;gap:14px;justify-content:space-between;
+		padding:10px 15px;border:0;border-bottom:1px solid var(--cd-line-2);
+		text-align:end;min-height:46px;font-size:14px;
+	}
+	.aod-cd-table--cards td:last-child{border-bottom:0}
+	.aod-cd-table--cards td::before{
+		content:attr(data-label);flex:0 0 40%;text-align:start;
+		font-size:11px;text-transform:uppercase;letter-spacing:.5px;
+		font-weight:700;color:var(--cd-muted);line-height:1.3;
+	}
+	/* Cellules sans libellé (cases à cocher, actions) : pas de pseudo-élément. */
+	.aod-cd-table--cards td:not([data-label])::before,
+	.aod-cd-table--cards td[data-label=""]::before{display:none}
+
+	/* Cellule « numéro » → en-tête de carte mis en valeur. */
+	.aod-cd-table--cards .aod-cd-cell-num{
+		justify-content:flex-start;background:#fafafa;
+		border-bottom:1px solid var(--cd-line);border-radius:10px 10px 0 0;
+	}
+	.aod-cd-table--cards .aod-cd-cell-num::before{display:none}
+	.aod-cd-table--cards .aod-cd-cell-num .aod-cd-order-detail{font-size:16px}
+
+	/* Articles : la liste passe à la ligne sous le libellé. */
+	.aod-cd-table--cards .aod-cd-articles{display:block;text-align:start;max-width:none}
+	.aod-cd-table--cards .aod-cd-articles::before{display:block;flex:none;margin-bottom:6px}
+	.aod-cd-table--cards .aod-cd-articles-list{font-size:13.5px}
+
+	/* Sélecteur de statut : pleine largeur du côté valeur. */
+	.aod-cd-table--cards .aod-cd-status{max-width:none;flex:1 1 auto;margin-inline-start:auto}
+
+	/* Case de sélection : flotte en haut à droite, par-dessus l'en-tête de carte. */
+	.aod-cd-table--cards .aod-cd-col-check{
+		position:absolute;top:0;right:0;z-index:2;width:auto;min-height:0;
+		padding:12px 14px;border:0;
+	}
+	/* Le n° garde ses coins arrondis ; on réserve de la place pour la case. */
+	.aod-cd-table--cards .aod-cd-cell-num{padding-inline-end:48px}
+
+	/* Colonne « Prix » (liste produits) : on aligne le bloc multi-lignes à droite. */
+	.aod-cd-table--cards .aod-cd-price{align-items:flex-end;text-align:end}
+
+	/* ---- Liste produits : carte avec produit en en-tête ---- */
+	.aod-cd-products .aod-cd-cell-prod{
+		justify-content:flex-start;background:#fafafa;
+		border-bottom:1px solid var(--cd-line);border-radius:10px 10px 0 0;text-align:start;
+	}
+	.aod-cd-products .aod-cd-cell-prod::before{display:none}
+	.aod-cd-products .aod-cd-prod{font-weight:700}
+	.aod-cd-products .aod-cd-prod img{width:34px;height:34px}
+	/* Actions : libellé à gauche, boutons groupés à droite (peuvent passer à la ligne). */
+	.aod-cd-products .aod-cd-rowactions{flex-wrap:wrap;gap:8px}
+	.aod-cd-products .aod-cd-rowactions::before{flex:0 0 auto}
+	.aod-cd-products .aod-cd-rowactions .aod-cd-btn{flex:1 1 auto;justify-content:center;min-width:96px}
+
+	/* ---- Tarifs par wilaya : cartes compactes dans le conteneur défilant ---- */
+	.aod-cd-pricetable.aod-cd-table--cards tr{margin:0 0 10px}
+	.aod-cd-scroll .aod-cd-pricetable.aod-cd-table--cards{padding:4px}
+	.aod-cd-pricetable.aod-cd-table--cards .aod-cd-cell-wilaya{
+		justify-content:flex-start;background:#fafafa;font-weight:700;
+		border-bottom:1px solid var(--cd-line);border-radius:10px 10px 0 0;text-align:start;
+	}
+	.aod-cd-pricetable.aod-cd-table--cards .aod-cd-cell-wilaya::before{display:none}
+	.aod-cd-pricetable.aod-cd-table--cards input[type=number]{max-width:150px}
+	.aod-cd-pricetable.aod-cd-table--cards .aod-cd-free-col{text-align:end}
+}
+
+/* ---- Champs des transporteurs : empilés sur petit écran ---- */
+@media(max-width:680px){
+	.aod-cd-carrier-fields .form-table,
+	.aod-cd-carrier-fields .form-table tbody,
+	.aod-cd-carrier-fields .form-table tr,
+	.aod-cd-carrier-fields .form-table th,
+	.aod-cd-carrier-fields .form-table td{display:block;width:100%}
+	.aod-cd-carrier-fields .form-table th{padding:10px 0 4px}
+	.aod-cd-carrier-fields .form-table td{padding:0 0 6px}
+	.aod-cd-carrier-fields .form-table input.regular-text{max-width:none}
+	.aod-cd-carrier-panel td{padding:6px 12px 18px}
+}
+
+/* ---- Modale : plein écran confortable sur mobile ---- */
+@media(max-width:560px){
+	.aod-cd-modal{padding:0;align-items:stretch}
+	.aod-cd-modal-box{max-width:none;min-height:100%;border-radius:0;animation:none}
+	.aod-cd-modal-head{position:sticky;top:0;background:#fff;z-index:2;padding:16px 18px}
+	.aod-cd-modal-body{padding:18px}
+	.aod-cd-od-head{flex-wrap:wrap}
+	.aod-cd-od-edit-toggle{margin-inline-start:auto}
 }
 
 /* ---- Couleurs / variantes (édition produit) ---- */

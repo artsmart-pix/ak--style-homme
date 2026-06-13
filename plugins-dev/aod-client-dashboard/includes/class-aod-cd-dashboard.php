@@ -389,7 +389,7 @@ class AOD_CD_Dashboard {
 			echo '</div>';
 		}
 
-		echo '<div class="aod-cd-tablewrap"><table class="aod-cd-table"><thead><tr>';
+		echo '<div class="aod-cd-tablewrap"><table class="aod-cd-table aod-cd-table--cards"><thead><tr>';
 		if ( $can_delete ) {
 			echo '<th class="aod-cd-col-check"><input type="checkbox" class="aod-cd-ordercheck-all" title="' . esc_attr__( 'Tout sélectionner', 'aod-client-dashboard' ) . '"></th>';
 		}
@@ -526,19 +526,19 @@ class AOD_CD_Dashboard {
 		if ( $can_delete ) {
 			echo '<td class="aod-cd-col-check"><input type="checkbox" class="aod-cd-ordercheck" value="' . esc_attr( $order->get_id() ) . '" title="' . esc_attr__( 'Sélectionner cette commande', 'aod-client-dashboard' ) . '"></td>';
 		}
-		echo '<td><button type="button" class="aod-cd-order-detail" data-order="' . esc_attr( $order->get_id() ) . '"><strong>#' . esc_html( $order->get_order_number() ) . '</strong></button></td>';
-		echo '<td>' . esc_html( wc_format_datetime( $order->get_date_created(), 'd/m/Y H:i' ) ) . '</td>';
-		echo '<td>' . esc_html( trim( $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() ) ) . '</td>';
-		echo '<td>' . ( $phone ? '<a href="tel:' . esc_attr( $phone ) . '">' . esc_html( $phone ) . '</a>' : '&mdash;' ) . '</td>';
-		echo '<td>' . esc_html( $wilaya ? $wilaya : '—' ) . '</td>';
-		echo '<td>' . esc_html( $commune ? $commune : '—' ) . '</td>';
-		echo '<td class="aod-cd-articles">' . $this->order_articles_html( $order ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput
-		echo '<td>' . wp_kses_post( wc_price( $products_cost, array( 'currency' => $currency ) ) ) . '</td>';
-		echo '<td>' . wp_kses_post( wc_price( $shipping_cost, array( 'currency' => $currency ) ) ) . '</td>';
-		echo '<td>' . wp_kses_post( $order->get_formatted_order_total() ) . '</td>';
-		echo '<td>' . $this->ship_cell_html( $order ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput
+		echo '<td class="aod-cd-cell-num" data-label="' . esc_attr__( 'N°', 'aod-client-dashboard' ) . '"><button type="button" class="aod-cd-order-detail" data-order="' . esc_attr( $order->get_id() ) . '"><strong>#' . esc_html( $order->get_order_number() ) . '</strong></button></td>';
+		echo '<td data-label="' . esc_attr__( 'Date', 'aod-client-dashboard' ) . '">' . esc_html( wc_format_datetime( $order->get_date_created(), 'd/m/Y H:i' ) ) . '</td>';
+		echo '<td data-label="' . esc_attr__( 'Client', 'aod-client-dashboard' ) . '">' . esc_html( trim( $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() ) ) . '</td>';
+		echo '<td data-label="' . esc_attr__( 'Téléphone', 'aod-client-dashboard' ) . '">' . ( $phone ? '<a href="tel:' . esc_attr( $phone ) . '">' . esc_html( $phone ) . '</a>' : '&mdash;' ) . '</td>';
+		echo '<td data-label="' . esc_attr__( 'Wilaya', 'aod-client-dashboard' ) . '">' . esc_html( $wilaya ? $wilaya : '—' ) . '</td>';
+		echo '<td data-label="' . esc_attr__( 'Commune', 'aod-client-dashboard' ) . '">' . esc_html( $commune ? $commune : '—' ) . '</td>';
+		echo '<td class="aod-cd-articles" data-label="' . esc_attr__( 'Articles', 'aod-client-dashboard' ) . '">' . $this->order_articles_html( $order ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput
+		echo '<td data-label="' . esc_attr__( 'Prix produit', 'aod-client-dashboard' ) . '">' . wp_kses_post( wc_price( $products_cost, array( 'currency' => $currency ) ) ) . '</td>';
+		echo '<td data-label="' . esc_attr__( 'Prix livraison', 'aod-client-dashboard' ) . '">' . wp_kses_post( wc_price( $shipping_cost, array( 'currency' => $currency ) ) ) . '</td>';
+		echo '<td data-label="' . esc_attr__( 'Total', 'aod-client-dashboard' ) . '">' . wp_kses_post( $order->get_formatted_order_total() ) . '</td>';
+		echo '<td class="aod-cd-cell-ship" data-label="' . esc_attr__( 'Suivi', 'aod-client-dashboard' ) . '">' . $this->ship_cell_html( $order ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput
 
-		echo '<td><select class="aod-cd-status" data-order="' . esc_attr( $order->get_id() ) . '">';
+		echo '<td class="aod-cd-cell-status" data-label="' . esc_attr__( 'Statut', 'aod-client-dashboard' ) . '"><select class="aod-cd-status" data-order="' . esc_attr( $order->get_id() ) . '">';
 		foreach ( $status_options as $key => $label ) {
 			printf(
 				'<option value="%s"%s>%s</option>',
@@ -548,7 +548,7 @@ class AOD_CD_Dashboard {
 		echo '</select></td>';
 
 		$note_count = count( wc_get_order_notes( array( 'order_id' => $order->get_id() ) ) );
-		echo '<td><button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-note-btn" data-order="' . esc_attr( $order->get_id() ) . '" title="' . esc_attr__( 'Ajouter une note', 'aod-client-dashboard' ) . '">📝'
+		echo '<td class="aod-cd-cell-note" data-label="' . esc_attr__( 'Note', 'aod-client-dashboard' ) . '"><button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-note-btn" data-order="' . esc_attr( $order->get_id() ) . '" title="' . esc_attr__( 'Ajouter une note', 'aod-client-dashboard' ) . '">📝'
 			. ( $note_count ? ' <span class="aod-cd-badge">' . (int) $note_count . '</span>' : '' )
 			. '</button></td>';
 		echo '</tr>';
@@ -1239,7 +1239,7 @@ class AOD_CD_Dashboard {
 			return;
 		}
 
-		echo '<div class="aod-cd-tablewrap"><table class="aod-cd-table"><thead><tr>';
+		echo '<div class="aod-cd-tablewrap"><table class="aod-cd-table aod-cd-table--cards aod-cd-products"><thead><tr>';
 		foreach ( array(
 			__( 'Produit', 'aod-client-dashboard' ),
 			__( 'Prix', 'aod-client-dashboard' ),
@@ -1255,11 +1255,11 @@ class AOD_CD_Dashboard {
 			$img      = $p->get_image( array( 40, 40 ) );
 			$edit_url = $this->products_url( array( 'action' => 'edit', 'product' => $p->get_id() ) );
 			echo '<tr data-product="' . esc_attr( $p->get_id() ) . '">';
-			echo '<td><span class="aod-cd-prod">' . wp_kses_post( $img ) . '<a href="' . esc_url( $edit_url ) . '">' . esc_html( $p->get_name() ) . '</a></span></td>';
-			echo '<td>' . $this->render_price_cell( $p ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- HTML déjà échappé dans le helper.
-			echo '<td>' . esc_html( $p->managing_stock() ? (string) $p->get_stock_quantity() : '—' ) . '</td>';
-			echo '<td>' . esc_html( 'publish' === $p->get_status() ? __( 'En ligne', 'aod-client-dashboard' ) : __( 'Brouillon', 'aod-client-dashboard' ) ) . '</td>';
-			echo '<td class="aod-cd-rowactions">';
+			echo '<td class="aod-cd-cell-prod" data-label="' . esc_attr__( 'Produit', 'aod-client-dashboard' ) . '"><span class="aod-cd-prod">' . wp_kses_post( $img ) . '<a href="' . esc_url( $edit_url ) . '">' . esc_html( $p->get_name() ) . '</a></span></td>';
+			echo '<td data-label="' . esc_attr__( 'Prix', 'aod-client-dashboard' ) . '">' . $this->render_price_cell( $p ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- HTML déjà échappé dans le helper.
+			echo '<td data-label="' . esc_attr__( 'Stock', 'aod-client-dashboard' ) . '">' . esc_html( $p->managing_stock() ? (string) $p->get_stock_quantity() : '—' ) . '</td>';
+			echo '<td data-label="' . esc_attr__( 'Statut', 'aod-client-dashboard' ) . '">' . esc_html( 'publish' === $p->get_status() ? __( 'En ligne', 'aod-client-dashboard' ) : __( 'Brouillon', 'aod-client-dashboard' ) ) . '</td>';
+			echo '<td class="aod-cd-rowactions" data-label="' . esc_attr__( 'Actions', 'aod-client-dashboard' ) . '">';
 			echo '<a class="aod-cd-btn aod-cd-btn-sm" href="' . esc_url( $edit_url ) . '">' . esc_html__( 'Éditer', 'aod-client-dashboard' ) . '</a> ';
 			echo '<button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-btn-danger aod-cd-del-product" data-product="' . esc_attr( $p->get_id() ) . '" data-name="' . esc_attr( $p->get_name() ) . '">' . esc_html__( 'Supprimer', 'aod-client-dashboard' ) . '</button>';
 			echo '</td>';
@@ -2452,7 +2452,7 @@ class AOD_CD_Dashboard {
 				<input type="search" class="aod-cd-search-input" data-filter="prices" placeholder="<?php esc_attr_e( 'Rechercher une wilaya…', 'aod-client-dashboard' ); ?>" autocomplete="off">
 			</div>
 			<div class="aod-cd-scroll">
-				<table class="aod-cd-table aod-cd-pricetable">
+				<table class="aod-cd-table aod-cd-pricetable aod-cd-table--cards">
 					<thead><tr>
 						<th><?php esc_html_e( 'Wilaya', 'aod-client-dashboard' ); ?></th>
 						<th><?php printf( esc_html__( 'Domicile (%s)', 'aod-client-dashboard' ), esc_html( $symbol ) ); ?></th>
@@ -2465,13 +2465,17 @@ class AOD_CD_Dashboard {
 						</th>
 					</tr></thead>
 					<tbody>
-						<?php foreach ( AOD_COD_Data::places() as $w ) :
+						<?php
+						$lbl_home = sprintf( __( 'Domicile (%s)', 'aod-client-dashboard' ), $symbol );
+						$lbl_desk = sprintf( __( 'Stop-desk (%s)', 'aod-client-dashboard' ), $symbol );
+						$lbl_free = __( 'Livraison gratuite', 'aod-client-dashboard' );
+						foreach ( AOD_COD_Data::places() as $w ) :
 							$code = (int) $w['code']; ?>
 							<tr>
-								<td><?php echo esc_html( sprintf( '%02d - %s', $code, $w['name'] ) ); ?></td>
-								<td><input type="number" min="0" step="any" name="home[<?php echo esc_attr( $code ); ?>]" value="<?php echo isset( $prices[ $code ]['home'] ) ? esc_attr( $prices[ $code ]['home'] ) : ''; ?>"></td>
-								<td><input type="number" min="0" step="any" name="desk[<?php echo esc_attr( $code ); ?>]" value="<?php echo isset( $prices[ $code ]['desk'] ) ? esc_attr( $prices[ $code ]['desk'] ) : ''; ?>"></td>
-								<td class="aod-cd-free-col"><input type="checkbox" class="aod-cd-free-one" name="free[<?php echo esc_attr( $code ); ?>]" value="1" <?php checked( ! empty( $prices[ $code ]['free'] ) ); ?>></td>
+								<td class="aod-cd-cell-wilaya" data-label="<?php esc_attr_e( 'Wilaya', 'aod-client-dashboard' ); ?>"><?php echo esc_html( sprintf( '%02d - %s', $code, $w['name'] ) ); ?></td>
+								<td data-label="<?php echo esc_attr( $lbl_home ); ?>"><input type="number" min="0" step="any" name="home[<?php echo esc_attr( $code ); ?>]" value="<?php echo isset( $prices[ $code ]['home'] ) ? esc_attr( $prices[ $code ]['home'] ) : ''; ?>"></td>
+								<td data-label="<?php echo esc_attr( $lbl_desk ); ?>"><input type="number" min="0" step="any" name="desk[<?php echo esc_attr( $code ); ?>]" value="<?php echo isset( $prices[ $code ]['desk'] ) ? esc_attr( $prices[ $code ]['desk'] ) : ''; ?>"></td>
+								<td class="aod-cd-free-col" data-label="<?php echo esc_attr( $lbl_free ); ?>"><input type="checkbox" class="aod-cd-free-one" name="free[<?php echo esc_attr( $code ); ?>]" value="1" <?php checked( ! empty( $prices[ $code ]['free'] ) ); ?>></td>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>
