@@ -1318,7 +1318,19 @@
 		} );
 	}
 
+	/* Menu déroulant de la barre latérale (mobile) */
+	function bindNavToggle() {
+		var btn  = document.querySelector( '.aod-cd-navtoggle' );
+		var side = document.querySelector( '.aod-cd-side' );
+		if ( ! btn || ! side ) { return; }
+		btn.addEventListener( 'click', function () {
+			var open = side.classList.toggle( 'is-open' );
+			btn.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
+		} );
+	}
+
 	document.addEventListener( 'DOMContentLoaded', function () {
+		try { bindNavToggle(); } catch ( err ) { /* menu mobile */ }
 		bindStatus();
 		bindProducts();
 		try { bindCategories(); }   catch ( err ) { /* catégories */ }

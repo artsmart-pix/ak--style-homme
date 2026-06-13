@@ -225,8 +225,13 @@ class AOD_CD_Dashboard {
 </head>
 <body class="aod-cd">
 	<aside class="aod-cd-side">
-		<div class="aod-cd-brand"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></div>
-		<nav class="aod-cd-nav">
+		<div class="aod-cd-brand">
+			<span class="aod-cd-brand-name"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></span>
+			<button type="button" class="aod-cd-navtoggle" aria-expanded="false" aria-controls="aod-cd-nav" aria-label="<?php esc_attr_e( 'Menu', 'aod-client-dashboard' ); ?>">
+				<span></span><span></span><span></span>
+			</button>
+		</div>
+		<nav class="aod-cd-nav" id="aod-cd-nav">
 			<?php foreach ( $this->sections as $slug => $meta ) :
 				$active = ( $slug === $section ) ? ' is-active' : '';
 				?>

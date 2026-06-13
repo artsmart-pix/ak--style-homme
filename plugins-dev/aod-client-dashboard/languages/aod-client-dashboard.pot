@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-13T18:59:51+00:00\n"
+"POT-Creation-Date: 2026-06-13T19:27:14+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: aod-client-dashboard\n"
@@ -54,21 +54,21 @@ msgstr ""
 
 #: includes/class-aod-cd-account.php:52
 #: includes/class-aod-cd-account.php:154
-#: includes/class-aod-cd-dashboard.php:1924
-#: includes/class-aod-cd-dashboard.php:2343
-#: includes/class-aod-cd-dashboard.php:2365
-#: includes/class-aod-cd-dashboard.php:2402
-#: includes/class-aod-cd-dashboard.php:2554
-#: includes/class-aod-cd-dashboard.php:2657
-#: includes/class-aod-cd-dashboard.php:2733
-#: includes/class-aod-cd-dashboard.php:2748
-#: includes/class-aod-cd-dashboard.php:2867
-#: includes/class-aod-cd-dashboard.php:2930
-#: includes/class-aod-cd-dashboard.php:3100
-#: includes/class-aod-cd-dashboard.php:3136
-#: includes/class-aod-cd-dashboard.php:3190
-#: includes/class-aod-cd-dashboard.php:3222
-#: includes/class-aod-cd-dashboard.php:3247
+#: includes/class-aod-cd-dashboard.php:1929
+#: includes/class-aod-cd-dashboard.php:2348
+#: includes/class-aod-cd-dashboard.php:2370
+#: includes/class-aod-cd-dashboard.php:2407
+#: includes/class-aod-cd-dashboard.php:2559
+#: includes/class-aod-cd-dashboard.php:2662
+#: includes/class-aod-cd-dashboard.php:2738
+#: includes/class-aod-cd-dashboard.php:2753
+#: includes/class-aod-cd-dashboard.php:2872
+#: includes/class-aod-cd-dashboard.php:2935
+#: includes/class-aod-cd-dashboard.php:3105
+#: includes/class-aod-cd-dashboard.php:3141
+#: includes/class-aod-cd-dashboard.php:3195
+#: includes/class-aod-cd-dashboard.php:3227
+#: includes/class-aod-cd-dashboard.php:3252
 msgid "Accès refusé."
 msgstr ""
 
@@ -93,12 +93,12 @@ msgid "requis"
 msgstr ""
 
 #: includes/class-aod-cd-account.php:94
-#: includes/class-aod-cd-dashboard.php:2792
+#: includes/class-aod-cd-dashboard.php:2797
 msgid "Nom affiché"
 msgstr ""
 
 #: includes/class-aod-cd-account.php:98
-#: includes/class-aod-cd-dashboard.php:2797
+#: includes/class-aod-cd-dashboard.php:2802
 msgid "Adresse e-mail"
 msgstr ""
 
@@ -131,12 +131,12 @@ msgid "E-mail"
 msgstr ""
 
 #: includes/class-aod-cd-account.php:122
-#: includes/class-aod-cd-dashboard.php:1243
+#: includes/class-aod-cd-dashboard.php:1248
 msgid "Actions"
 msgstr ""
 
 #: includes/class-aod-cd-account.php:132
-#: includes/class-aod-cd-dashboard.php:3628
+#: includes/class-aod-cd-dashboard.php:3633
 msgid "Modifier"
 msgstr ""
 
@@ -149,7 +149,7 @@ msgid "L’identifiant et le mot de passe sont obligatoires."
 msgstr ""
 
 #: includes/class-aod-cd-account.php:166
-#: includes/class-aod-cd-dashboard.php:2897
+#: includes/class-aod-cd-dashboard.php:2902
 msgid "Le mot de passe doit faire au moins 8 caractères."
 msgstr ""
 
@@ -158,7 +158,7 @@ msgid "Cet identifiant existe déjà."
 msgstr ""
 
 #: includes/class-aod-cd-account.php:172
-#: includes/class-aod-cd-dashboard.php:2883
+#: includes/class-aod-cd-dashboard.php:2888
 msgid "Adresse e-mail invalide."
 msgstr ""
 
@@ -177,18 +177,18 @@ msgid "Commandes"
 msgstr ""
 
 #: includes/class-aod-cd-dashboard.php:42
-#: includes/class-aod-cd-dashboard.php:3663
+#: includes/class-aod-cd-dashboard.php:3668
 msgid "Produits"
 msgstr ""
 
 #: includes/class-aod-cd-dashboard.php:43
-#: includes/class-aod-cd-dashboard.php:1397
+#: includes/class-aod-cd-dashboard.php:1402
 msgid "Catégories"
 msgstr ""
 
 #: includes/class-aod-cd-dashboard.php:44
-#: includes/class-aod-cd-dashboard.php:3640
-#: includes/class-aod-cd-dashboard.php:3681
+#: includes/class-aod-cd-dashboard.php:3645
+#: includes/class-aod-cd-dashboard.php:3686
 msgid "Livraison"
 msgstr ""
 
@@ -205,7 +205,7 @@ msgid "WhatsApp"
 msgstr ""
 
 #: includes/class-aod-cd-dashboard.php:48
-#: includes/class-aod-cd-dashboard.php:2783
+#: includes/class-aod-cd-dashboard.php:2788
 msgid "Mon compte"
 msgstr ""
 
@@ -226,13 +226,13 @@ msgid "Note pour cette commande :"
 msgstr ""
 
 #: includes/class-aod-cd-dashboard.php:201
-#: includes/class-aod-cd-dashboard.php:1193
+#: includes/class-aod-cd-dashboard.php:1198
 msgid "Renommer"
 msgstr ""
 
 #: includes/class-aod-cd-dashboard.php:202
-#: includes/class-aod-cd-dashboard.php:382
-#: includes/class-aod-cd-dashboard.php:1259
+#: includes/class-aod-cd-dashboard.php:387
+#: includes/class-aod-cd-dashboard.php:1264
 msgid "Supprimer"
 msgstr ""
 
@@ -275,21 +275,21 @@ msgid "Aucune réduction (sera ignorée)"
 msgstr ""
 
 #: includes/class-aod-cd-dashboard.php:212
-#: includes/class-aod-cd-dashboard.php:546
+#: includes/class-aod-cd-dashboard.php:551
 msgid "Ajouter une note"
 msgstr ""
 
 #: includes/class-aod-cd-dashboard.php:213
-#: includes/class-aod-cd-dashboard.php:1612
-#: includes/class-aod-cd-dashboard.php:2721
-#: includes/class-aod-cd-dashboard.php:2815
-#: includes/class-aod-cd-dashboard.php:3595
+#: includes/class-aod-cd-dashboard.php:1617
+#: includes/class-aod-cd-dashboard.php:2726
+#: includes/class-aod-cd-dashboard.php:2820
+#: includes/class-aod-cd-dashboard.php:3600
 msgid "Enregistrer"
 msgstr ""
 
 #: includes/class-aod-cd-dashboard.php:214
-#: includes/class-aod-cd-dashboard.php:1613
-#: includes/class-aod-cd-dashboard.php:3596
+#: includes/class-aod-cd-dashboard.php:1618
+#: includes/class-aod-cd-dashboard.php:3601
 msgid "Annuler"
 msgstr ""
 
@@ -298,8 +298,8 @@ msgid "Colis créé"
 msgstr ""
 
 #: includes/class-aod-cd-dashboard.php:216
-#: includes/class-aod-cd-dashboard.php:1398
-#: includes/class-aod-cd-dashboard.php:1400
+#: includes/class-aod-cd-dashboard.php:1403
+#: includes/class-aod-cd-dashboard.php:1405
 msgid "Sélectionner des catégories"
 msgstr ""
 
@@ -308,7 +308,7 @@ msgid "Nouveau"
 msgstr ""
 
 #: includes/class-aod-cd-dashboard.php:218
-#: includes/class-aod-cd-dashboard.php:1505
+#: includes/class-aod-cd-dashboard.php:1510
 msgid "Retirer cette photo"
 msgstr ""
 
@@ -329,1136 +329,1140 @@ msgstr ""
 msgid "Supprimer définitivement %d commande(s) sélectionnée(s) ? Cette action est irréversible."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:240
+#: includes/class-aod-cd-dashboard.php:230
+msgid "Menu"
+msgstr ""
+
+#: includes/class-aod-cd-dashboard.php:245
 msgid "Voir la boutique"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:241
+#: includes/class-aod-cd-dashboard.php:246
 msgid "Déconnexion"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:264
+#: includes/class-aod-cd-dashboard.php:269
 msgid "Fermer"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:321
+#: includes/class-aod-cd-dashboard.php:326
 msgid "Toutes"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:322
-#: includes/class-aod-cd-dashboard.php:651
+#: includes/class-aod-cd-dashboard.php:327
+#: includes/class-aod-cd-dashboard.php:656
 msgid "En attente"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:323
+#: includes/class-aod-cd-dashboard.php:328
 msgid "Confirmées"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:324
+#: includes/class-aod-cd-dashboard.php:329
 msgid "Terminées"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:325
-#: includes/class-aod-cd-dashboard.php:835
+#: includes/class-aod-cd-dashboard.php:330
+#: includes/class-aod-cd-dashboard.php:840
 msgid "Annulées"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:350
+#: includes/class-aod-cd-dashboard.php:355
 msgid "Rechercher : n°, nom, téléphone…"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:367
+#: includes/class-aod-cd-dashboard.php:372
 msgid "Aucune commande dans cette catégorie."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:379
+#: includes/class-aod-cd-dashboard.php:384
 msgid "sélectionnée(s)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:389
+#: includes/class-aod-cd-dashboard.php:394
 msgid "Tout sélectionner"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:392
+#: includes/class-aod-cd-dashboard.php:397
 msgid "N°"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:393
+#: includes/class-aod-cd-dashboard.php:398
 msgid "Date"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:394
-#: includes/class-aod-cd-dashboard.php:3635
+#: includes/class-aod-cd-dashboard.php:399
+#: includes/class-aod-cd-dashboard.php:3640
 msgid "Client"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:395
-#: includes/class-aod-cd-dashboard.php:3489
+#: includes/class-aod-cd-dashboard.php:400
+#: includes/class-aod-cd-dashboard.php:3494
 msgid "Téléphone"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:396
-#: includes/class-aod-cd-dashboard.php:2452
-#: includes/class-aod-cd-dashboard.php:3504
+#: includes/class-aod-cd-dashboard.php:401
+#: includes/class-aod-cd-dashboard.php:2457
+#: includes/class-aod-cd-dashboard.php:3509
 msgid "Wilaya"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:397
-#: includes/class-aod-cd-dashboard.php:3517
+#: includes/class-aod-cd-dashboard.php:402
+#: includes/class-aod-cd-dashboard.php:3522
 msgid "Commune"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:398
-#: includes/class-aod-cd-dashboard.php:3536
+#: includes/class-aod-cd-dashboard.php:403
+#: includes/class-aod-cd-dashboard.php:3541
 msgid "Articles"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:399
+#: includes/class-aod-cd-dashboard.php:404
 msgid "Prix produit"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:400
+#: includes/class-aod-cd-dashboard.php:405
 msgid "Prix livraison"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:401
-#: includes/class-aod-cd-dashboard.php:1008
-#: includes/class-aod-cd-dashboard.php:3665
-#: includes/class-aod-cd-dashboard.php:3683
+#: includes/class-aod-cd-dashboard.php:406
+#: includes/class-aod-cd-dashboard.php:1013
+#: includes/class-aod-cd-dashboard.php:3670
+#: includes/class-aod-cd-dashboard.php:3688
 msgid "Total"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:402
-#: includes/class-aod-cd-dashboard.php:3656
+#: includes/class-aod-cd-dashboard.php:407
+#: includes/class-aod-cd-dashboard.php:3661
 msgid "Suivi"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:403
-#: includes/class-aod-cd-dashboard.php:1242
-#: includes/class-aod-cd-dashboard.php:1425
-#: includes/class-aod-cd-dashboard.php:2507
+#: includes/class-aod-cd-dashboard.php:408
+#: includes/class-aod-cd-dashboard.php:1247
+#: includes/class-aod-cd-dashboard.php:1430
+#: includes/class-aod-cd-dashboard.php:2512
 msgid "Statut"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:404
+#: includes/class-aod-cd-dashboard.php:409
 msgid "Note"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:439
+#: includes/class-aod-cd-dashboard.php:444
 msgid "Rechercher"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:442
+#: includes/class-aod-cd-dashboard.php:447
 msgid "Réinitialiser"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:464
+#: includes/class-aod-cd-dashboard.php:469
 msgid "Pagination"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:522
+#: includes/class-aod-cd-dashboard.php:527
 msgid "Sélectionner cette commande"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:652
+#: includes/class-aod-cd-dashboard.php:657
 msgid "En cours"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:653
+#: includes/class-aod-cd-dashboard.php:658
 msgid "Confirmée"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:654
+#: includes/class-aod-cd-dashboard.php:659
 msgid "En pause"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:655
+#: includes/class-aod-cd-dashboard.php:660
 msgid "Terminée"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:656
+#: includes/class-aod-cd-dashboard.php:661
 msgid "Annulée"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:657
+#: includes/class-aod-cd-dashboard.php:662
 msgid "Remboursée"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:658
+#: includes/class-aod-cd-dashboard.php:663
 msgid "Échouée"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:659
-#: includes/class-aod-cd-dashboard.php:1256
-#: includes/class-aod-cd-dashboard.php:1428
+#: includes/class-aod-cd-dashboard.php:664
+#: includes/class-aod-cd-dashboard.php:1261
+#: includes/class-aod-cd-dashboard.php:1433
 msgid "Brouillon"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:738
+#: includes/class-aod-cd-dashboard.php:743
 msgid "7 jours"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:739
+#: includes/class-aod-cd-dashboard.php:744
 msgid "30 jours"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:740
+#: includes/class-aod-cd-dashboard.php:745
 msgid "Cette année"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:741
+#: includes/class-aod-cd-dashboard.php:746
 msgid "Tout"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:829
+#: includes/class-aod-cd-dashboard.php:834
 msgid "Chiffre d’affaires"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:830
+#: includes/class-aod-cd-dashboard.php:835
 msgid "Commandes encaissées"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:831
+#: includes/class-aod-cd-dashboard.php:836
 msgid "Panier moyen"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:832
+#: includes/class-aod-cd-dashboard.php:837
 msgid "Marge estimée"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:833
+#: includes/class-aod-cd-dashboard.php:838
 msgid "Taux de marge"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:834
+#: includes/class-aod-cd-dashboard.php:839
 msgid "En attente (en cours)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:836
+#: includes/class-aod-cd-dashboard.php:841
 msgid "Produits en ligne"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:865
+#: includes/class-aod-cd-dashboard.php:870
 msgid "Top produits"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:867
-#: includes/class-aod-cd-dashboard.php:1012
+#: includes/class-aod-cd-dashboard.php:872
+#: includes/class-aod-cd-dashboard.php:1017
 msgid "Aucune vente sur cette période."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:879
-#: includes/class-aod-cd-dashboard.php:1239
+#: includes/class-aod-cd-dashboard.php:884
+#: includes/class-aod-cd-dashboard.php:1244
 msgid "Produit"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:880
+#: includes/class-aod-cd-dashboard.php:885
 msgid "Quantité vendue"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:881
+#: includes/class-aod-cd-dashboard.php:886
 msgid "CA généré"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:882
-#: includes/class-aod-cd-dashboard.php:1312
+#: includes/class-aod-cd-dashboard.php:887
+#: includes/class-aod-cd-dashboard.php:1317
 msgid "Marge"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:906
+#: includes/class-aod-cd-dashboard.php:911
 msgid "CA = total des commandes en cours, confirmées et terminées sur la période sélectionnée. « En attente » et « Produits en ligne » reflètent l’état actuel, toutes périodes confondues."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:907
+#: includes/class-aod-cd-dashboard.php:912
 msgid "Marge = CA produits (hors livraison) − prix d’achat. Renseignez le « Prix d’achat » d’un produit pour qu’il compte dans la marge ; les produits sans prix d’achat sont ignorés (un « — » s’affiche)."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:909
+#: includes/class-aod-cd-dashboard.php:914
 msgid "Note : certains produits vendus n’ont pas de prix d’achat renseigné — la marge affichée est donc une estimation partielle."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1007
+#: includes/class-aod-cd-dashboard.php:1012
 msgid "Évolution du chiffre d’affaires"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1063
+#: includes/class-aod-cd-dashboard.php:1068
 msgid "Chiffre d’affaires sur la période"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1156
+#: includes/class-aod-cd-dashboard.php:1161
 msgid "Catégories de produits"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1157
+#: includes/class-aod-cd-dashboard.php:1162
 msgid "Créez, renommez ou supprimez les catégories qui servent à classer vos produits. Supprimer une catégorie n’efface aucun produit : les produits concernés perdent simplement ce classement."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1160
+#: includes/class-aod-cd-dashboard.php:1165
 msgid "Nom de la nouvelle catégorie"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1161
-#: includes/class-aod-cd-dashboard.php:1512
+#: includes/class-aod-cd-dashboard.php:1166
+#: includes/class-aod-cd-dashboard.php:1517
 msgid "Ajouter"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1166
-#: includes/class-aod-cd-dashboard.php:1413
+#: includes/class-aod-cd-dashboard.php:1171
+#: includes/class-aod-cd-dashboard.php:1418
 msgid "Aucune catégorie pour le moment."
 msgstr ""
 
 #. translators: %d: nombre de produits
-#: includes/class-aod-cd-dashboard.php:1191
+#: includes/class-aod-cd-dashboard.php:1196
 #, php-format
 msgid "%d produit"
 msgid_plural "%d produits"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-aod-cd-dashboard.php:1194
+#: includes/class-aod-cd-dashboard.php:1199
 msgid "Supprimer la catégorie"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1204
+#: includes/class-aod-cd-dashboard.php:1209
 msgid "Ajouter un produit"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1213
+#: includes/class-aod-cd-dashboard.php:1218
 msgid "Rechercher un produit…"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1231
+#: includes/class-aod-cd-dashboard.php:1236
 msgid "Aucun produit ne correspond à cette recherche."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1232
+#: includes/class-aod-cd-dashboard.php:1237
 msgid "Aucun produit pour le moment. Cliquez sur « Ajouter un produit » pour commencer."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1240
-#: includes/class-aod-cd-dashboard.php:1293
+#: includes/class-aod-cd-dashboard.php:1245
+#: includes/class-aod-cd-dashboard.php:1298
 msgid "Prix"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1241
+#: includes/class-aod-cd-dashboard.php:1246
 msgid "Stock"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1256
-#: includes/class-aod-cd-dashboard.php:1427
+#: includes/class-aod-cd-dashboard.php:1261
+#: includes/class-aod-cd-dashboard.php:1432
 msgid "En ligne"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1258
+#: includes/class-aod-cd-dashboard.php:1263
 msgid "Éditer"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1294
+#: includes/class-aod-cd-dashboard.php:1299
 msgid "Promo"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1305
+#: includes/class-aod-cd-dashboard.php:1310
 msgid "Achat"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1328
-#: includes/class-aod-cd-dashboard.php:1938
-#: includes/class-aod-cd-dashboard.php:2348
+#: includes/class-aod-cd-dashboard.php:1333
+#: includes/class-aod-cd-dashboard.php:1943
+#: includes/class-aod-cd-dashboard.php:2353
 msgid "Produit introuvable."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1365
+#: includes/class-aod-cd-dashboard.php:1370
 msgid "Modifier le produit"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1365
+#: includes/class-aod-cd-dashboard.php:1370
 msgid "Nouveau produit"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1368
+#: includes/class-aod-cd-dashboard.php:1373
 msgid "Retour à la liste"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1377
+#: includes/class-aod-cd-dashboard.php:1382
 msgid "Informations générales"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1380
+#: includes/class-aod-cd-dashboard.php:1385
 msgid "Nom du produit"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1385
+#: includes/class-aod-cd-dashboard.php:1390
 msgid "Description"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1390
+#: includes/class-aod-cd-dashboard.php:1395
 msgid "Arguments de vente (un par ligne)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1391
+#: includes/class-aod-cd-dashboard.php:1396
 msgid ""
 "Livraison rapide\n"
 "Garantie 1 an\n"
 "Qualité premium"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1392
+#: includes/class-aod-cd-dashboard.php:1397
 msgid "Affichés en liste à puces sur la page produit."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1417
+#: includes/class-aod-cd-dashboard.php:1422
 msgid "Cliquez pour ouvrir la liste et cochez une ou plusieurs catégories."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1421
+#: includes/class-aod-cd-dashboard.php:1426
 msgid "Nouvelle catégorie (optionnel)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1422
+#: includes/class-aod-cd-dashboard.php:1427
 msgid "Crée et assigne une catégorie"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1438
+#: includes/class-aod-cd-dashboard.php:1443
 msgid "Prix & promotion"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1442
+#: includes/class-aod-cd-dashboard.php:1447
 #, php-format
 msgid "Prix (%s)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1444
+#: includes/class-aod-cd-dashboard.php:1449
 msgid "Si vous ajoutez des variantes, ce prix sert de prix par défaut (utilisé quand une variante n’a pas son propre prix)."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1447
+#: includes/class-aod-cd-dashboard.php:1452
 msgid "Prix promo (optionnel)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1453
+#: includes/class-aod-cd-dashboard.php:1458
 msgid "Période de promotion (optionnel)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1456
+#: includes/class-aod-cd-dashboard.php:1461
 msgid "Début"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1459
-#: includes/class-aod-cd-dashboard.php:1467
+#: includes/class-aod-cd-dashboard.php:1464
+#: includes/class-aod-cd-dashboard.php:1472
 msgid "Effacer la date"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1464
+#: includes/class-aod-cd-dashboard.php:1469
 msgid "Fin"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1471
+#: includes/class-aod-cd-dashboard.php:1476
 msgid "La promo s’activera et s’arrêtera automatiquement à ces dates."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1475
+#: includes/class-aod-cd-dashboard.php:1480
 #, php-format
 msgid "Prix d’achat (%s, optionnel)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1477
+#: includes/class-aod-cd-dashboard.php:1482
 msgid "Sert au calcul de la marge (non affiché au client)."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1484
+#: includes/class-aod-cd-dashboard.php:1489
 msgid "Images"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1484
+#: includes/class-aod-cd-dashboard.php:1489
 msgid "photo principale & galerie"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1487
+#: includes/class-aod-cd-dashboard.php:1492
 msgid "Photo principale"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1490
+#: includes/class-aod-cd-dashboard.php:1495
 msgid "Aucune image"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1496
+#: includes/class-aod-cd-dashboard.php:1501
 msgid "Galerie (photos supplémentaires)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1506
+#: includes/class-aod-cd-dashboard.php:1511
 msgid "À retirer"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1516
+#: includes/class-aod-cd-dashboard.php:1521
 msgid "Cliquez sur « Ajouter » (ou glissez vos fichiers) pour choisir des photos. Cliquez sur ✕ pour en retirer une."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1523
+#: includes/class-aod-cd-dashboard.php:1528
 msgid "Stock & logistique"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1528
+#: includes/class-aod-cd-dashboard.php:1533
 msgid "Gérer le stock"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1530
-#: includes/class-aod-cd-dashboard.php:3569
+#: includes/class-aod-cd-dashboard.php:1535
+#: includes/class-aod-cd-dashboard.php:3574
 msgid "Quantité"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1531
+#: includes/class-aod-cd-dashboard.php:1536
 msgid "Alerte stock bas (optionnel)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1536
+#: includes/class-aod-cd-dashboard.php:1541
 msgid "Référence / SKU (optionnel)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1540
+#: includes/class-aod-cd-dashboard.php:1545
 msgid "Poids (kg, optionnel)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1541
+#: includes/class-aod-cd-dashboard.php:1546
 msgid "ex : 0.5"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1549
+#: includes/class-aod-cd-dashboard.php:1554
 msgid "Variantes"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1549
+#: includes/class-aod-cd-dashboard.php:1554
 msgid "Taille, Couleur, Pointure… (optionnel)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1552
+#: includes/class-aod-cd-dashboard.php:1557
 msgid "Crée une section par caractéristique (Taille, Pointure, Couleur…). Pour chaque section, ajoute les valeurs que le client pourra choisir. Une section « avec photos » affiche des pastilles cliquables (couleurs, modèles…) ; chaque valeur peut ajouter un supplément de prix. Laisse vide pour un produit simple."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1555
+#: includes/class-aod-cd-dashboard.php:1560
 msgid "Sections rapides :"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1556
+#: includes/class-aod-cd-dashboard.php:1561
 msgid "Sélectionner une taille"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1556
+#: includes/class-aod-cd-dashboard.php:1561
 msgid "Tailles S–XXL"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1557
+#: includes/class-aod-cd-dashboard.php:1562
 msgid "Sélectionner une pointure"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1557
+#: includes/class-aod-cd-dashboard.php:1562
 msgid "Pointures 35–46"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1558
+#: includes/class-aod-cd-dashboard.php:1563
 msgid "Sélectionner une couleur"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1558
+#: includes/class-aod-cd-dashboard.php:1563
 msgid "Couleur (avec photos)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1571
+#: includes/class-aod-cd-dashboard.php:1576
 msgid "Ajouter une section"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1581
+#: includes/class-aod-cd-dashboard.php:1586
 msgid "Offres"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1581
+#: includes/class-aod-cd-dashboard.php:1586
 msgid "packs « 2 produits », « 3 produits »… (optionnel)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1584
+#: includes/class-aod-cd-dashboard.php:1589
 msgid "Proposez d’acheter plusieurs unités de ce produit à un prix de lot avantageux. Indiquez le NOMBRE d’unités et le PRIX TOTAL du lot (ex. : 2 → 2500, 3 → 3300). Ce total doit être inférieur au prix normal multiplié par le nombre d’unités, sinon l’offre n’apporte aucune réduction et sera ignorée. Sur la page produit, le client verra une carte « 1 produit » par défaut, puis une carte par offre ; au clic, il choisit une variante pour chaque unité."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1587
+#: includes/class-aod-cd-dashboard.php:1592
 msgid "Nombre d’unités"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1588
+#: includes/class-aod-cd-dashboard.php:1593
 #, php-format
 msgid "Prix total du lot (%s)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1602
+#: includes/class-aod-cd-dashboard.php:1607
 msgid "Ajouter une offre"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1675
+#: includes/class-aod-cd-dashboard.php:1680
 msgid "Couleur"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1718
+#: includes/class-aod-cd-dashboard.php:1723
 msgid "ex : Sélectionner une couleur, une taille…"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1721
+#: includes/class-aod-cd-dashboard.php:1726
 msgid "Avec photos"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1723
+#: includes/class-aod-cd-dashboard.php:1728
 msgid "Affiche cette section en menu déroulant sur le formulaire de commande (idéal quand il y a beaucoup de valeurs)."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1725
+#: includes/class-aod-cd-dashboard.php:1730
 msgid "Liste déroulante"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1727
+#: includes/class-aod-cd-dashboard.php:1732
 msgid "Supprimer cette section"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1738
+#: includes/class-aod-cd-dashboard.php:1743
 msgid "Ajouter une valeur"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1764
+#: includes/class-aod-cd-dashboard.php:1769
 msgid "Choisir une couleur"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1764
+#: includes/class-aod-cd-dashboard.php:1769
 msgid "Choisir une couleur prédéfinie"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1766
+#: includes/class-aod-cd-dashboard.php:1771
 msgid "ex : Rouge, L, 42…"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1768
+#: includes/class-aod-cd-dashboard.php:1773
 msgid "supplément"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1769
+#: includes/class-aod-cd-dashboard.php:1774
 msgid "Supprimer cette valeur"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1783
+#: includes/class-aod-cd-dashboard.php:1788
 msgid "Noir"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1784
+#: includes/class-aod-cd-dashboard.php:1789
 msgid "Blanc"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1785
+#: includes/class-aod-cd-dashboard.php:1790
 msgid "Gris"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1786
+#: includes/class-aod-cd-dashboard.php:1791
 msgid "Gris clair"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1787
+#: includes/class-aod-cd-dashboard.php:1792
 msgid "Gris foncé"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1788
+#: includes/class-aod-cd-dashboard.php:1793
 msgid "Beige"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1789
+#: includes/class-aod-cd-dashboard.php:1794
 msgid "Crème"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1790
+#: includes/class-aod-cd-dashboard.php:1795
 msgid "Marron"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1791
+#: includes/class-aod-cd-dashboard.php:1796
 msgid "Bordeaux"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1792
+#: includes/class-aod-cd-dashboard.php:1797
 msgid "Rouge"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1793
+#: includes/class-aod-cd-dashboard.php:1798
 msgid "Rouge foncé"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1794
+#: includes/class-aod-cd-dashboard.php:1799
 msgid "Rose"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1795
+#: includes/class-aod-cd-dashboard.php:1800
 msgid "Fuchsia"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1796
+#: includes/class-aod-cd-dashboard.php:1801
 msgid "Corail"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1797
+#: includes/class-aod-cd-dashboard.php:1802
 msgid "Orange"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1798
+#: includes/class-aod-cd-dashboard.php:1803
 msgid "Moutarde"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1799
+#: includes/class-aod-cd-dashboard.php:1804
 msgid "Jaune"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1800
+#: includes/class-aod-cd-dashboard.php:1805
 msgid "Or"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1801
+#: includes/class-aod-cd-dashboard.php:1806
 msgid "Vert clair"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1802
+#: includes/class-aod-cd-dashboard.php:1807
 msgid "Vert"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1803
+#: includes/class-aod-cd-dashboard.php:1808
 msgid "Vert foncé"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1804
+#: includes/class-aod-cd-dashboard.php:1809
 msgid "Kaki"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1805
+#: includes/class-aod-cd-dashboard.php:1810
 msgid "Turquoise"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1806
+#: includes/class-aod-cd-dashboard.php:1811
 msgid "Cyan"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1807
+#: includes/class-aod-cd-dashboard.php:1812
 msgid "Bleu ciel"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1808
+#: includes/class-aod-cd-dashboard.php:1813
 msgid "Bleu"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1809
+#: includes/class-aod-cd-dashboard.php:1814
 msgid "Bleu marine"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1810
+#: includes/class-aod-cd-dashboard.php:1815
 msgid "Mauve"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1811
+#: includes/class-aod-cd-dashboard.php:1816
 msgid "Violet"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1812
+#: includes/class-aod-cd-dashboard.php:1817
 msgid "Argent"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1910
+#: includes/class-aod-cd-dashboard.php:1915
 msgid "ex : 2"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1911
+#: includes/class-aod-cd-dashboard.php:1916
 msgid "ex : 2500 (pour 2)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1912
+#: includes/class-aod-cd-dashboard.php:1917
 msgid "Supprimer cette offre"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1930
+#: includes/class-aod-cd-dashboard.php:1935
 msgid "Le nom du produit est obligatoire."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1949
+#: includes/class-aod-cd-dashboard.php:1954
 msgid "Le prix promo doit être inférieur ou égal au prix normal."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:1958
+#: includes/class-aod-cd-dashboard.php:1963
 msgid "Cette référence (SKU) est déjà utilisée."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2085
+#: includes/class-aod-cd-dashboard.php:2090
 msgid "Produit enregistré, mais échec de l’image : "
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2101
+#: includes/class-aod-cd-dashboard.php:2106
 msgid "Produit mis à jour."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2101
+#: includes/class-aod-cd-dashboard.php:2106
 msgid "Produit créé."
 msgstr ""
 
 #. translators: %d: nombre d'offres ignorées
-#: includes/class-aod-cd-dashboard.php:2107
+#: includes/class-aod-cd-dashboard.php:2112
 #, php-format
 msgid "%d offre a été ignorée : le prix total du lot doit être INFÉRIEUR au prix normal multiplié par le nombre d’unités (sinon l’offre n’apporte aucune réduction)."
 msgid_plural "%d offres ont été ignorées : le prix total du lot doit être INFÉRIEUR au prix normal multiplié par le nombre d’unités (sinon l’offre n’apporte aucune réduction)."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-aod-cd-dashboard.php:2351
+#: includes/class-aod-cd-dashboard.php:2356
 msgid "Produit déplacé dans la corbeille."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2370
+#: includes/class-aod-cd-dashboard.php:2375
 msgid "Le nom de la catégorie est obligatoire."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2381
+#: includes/class-aod-cd-dashboard.php:2386
 msgid "Cette catégorie existe déjà."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2389
+#: includes/class-aod-cd-dashboard.php:2394
 msgid "Catégorie renommée."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2389
+#: includes/class-aod-cd-dashboard.php:2394
 msgid "Catégorie créée."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2406
+#: includes/class-aod-cd-dashboard.php:2411
 msgid "Catégorie introuvable."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2410
+#: includes/class-aod-cd-dashboard.php:2415
 msgid "Suppression impossible."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2412
+#: includes/class-aod-cd-dashboard.php:2417
 msgid "Catégorie supprimée."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2421
+#: includes/class-aod-cd-dashboard.php:2426
 msgid "Le module de livraison (AOD COD Form) n’est pas actif."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2432
-#: includes/class-aod-cd-dashboard.php:2458
+#: includes/class-aod-cd-dashboard.php:2437
+#: includes/class-aod-cd-dashboard.php:2463
 msgid "Livraison gratuite"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2436
+#: includes/class-aod-cd-dashboard.php:2441
 msgid "Offrir la livraison à partir d’un certain montant de produits"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2440
+#: includes/class-aod-cd-dashboard.php:2445
 #, php-format
 msgid "Seuil (%s)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2444
+#: includes/class-aod-cd-dashboard.php:2449
 msgid "Tarifs par wilaya"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2445
+#: includes/class-aod-cd-dashboard.php:2450
 msgid "Laissez une wilaya vide pour la rendre non livrable. Domicile = livraison à l’adresse ; Stop-desk = retrait au bureau du livreur."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2447
+#: includes/class-aod-cd-dashboard.php:2452
 msgid "Rechercher une wilaya…"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2453
+#: includes/class-aod-cd-dashboard.php:2458
 #, php-format
 msgid "Domicile (%s)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2454
+#: includes/class-aod-cd-dashboard.php:2459
 #, php-format
 msgid "Stop-desk (%s)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2480
+#: includes/class-aod-cd-dashboard.php:2485
 msgid "Transporteurs"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2481
+#: includes/class-aod-cd-dashboard.php:2486
 msgid "Cliquez sur un transporteur pour saisir vos identifiants API et le connecter."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2486
+#: includes/class-aod-cd-dashboard.php:2491
 msgid "Envoyer automatiquement au livreur quand une commande passe à « Confirmée »"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2490
+#: includes/class-aod-cd-dashboard.php:2495
 msgid "Livreur par défaut (envoi auto)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2494
+#: includes/class-aod-cd-dashboard.php:2499
 msgid "(non configuré)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2501
+#: includes/class-aod-cd-dashboard.php:2506
 msgid "Rechercher un transporteur…"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2506
+#: includes/class-aod-cd-dashboard.php:2511
 msgid "Transporteur"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2520
+#: includes/class-aod-cd-dashboard.php:2525
 msgid "Connecté"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2522
+#: includes/class-aod-cd-dashboard.php:2527
 msgid "Non connecté"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2541
+#: includes/class-aod-cd-dashboard.php:2546
 msgid "Enregistrer la livraison"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2557
+#: includes/class-aod-cd-dashboard.php:2562
 msgid "Module de livraison indisponible."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2597
+#: includes/class-aod-cd-dashboard.php:2602
 msgid "Réglages de livraison enregistrés."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2625
+#: includes/class-aod-cd-dashboard.php:2630
 msgid "Meta (Facebook) Pixel ID"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2625
+#: includes/class-aod-cd-dashboard.php:2630
 msgid "Gestionnaire d’événements Meta → Paramètres → ID du pixel."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2626
+#: includes/class-aod-cd-dashboard.php:2631
 msgid "Google Ads — Libellé de conversion"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2626
+#: includes/class-aod-cd-dashboard.php:2631
 msgid "La partie après « / » dans send_to. Sans elle, seule la balise de base est posée."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2627
+#: includes/class-aod-cd-dashboard.php:2632
 msgid "Snapchat Pixel ID"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2627
+#: includes/class-aod-cd-dashboard.php:2632
 msgid "Snapchat Ads → Gestionnaire d’événements → Pixel ID."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2628
+#: includes/class-aod-cd-dashboard.php:2633
 msgid "Google Ads — ID de conversion"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2628
+#: includes/class-aod-cd-dashboard.php:2633
 msgid "Commence par AW-. Google Ads → Objectifs → Conversions."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2629
+#: includes/class-aod-cd-dashboard.php:2634
 msgid "TikTok Pixel ID"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2629
+#: includes/class-aod-cd-dashboard.php:2634
 msgid "TikTok Ads → Outils → Événements → Pixel Web."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2633
+#: includes/class-aod-cd-dashboard.php:2638
 msgid "Pixels publicitaires"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2634
+#: includes/class-aod-cd-dashboard.php:2639
 msgid "Colle l’identifiant de chaque régie. Laisse vide pour désactiver. Le PageView est suivi sur tout le site ; l’achat est mesuré sur la page de remerciement (une fois par commande)."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2646
+#: includes/class-aod-cd-dashboard.php:2651
 msgid "Enregistrer les pixels"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2667
+#: includes/class-aod-cd-dashboard.php:2672
 msgid "Pixels enregistrés."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2689
+#: includes/class-aod-cd-dashboard.php:2694
 msgid "Notification WhatsApp des commandes"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2690
+#: includes/class-aod-cd-dashboard.php:2695
 msgid "Reçois un message WhatsApp instantané à chaque nouvelle commande. Service gratuit via CallMeBot."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2693
+#: includes/class-aod-cd-dashboard.php:2698
 msgid "Mise en route (une seule fois) :"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2695
+#: includes/class-aod-cd-dashboard.php:2700
 #, php-format
 msgid "Enregistre le numéro %s dans tes contacts (nom : CallMeBot)."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2696
+#: includes/class-aod-cd-dashboard.php:2701
 #, php-format
 msgid "Sur WhatsApp, envoie-lui : %s"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2697
+#: includes/class-aod-cd-dashboard.php:2702
 msgid "Tu reçois ta clé API (apikey). Colle-la ci-dessous."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2704
+#: includes/class-aod-cd-dashboard.php:2709
 msgid "Envoyer un WhatsApp à chaque commande"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2709
+#: includes/class-aod-cd-dashboard.php:2714
 msgid "Ton numéro WhatsApp"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2711
+#: includes/class-aod-cd-dashboard.php:2716
 msgid "Avec l’indicatif pays, sans « + » ni espaces. Algérie = 213. Ex : 213550123456."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2715
+#: includes/class-aod-cd-dashboard.php:2720
 msgid "Clé API (apikey)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2717
+#: includes/class-aod-cd-dashboard.php:2722
 msgid "Fournie par CallMeBot dans sa réponse WhatsApp."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2722
+#: includes/class-aod-cd-dashboard.php:2727
 msgid "Envoyer un message test"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2741
+#: includes/class-aod-cd-dashboard.php:2746
 msgid "Réglages WhatsApp enregistrés."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2752
+#: includes/class-aod-cd-dashboard.php:2757
 msgid "Active et renseigne le numéro + la clé, puis enregistre avant de tester."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2758
+#: includes/class-aod-cd-dashboard.php:2763
 msgid "✅ Test : la notification WhatsApp de votre boutique fonctionne."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2766
+#: includes/class-aod-cd-dashboard.php:2771
 msgid "Échec de l’envoi : "
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2770
+#: includes/class-aod-cd-dashboard.php:2775
 msgid "Message test envoyé. Vérifie ton WhatsApp."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2772
+#: includes/class-aod-cd-dashboard.php:2777
 #, php-format
 msgid "Réponse inattendue (HTTP %d). Vérifie ton numéro et ta clé."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2786
+#: includes/class-aod-cd-dashboard.php:2791
 msgid "Identifiant de connexion"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2788
+#: includes/class-aod-cd-dashboard.php:2793
 msgid "L’identifiant ne peut pas être modifié."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2801
+#: includes/class-aod-cd-dashboard.php:2806
 msgid "Changer le mot de passe"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2802
+#: includes/class-aod-cd-dashboard.php:2807
 msgid "Laissez ces deux champs vides pour conserver le mot de passe actuel."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2805
+#: includes/class-aod-cd-dashboard.php:2810
 msgid "Nouveau mot de passe"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2809
+#: includes/class-aod-cd-dashboard.php:2814
 msgid "Confirmer"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2837
+#: includes/class-aod-cd-dashboard.php:2842
 msgid "Zone de danger"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2838
+#: includes/class-aod-cd-dashboard.php:2843
 msgid "Réinitialiser la boutique supprime définitivement TOUS les produits (avec leurs photos) et TOUTES les commandes, puis remet le compteur des numéros de commande à #1. Les pages, réglages et votre compte ne sont pas touchés. Cette action est irréversible."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2842
+#: includes/class-aod-cd-dashboard.php:2847
 msgid "Pour confirmer, recopiez exactement la phrase ci-dessous :"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2847
+#: includes/class-aod-cd-dashboard.php:2852
 msgid "Réinitialiser la boutique"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2864
+#: includes/class-aod-cd-dashboard.php:2869
 msgid "Session expirée, reconnectez-vous."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2887
+#: includes/class-aod-cd-dashboard.php:2892
 msgid "Cette adresse e-mail est déjà utilisée par un autre compte."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2894
+#: includes/class-aod-cd-dashboard.php:2899
 msgid "Les deux mots de passe ne correspondent pas."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2914
+#: includes/class-aod-cd-dashboard.php:2919
 msgid "Compte mis à jour."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:2935
+#: includes/class-aod-cd-dashboard.php:2940
 msgid "La phrase de confirmation ne correspond pas. Réinitialisation annulée."
 msgstr ""
 
 #. translators: 1: nb produits, 2: nb images, 3: nb commandes.
-#: includes/class-aod-cd-dashboard.php:2963
+#: includes/class-aod-cd-dashboard.php:2968
 #, php-format
 msgid "Boutique réinitialisée : %1$d produit(s), %2$d image(s) et %3$d commande(s) supprimés. La prochaine commande portera le n° #1."
 msgstr ""
 
 #. translators: %d: nb de prospects (leads) supprimés.
-#: includes/class-aod-cd-dashboard.php:2971
+#: includes/class-aod-cd-dashboard.php:2976
 #, php-format
 msgid "%d prospect(s) du formulaire également supprimés."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3090
+#: includes/class-aod-cd-dashboard.php:3095
 msgid "Cette section arrive bientôt."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3109
-#: includes/class-aod-cd-dashboard.php:3202
-#: includes/class-aod-cd-dashboard.php:3227
-#: includes/class-aod-cd-dashboard.php:3253
+#: includes/class-aod-cd-dashboard.php:3114
+#: includes/class-aod-cd-dashboard.php:3207
+#: includes/class-aod-cd-dashboard.php:3232
+#: includes/class-aod-cd-dashboard.php:3258
 msgid "Commande introuvable."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3112
+#: includes/class-aod-cd-dashboard.php:3117
 msgid "Statut invalide."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3115
+#: includes/class-aod-cd-dashboard.php:3120
 msgid "Statut modifié depuis l’espace de gestion."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3122
+#: includes/class-aod-cd-dashboard.php:3127
 msgid "Statut mis à jour."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3142
+#: includes/class-aod-cd-dashboard.php:3147
 msgid "Aucune commande sélectionnée."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3162
+#: includes/class-aod-cd-dashboard.php:3167
 msgid "Aucune commande n’a pu être supprimée."
 msgstr ""
 
 #. translators: %d: nombre de commandes supprimées.
-#: includes/class-aod-cd-dashboard.php:3167
+#: includes/class-aod-cd-dashboard.php:3172
 #, php-format
 msgid "%d commande supprimée."
 msgid_plural "%d commandes supprimées."
@@ -1466,108 +1470,108 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: nombre de commandes non supprimées.
-#: includes/class-aod-cd-dashboard.php:3173
+#: includes/class-aod-cd-dashboard.php:3178
 #, php-format
 msgid "%d commande n’a pas pu être supprimée."
 msgid_plural "%d commandes n’ont pas pu être supprimées."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-aod-cd-dashboard.php:3197
+#: includes/class-aod-cd-dashboard.php:3202
 msgid "La note est vide."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3210
+#: includes/class-aod-cd-dashboard.php:3215
 msgid "Note ajoutée."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3235
-#: includes/class-aod-cd-dashboard.php:3433
+#: includes/class-aod-cd-dashboard.php:3240
+#: includes/class-aod-cd-dashboard.php:3438
 #, php-format
 msgid "Commande #%s"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3264
+#: includes/class-aod-cd-dashboard.php:3269
 msgid "Le téléphone est obligatoire."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3273
+#: includes/class-aod-cd-dashboard.php:3278
 msgid "Wilaya invalide."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3276
+#: includes/class-aod-cd-dashboard.php:3281
 msgid "Commune invalide pour cette wilaya."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3377
+#: includes/class-aod-cd-dashboard.php:3382
 msgid "Une commande doit contenir au moins un article."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3420
+#: includes/class-aod-cd-dashboard.php:3425
 msgid "Infos client / livraison et articles modifiés depuis l’espace de gestion."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3421
+#: includes/class-aod-cd-dashboard.php:3426
 msgid "Infos client / livraison modifiées depuis l’espace de gestion."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3432
+#: includes/class-aod-cd-dashboard.php:3437
 msgid "Commande mise à jour."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3485
+#: includes/class-aod-cd-dashboard.php:3490
 msgid "Nom du client"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3491
+#: includes/class-aod-cd-dashboard.php:3496
 msgid "Type de livraison"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3493
-#: includes/class-aod-cd-dashboard.php:3646
+#: includes/class-aod-cd-dashboard.php:3498
+#: includes/class-aod-cd-dashboard.php:3651
 msgid "À domicile"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3494
-#: includes/class-aod-cd-dashboard.php:3646
+#: includes/class-aod-cd-dashboard.php:3499
+#: includes/class-aod-cd-dashboard.php:3651
 msgid "Stop-desk (bureau)"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3498
+#: includes/class-aod-cd-dashboard.php:3503
 msgid "Adresse"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3506
-#: includes/class-aod-cd-dashboard.php:3519
+#: includes/class-aod-cd-dashboard.php:3511
+#: includes/class-aod-cd-dashboard.php:3524
 msgid "—"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3545
+#: includes/class-aod-cd-dashboard.php:3550
 msgid "Retirer"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3575
+#: includes/class-aod-cd-dashboard.php:3580
 msgid "Le total est recalculé automatiquement (prix de base + suppléments des variantes)."
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3665
+#: includes/class-aod-cd-dashboard.php:3670
 msgid "Article"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3665
+#: includes/class-aod-cd-dashboard.php:3670
 msgid "Qté"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3694
-#: includes/class-aod-cd-dashboard.php:3706
+#: includes/class-aod-cd-dashboard.php:3699
+#: includes/class-aod-cd-dashboard.php:3711
 msgid "Notes & historique"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3698
+#: includes/class-aod-cd-dashboard.php:3703
 msgid "Système"
 msgstr ""
 
-#: includes/class-aod-cd-dashboard.php:3707
+#: includes/class-aod-cd-dashboard.php:3712
 msgid "Aucune note pour le moment."
 msgstr ""
 
