@@ -5,6 +5,9 @@ library/themes/*.zip
 library/plugins/*.zip
 *.log
 
+# Artefacts de déploiement (zip du site + dump DB avec données clients) — locaux uniquement
+deploy/
+
 # Kit de template Elementor (référence visuelle, non livrable)
 Laste - Real Estate & Property Elementor Template Kit/
 
