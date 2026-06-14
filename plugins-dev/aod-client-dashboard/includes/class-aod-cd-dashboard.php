@@ -231,6 +231,9 @@ class AOD_CD_Dashboard {
 				<span></span><span></span><span></span>
 			</button>
 		</div>
+		<div class="aod-cd-side-head">
+			<a class="aod-cd-view" href="<?php echo esc_url( home_url( '/' ) ); ?>" target="_blank" rel="noopener">🌐 <?php esc_html_e( 'Voir la boutique', 'aod-client-dashboard' ); ?></a>
+		</div>
 		<nav class="aod-cd-nav" id="aod-cd-nav">
 			<?php foreach ( $this->sections as $slug => $meta ) :
 				$active = ( $slug === $section ) ? ' is-active' : '';
@@ -242,7 +245,6 @@ class AOD_CD_Dashboard {
 			<?php endforeach; ?>
 		</nav>
 		<div class="aod-cd-side-foot">
-			<a class="aod-cd-view" href="<?php echo esc_url( home_url( '/' ) ); ?>" target="_blank" rel="noopener">🌐 <?php esc_html_e( 'Voir la boutique', 'aod-client-dashboard' ); ?></a>
 			<a class="aod-cd-logout" href="<?php echo esc_url( wp_logout_url( $base ) ); ?>"><?php esc_html_e( 'Déconnexion', 'aod-client-dashboard' ); ?></a>
 		</div>
 	</aside>
