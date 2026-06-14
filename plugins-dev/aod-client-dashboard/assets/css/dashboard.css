@@ -733,10 +733,13 @@ body.aod-cd{
 
 /* ---- Modale : plein écran confortable sur mobile ---- */
 @media(max-width:560px){
-	.aod-cd-modal{padding:0;align-items:stretch}
+	/* align-items reste à flex-start (hérité) : en stretch, un contenu plus haut que
+	   l'écran déborde sous la boîte (fond blanc coupé) → les notes s'affichaient hors fenêtre. */
+	.aod-cd-modal{padding:0}
 	.aod-cd-modal-box{max-width:none;min-height:100%;border-radius:0;animation:none}
 	.aod-cd-modal-head{position:sticky;top:0;background:#fff;z-index:2;padding:16px 18px}
-	.aod-cd-modal-body{padding:18px}
+	/* marge basse confortable (+ encoche/safe-area) pour ne pas coller au bord */
+	.aod-cd-modal-body{padding:18px 18px calc(28px + env(safe-area-inset-bottom))}
 	.aod-cd-od-head{flex-wrap:wrap}
 	.aod-cd-od-edit-toggle{margin-inline-start:auto}
 }
