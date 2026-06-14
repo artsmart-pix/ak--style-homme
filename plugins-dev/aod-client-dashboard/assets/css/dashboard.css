@@ -152,6 +152,55 @@ body.aod-cd{
 .aod-cd-badge{background:rgba(24,24,24,.08);border-radius:30px;padding:1px 9px;font-size:12px;font-weight:700}
 .aod-cd-tab.is-active .aod-cd-badge{background:var(--cd-yellow);color:var(--cd-ink)}
 
+/* ---- Filtre statut en menu déroulant (page Commandes) ---- */
+.aod-cd-filterdd{position:relative;display:inline-block;margin-bottom:20px}
+.aod-cd-filterdd-btn{
+	display:inline-flex;align-items:center;gap:10px;padding:10px 16px;
+	background:var(--cd-ink);color:#fff;border:1px solid var(--cd-ink);
+	border-radius:var(--cd-radius-sm);font-weight:700;font-size:13.5px;
+	cursor:pointer;transition:.15s;line-height:1.1;
+}
+.aod-cd-filterdd-btn:hover{background:#000}
+.aod-cd-filterdd-btn:focus-visible{outline:2px solid var(--cd-yellow);outline-offset:2px}
+.aod-cd-filterdd-funnel{width:16px;height:16px;flex:0 0 auto;color:var(--cd-yellow)}
+.aod-cd-filterdd-caret{width:16px;height:16px;flex:0 0 auto;margin-inline-start:2px;opacity:.85;transition:transform .18s}
+.aod-cd-filterdd-btn[aria-expanded="true"] .aod-cd-filterdd-caret{transform:rotate(180deg)}
+.aod-cd-filterdd-label{display:flex;flex-direction:column;align-items:flex-start;text-align:start;gap:1px}
+.aod-cd-filterdd-hint{font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;opacity:.55}
+.aod-cd-filterdd-text{font-size:13.5px;font-weight:700}
+.aod-cd-filterdd-btn .aod-cd-badge{background:var(--cd-yellow);color:var(--cd-ink);margin-inline-start:2px}
+
+.aod-cd-filterdd-menu{
+	position:absolute;z-index:40;top:calc(100% + 6px);inset-inline-start:0;
+	min-width:max(240px,100%);background:#fff;border:1px solid var(--cd-line);
+	border-radius:var(--cd-radius);box-shadow:0 14px 34px rgba(0,0,0,.14);
+	padding:6px;display:flex;flex-direction:column;gap:2px;
+}
+.aod-cd-filterdd-menu[hidden]{display:none}
+.aod-cd-filterdd-menu:not([hidden]){animation:aod-cd-dd-in .14s ease}
+@keyframes aod-cd-dd-in{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.aod-cd-filterdd-opt{
+	display:flex;align-items:center;justify-content:space-between;gap:14px;
+	padding:11px 13px;border-radius:var(--cd-radius-sm);color:var(--cd-ink);
+	text-decoration:none;font-weight:600;font-size:13.5px;transition:.12s;
+	position:relative;
+}
+.aod-cd-filterdd-opt:hover{background:#fafafa}
+.aod-cd-filterdd-opt.is-active{background:var(--cd-ink);color:#fff}
+.aod-cd-filterdd-opt.is-active::before{
+	content:"";position:absolute;inset-inline-start:0;top:7px;bottom:7px;
+	width:3px;border-radius:3px;background:var(--cd-yellow);
+}
+.aod-cd-filterdd-opt .aod-cd-badge{background:rgba(24,24,24,.08);color:var(--cd-ink)}
+.aod-cd-filterdd-opt.is-active .aod-cd-badge{background:var(--cd-yellow);color:var(--cd-ink)}
+
+@media(max-width:560px){
+	.aod-cd-filterdd{display:block}
+	.aod-cd-filterdd-btn{width:100%;justify-content:flex-start}
+	.aod-cd-filterdd-btn .aod-cd-badge{margin-inline-start:auto}
+	.aod-cd-filterdd-menu{inset-inline:0}
+}
+
 /* ---- Tableaux ---- */
 .aod-cd-tablewrap{background:#fff;border:1px solid var(--cd-line);border-radius:var(--cd-radius);overflow:hidden;overflow-x:auto}
 .aod-cd-table{width:100%;border-collapse:collapse;min-width:760px}
@@ -192,13 +241,92 @@ body.aod-cd{
 .aod-cd-prod img{border-radius:var(--cd-radius-sm);display:block}
 
 /* ---- Sélecteur de statut ---- */
-.aod-cd-status{
-	padding:8px 11px;border:1px solid var(--cd-line);border-radius:var(--cd-radius-sm);background:#fff;
-	font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;max-width:170px;transition:.15s;
+/* Sélecteur de statut : menu personnalisé (le <select> natif s'ouvrait hors champ). */
+.aod-cd-statussel{position:relative;display:inline-block;max-width:185px}
+.aod-cd-statussel-btn{
+	display:inline-flex;align-items:center;gap:8px;width:100%;padding:8px 11px;
+	border:1px solid var(--cd-line);border-radius:var(--cd-radius-sm);background:#fff;
+	font-family:inherit;font-size:13px;font-weight:600;color:var(--cd-ink);
+	cursor:pointer;transition:.15s;text-align:start;line-height:1.2;
 }
-.aod-cd-status:hover{border-color:var(--cd-ink)}
-.aod-cd-status.is-saving{opacity:.5}
-.aod-cd-status.is-ok{border-color:var(--cd-ok);box-shadow:0 0 0 2px rgba(26,127,55,.14)}
+.aod-cd-statussel-btn:hover{border-color:var(--cd-ink)}
+.aod-cd-statussel-btn:focus-visible{outline:2px solid var(--cd-yellow);outline-offset:1px}
+.aod-cd-statussel.is-open .aod-cd-statussel-btn{border-color:var(--cd-ink);box-shadow:0 0 0 2px rgba(24,24,24,.08)}
+.aod-cd-statussel.is-saving{opacity:.55;pointer-events:none}
+.aod-cd-statussel.is-ok .aod-cd-statussel-btn{border-color:var(--cd-ok);box-shadow:0 0 0 2px rgba(26,127,55,.16)}
+.aod-cd-statussel-text{flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.aod-cd-statussel-caret{width:15px;height:15px;flex:0 0 auto;opacity:.6;transition:transform .18s}
+.aod-cd-statussel.is-open .aod-cd-statussel-caret{transform:rotate(180deg)}
+.aod-cd-statussel-dot{
+	width:9px;height:9px;border-radius:50%;flex:0 0 auto;background:var(--dot,#9ca3af);
+	box-shadow:0 0 0 3px color-mix(in srgb,var(--dot,#9ca3af) 18%,transparent);
+}
+
+.aod-cd-statussel-menu{
+	position:fixed;z-index:1000;min-width:200px;padding:6px;background:#fff;
+	border:1px solid var(--cd-line);border-radius:var(--cd-radius);
+	box-shadow:0 16px 40px rgba(24,24,24,.18);
+	display:flex;flex-direction:column;gap:2px;max-height:320px;overflow:auto;
+}
+.aod-cd-statussel-menu[hidden]{display:none}
+.aod-cd-statussel-menu:not([hidden]){animation:aod-cd-dd-in .14s ease}
+.aod-cd-statussel-opt{
+	display:flex;align-items:center;gap:9px;padding:9px 10px;width:100%;border:0;
+	border-radius:var(--cd-radius-sm);background:none;font-family:inherit;
+	font-size:13.5px;font-weight:600;color:var(--cd-ink);cursor:pointer;text-align:start;transition:.12s;
+}
+.aod-cd-statussel-opt:hover{background:#fafafa}
+.aod-cd-statussel-opt.is-active{background:var(--cd-bg)}
+.aod-cd-statussel-check{width:16px;height:16px;flex:0 0 auto;color:var(--cd-ink);opacity:0}
+.aod-cd-statussel-opt.is-active .aod-cd-statussel-check{opacity:1}
+
+/* Pastille de couleur par statut */
+.aod-cd-statussel [data-status="pending"]{--dot:#f59e0b}
+.aod-cd-statussel [data-status="processing"]{--dot:#3b82f6}
+.aod-cd-statussel [data-status="aod-confirmed"]{--dot:#16a34a}
+.aod-cd-statussel [data-status="on-hold"]{--dot:#9ca3af}
+.aod-cd-statussel [data-status="completed"]{--dot:#15803d}
+.aod-cd-statussel [data-status="cancelled"]{--dot:#ef4444}
+.aod-cd-statussel [data-status="refunded"]{--dot:#a855f7}
+.aod-cd-statussel [data-status="failed"]{--dot:#dc2626}
+.aod-cd-statussel [data-status="checkout-draft"]{--dot:#9ca3af}
+
+/* Select personnalisé générique : remplace le <select> natif (qui s'ouvrait
+   hors champ sur mobile). Le natif reste caché dans le DOM pour la soumission. */
+.aod-cd-csel{position:relative;display:block;width:100%}
+.aod-cd-csel select{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;clip:rect(0 0 0 0);overflow:hidden}
+.aod-cd-csel-btn{
+	display:flex;align-items:center;gap:8px;width:100%;padding:11px 13px;
+	border:1px solid var(--cd-line);border-radius:var(--cd-radius-sm);background:#fff;
+	font-family:inherit;font-size:14px;font-weight:600;color:var(--cd-ink);
+	cursor:pointer;transition:.15s;text-align:start;line-height:1.2;
+}
+.aod-cd-csel-btn:hover{border-color:var(--cd-ink)}
+.aod-cd-csel-btn:focus-visible{outline:none;border-color:var(--cd-ink);box-shadow:var(--cd-focus)}
+.aod-cd-csel.is-open .aod-cd-csel-btn{border-color:var(--cd-ink);box-shadow:0 0 0 2px rgba(24,24,24,.08)}
+.aod-cd-csel-text{flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.aod-cd-csel-caret{
+	flex:0 0 auto;width:8px;height:8px;margin-top:-3px;opacity:.55;
+	border-right:2px solid currentColor;border-bottom:2px solid currentColor;
+	transform:rotate(45deg);transition:transform .18s,margin-top .18s;
+}
+.aod-cd-csel.is-open .aod-cd-csel-caret{transform:rotate(225deg);margin-top:2px}
+
+.aod-cd-csel-menu{
+	position:fixed;z-index:1000;min-width:200px;padding:6px;background:#fff;
+	border:1px solid var(--cd-line);border-radius:var(--cd-radius);
+	box-shadow:0 16px 40px rgba(24,24,24,.18);
+	display:flex;flex-direction:column;gap:2px;max-height:320px;overflow:auto;
+}
+.aod-cd-csel-menu[hidden]{display:none}
+.aod-cd-csel-menu:not([hidden]){animation:aod-cd-dd-in .14s ease}
+.aod-cd-csel-opt{
+	display:flex;align-items:center;gap:9px;padding:10px 11px;width:100%;border:0;
+	border-radius:var(--cd-radius-sm);background:none;font-family:inherit;
+	font-size:14px;font-weight:600;color:var(--cd-ink);cursor:pointer;text-align:start;transition:.12s;
+}
+.aod-cd-csel-opt:hover{background:#fafafa}
+.aod-cd-csel-opt.is-active{background:var(--cd-bg)}
 
 /* ---- Cartes stats ---- */
 .aod-cd-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
@@ -552,7 +680,7 @@ body.aod-cd{
 	.aod-cd-table--cards .aod-cd-articles-list{font-size:13.5px}
 
 	/* Sélecteur de statut : pleine largeur du côté valeur. */
-	.aod-cd-table--cards .aod-cd-status{max-width:none;flex:1 1 auto;margin-inline-start:auto}
+	.aod-cd-table--cards .aod-cd-statussel{max-width:none;flex:0 1 auto;margin-inline-start:auto}
 
 	/* Case de sélection : flotte en haut à droite, par-dessus l'en-tête de carte. */
 	.aod-cd-table--cards .aod-cd-col-check{

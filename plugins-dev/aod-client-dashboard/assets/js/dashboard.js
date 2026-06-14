@@ -19,47 +19,110 @@
 
 	/* Changement de statut de commande (AJAX) */
 	function bindStatus() {
-		document.querySelectorAll( '.aod-cd-status' ).forEach( function ( sel ) {
-			sel.dataset.prev = sel.value;
-			sel.addEventListener( 'change', function () {
-				var orderId = sel.dataset.order;
-				var status  = sel.value;
-				sel.classList.add( 'is-saving' );
-				sel.disabled = true;
+		document.querySelectorAll( '.aod-cd-statussel' ).forEach( function ( widget ) {
+			var btn  = widget.querySelector( '.aod-cd-statussel-btn' );
+			var menu = widget.querySelector( '.aod-cd-statussel-menu' );
+			if ( ! btn || ! menu ) { return; }
+			var txt = btn.querySelector( '.aod-cd-statussel-text' );
 
-				var body = new URLSearchParams();
-				body.append( 'action', 'aod_cd_order_status' );
-				body.append( 'nonce', CD.nonce );
-				body.append( 'order_id', orderId );
-				body.append( 'status', status );
+			// Menu en position:fixed : on le place sous le bouton (ou au-dessus
+			// s'il dépasse en bas), ce qui évite tout rognage par l'overflow du
+			// tableau et le replace toujours au bon endroit.
+			function place() {
+				var r  = btn.getBoundingClientRect();
+				var mh = menu.offsetHeight;
+				var mw = menu.offsetWidth;
+				var vw = window.innerWidth;
+				var vh = window.innerHeight;
+				var left = Math.max( 8, Math.min( r.left, vw - mw - 8 ) );
+				var top  = r.bottom + 6;
+				if ( top + mh > vh - 8 && r.top - 6 - mh > 8 ) { top = r.top - 6 - mh; }
+				menu.style.left     = left + 'px';
+				menu.style.top      = top + 'px';
+				menu.style.minWidth = r.width + 'px';
+			}
 
-				fetch( CD.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body } )
-					.then( function ( r ) { return r.json(); } )
-					.then( function ( res ) {
-						sel.classList.remove( 'is-saving' );
-						sel.disabled = false;
-						if ( res && res.success ) {
-							sel.dataset.prev = status;
-							sel.classList.add( 'is-ok' );
-							setTimeout( function () { sel.classList.remove( 'is-ok' ); }, 1500 );
-							var msg = res.data.message || 'OK';
-							if ( res.data.tracking ) {
-								msg += ' — ' + ( CD.i18nShipped || 'Colis créé' ) + ' : ' + res.data.tracking;
-							}
-							toast( msg, false );
-						} else {
-							sel.value = sel.dataset.prev;
-							toast( ( res && res.data && res.data.message ) || 'Erreur.', true );
-						}
-					} )
-					.catch( function () {
-						sel.classList.remove( 'is-saving' );
-						sel.disabled = false;
-						sel.value = sel.dataset.prev;
-						toast( netErr, true );
-					} );
+			function setOpen( on ) {
+				if ( on ) {
+					menu.hidden = false;
+					place();
+					widget.classList.add( 'is-open' );
+				} else {
+					menu.hidden = true;
+					widget.classList.remove( 'is-open' );
+				}
+				btn.setAttribute( 'aria-expanded', on ? 'true' : 'false' );
+			}
+
+			btn.addEventListener( 'click', function ( e ) {
+				e.preventDefault();
+				setOpen( menu.hidden );
 			} );
+
+			menu.addEventListener( 'click', function ( e ) {
+				var opt = e.target.closest( '.aod-cd-statussel-opt' );
+				if ( ! opt ) { return; }
+				e.preventDefault();
+				setOpen( false );
+				if ( opt.dataset.value !== widget.dataset.value ) {
+					applyStatus( widget, btn, txt, opt );
+				}
+			} );
+
+			document.addEventListener( 'click', function ( e ) {
+				if ( ! menu.hidden && ! e.target.closest( '.aod-cd-statussel' ) ) { setOpen( false ); }
+			} );
+			document.addEventListener( 'keydown', function ( e ) {
+				if ( 'Escape' === e.key && ! menu.hidden ) { setOpen( false ); btn.focus(); }
+			} );
+			// Le menu est en position:fixed : on le referme si la page bouge.
+			window.addEventListener( 'resize', function () { if ( ! menu.hidden ) { setOpen( false ); } } );
+			window.addEventListener( 'scroll', function () { if ( ! menu.hidden ) { setOpen( false ); } }, true );
 		} );
+	}
+
+	/* Applique un changement de statut (AJAX) et met à jour l'affichage. */
+	function applyStatus( widget, btn, txt, opt ) {
+		var status   = opt.dataset.value;
+		var newLabel = opt.querySelector( '.aod-cd-statussel-text' ).textContent;
+		var newSlug  = opt.dataset.status;
+
+		widget.classList.add( 'is-saving' );
+
+		var body = new URLSearchParams();
+		body.append( 'action', 'aod_cd_order_status' );
+		body.append( 'nonce', CD.nonce );
+		body.append( 'order_id', widget.dataset.order );
+		body.append( 'status', status );
+
+		fetch( CD.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body } )
+			.then( function ( r ) { return r.json(); } )
+			.then( function ( res ) {
+				widget.classList.remove( 'is-saving' );
+				if ( res && res.success ) {
+					widget.dataset.value = status;
+					txt.textContent      = newLabel;
+					btn.dataset.status   = newSlug;
+					widget.querySelectorAll( '.aod-cd-statussel-opt' ).forEach( function ( o ) {
+						var on = ( o.dataset.value === status );
+						o.classList.toggle( 'is-active', on );
+						o.setAttribute( 'aria-selected', on ? 'true' : 'false' );
+					} );
+					widget.classList.add( 'is-ok' );
+					setTimeout( function () { widget.classList.remove( 'is-ok' ); }, 1500 );
+					var msg = res.data.message || 'OK';
+					if ( res.data.tracking ) {
+						msg += ' — ' + ( CD.i18nShipped || 'Colis créé' ) + ' : ' + res.data.tracking;
+					}
+					toast( msg, false );
+				} else {
+					toast( ( res && res.data && res.data.message ) || 'Erreur.', true );
+				}
+			} )
+			.catch( function () {
+				widget.classList.remove( 'is-saving' );
+				toast( netErr, true );
+			} );
 	}
 
 	/* Produits : aperçu image, toggle stock, enregistrement, suppression */
@@ -701,6 +764,110 @@
 		} );
 	}
 
+	/* Selects personnalisés : remplace le <select> natif (qui s'ouvrait hors
+	   champ sur mobile) par un menu en position:fixed clampé au viewport.
+	   Le <select> d'origine reste dans le DOM (caché) pour la soumission. */
+	function bindSelects() {
+		document.querySelectorAll( 'select[data-aod-select]' ).forEach( function ( sel ) {
+			if ( sel.dataset.aodSelectBound ) { return; }
+			sel.dataset.aodSelectBound = '1';
+
+			var wrap = document.createElement( 'div' );
+			wrap.className = 'aod-cd-csel';
+			sel.parentNode.insertBefore( wrap, sel );
+			wrap.appendChild( sel );
+
+			var btn = document.createElement( 'button' );
+			btn.type = 'button';
+			btn.className = 'aod-cd-csel-btn';
+			btn.setAttribute( 'aria-haspopup', 'listbox' );
+			btn.setAttribute( 'aria-expanded', 'false' );
+			var txt = document.createElement( 'span' );
+			txt.className = 'aod-cd-csel-text';
+			var caret = document.createElement( 'span' );
+			caret.className = 'aod-cd-csel-caret';
+			caret.setAttribute( 'aria-hidden', 'true' );
+			btn.appendChild( txt );
+			btn.appendChild( caret );
+			wrap.appendChild( btn );
+
+			// Le menu est attaché au <body> : ainsi aucun overflow parent ne le rogne.
+			var menu = document.createElement( 'div' );
+			menu.className = 'aod-cd-csel-menu';
+			menu.setAttribute( 'role', 'listbox' );
+			menu.hidden = true;
+			document.body.appendChild( menu );
+
+			function syncText() {
+				var o = sel.options[ sel.selectedIndex ];
+				txt.textContent = o ? o.textContent.trim() : '';
+			}
+			function buildMenu() {
+				menu.innerHTML = '';
+				Array.prototype.forEach.call( sel.options, function ( o ) {
+					var opt = document.createElement( 'button' );
+					opt.type = 'button';
+					opt.className = 'aod-cd-csel-opt' + ( o.selected ? ' is-active' : '' );
+					opt.textContent = o.textContent.trim();
+					opt.dataset.value = o.value;
+					menu.appendChild( opt );
+				} );
+			}
+			function place() {
+				var r  = btn.getBoundingClientRect();
+				var mh = menu.offsetHeight;
+				var mw = menu.offsetWidth;
+				var vw = window.innerWidth;
+				var vh = window.innerHeight;
+				var left = Math.max( 8, Math.min( r.left, vw - mw - 8 ) );
+				var top  = r.bottom + 6;
+				if ( top + mh > vh - 8 && r.top - 6 - mh > 8 ) { top = r.top - 6 - mh; }
+				menu.style.left     = left + 'px';
+				menu.style.top      = top + 'px';
+				menu.style.minWidth = r.width + 'px';
+			}
+			function setOpen( on ) {
+				if ( on ) {
+					buildMenu();
+					menu.hidden = false;
+					place();
+					wrap.classList.add( 'is-open' );
+				} else {
+					menu.hidden = true;
+					wrap.classList.remove( 'is-open' );
+				}
+				btn.setAttribute( 'aria-expanded', on ? 'true' : 'false' );
+			}
+
+			btn.addEventListener( 'click', function ( e ) {
+				e.preventDefault();
+				setOpen( menu.hidden );
+			} );
+			menu.addEventListener( 'click', function ( e ) {
+				var opt = e.target.closest( '.aod-cd-csel-opt' );
+				if ( ! opt ) { return; }
+				e.preventDefault();
+				sel.value = opt.dataset.value;
+				sel.dispatchEvent( new Event( 'change', { bubbles: true } ) );
+				syncText();
+				setOpen( false );
+				btn.focus();
+			} );
+			document.addEventListener( 'click', function ( e ) {
+				if ( menu.hidden ) { return; }
+				if ( e.target.closest( '.aod-cd-csel-menu' ) || btn.contains( e.target ) ) { return; }
+				setOpen( false );
+			} );
+			document.addEventListener( 'keydown', function ( e ) {
+				if ( 'Escape' === e.key && ! menu.hidden ) { setOpen( false ); btn.focus(); }
+			} );
+			window.addEventListener( 'resize', function () { if ( ! menu.hidden ) { setOpen( false ); } } );
+			window.addEventListener( 'scroll', function () { if ( ! menu.hidden ) { setOpen( false ); } }, true );
+
+			syncText();
+		} );
+	}
+
 	/* Formulaires de réglages génériques (Livraison, Pixels, WhatsApp…) */
 	function bindSettingsForms() {
 		document.querySelectorAll( '.aod-cd-settings-form' ).forEach( function ( form ) {
@@ -1329,8 +1496,36 @@
 		} );
 	}
 
+	/* Filtre de statut (page Commandes) regroupé dans un bouton déroulant. */
+	function bindFilterDropdown() {
+		document.querySelectorAll( '.aod-cd-filterdd' ).forEach( function ( dd ) {
+			var btn  = dd.querySelector( '.aod-cd-filterdd-btn' );
+			var menu = dd.querySelector( '.aod-cd-filterdd-menu' );
+			if ( ! btn || ! menu ) { return; }
+
+			function setOpen( on ) {
+				menu.hidden = ! on;
+				btn.setAttribute( 'aria-expanded', on ? 'true' : 'false' );
+			}
+
+			btn.addEventListener( 'click', function ( e ) {
+				e.preventDefault();
+				setOpen( menu.hidden );
+			} );
+
+			// Clic en dehors : on referme.
+			document.addEventListener( 'click', function ( e ) {
+				if ( ! menu.hidden && ! e.target.closest( '.aod-cd-filterdd' ) ) { setOpen( false ); }
+			} );
+			document.addEventListener( 'keydown', function ( e ) {
+				if ( 'Escape' === e.key && ! menu.hidden ) { setOpen( false ); btn.focus(); }
+			} );
+		} );
+	}
+
 	document.addEventListener( 'DOMContentLoaded', function () {
 		try { bindNavToggle(); } catch ( err ) { /* menu mobile */ }
+		try { bindFilterDropdown(); } catch ( err ) { /* filtre commandes */ }
 		bindStatus();
 		bindProducts();
 		try { bindCategories(); }   catch ( err ) { /* catégories */ }
@@ -1339,6 +1534,7 @@
 		try { bindGallery(); }      catch ( err ) { /* galerie produit */ }
 		try { bindColorPalette(); } catch ( err ) { /* palette */ }
 		try { bindCharts(); }       catch ( err ) { /* graphe stats */ }
+		try { bindSelects(); } catch ( err ) { /* selects custom */ }
 		bindSettingsForms();
 		bindShippingFree();
 		bindCarrierRows();

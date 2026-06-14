@@ -330,16 +330,39 @@ class AOD_CD_Dashboard {
 			'cancelled'    => __( 'Annulées', 'aod-client-dashboard' ),
 		);
 
-		echo '<div class="aod-cd-tabs">';
+		// Compteurs (calculés une seule fois, réutilisés par le bouton et le menu).
+		$counts = array();
 		foreach ( $tabs as $slug => $label ) {
-			$count  = $this->count_orders( $slug );
+			$counts[ $slug ] = (int) $this->count_orders( $slug );
+		}
+		$current_label = isset( $tabs[ $current ] ) ? $tabs[ $current ] : $tabs['all'];
+		$current_count = isset( $counts[ $current ] ) ? $counts[ $current ] : 0;
+
+		// Filtre par statut regroupé dans un bouton déroulant (un statut par ligne).
+		$funnel = '<svg class="aod-cd-filterdd-funnel" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16M7 12h10M10 19h4"/></svg>';
+		$caret  = '<svg class="aod-cd-filterdd-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+
+		echo '<div class="aod-cd-filterdd">';
+		printf(
+			'<button type="button" class="aod-cd-filterdd-btn" aria-haspopup="true" aria-expanded="false">'
+				. '%1$s<span class="aod-cd-filterdd-label"><span class="aod-cd-filterdd-hint">%2$s</span><span class="aod-cd-filterdd-text">%3$s</span></span>'
+				. '<span class="aod-cd-badge">%4$d</span>%5$s</button>',
+			$funnel, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG statique.
+			esc_html__( 'Filtrer', 'aod-client-dashboard' ),
+			esc_html( $current_label ),
+			$current_count,
+			$caret // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG statique.
+		);
+		echo '<div class="aod-cd-filterdd-menu" role="menu" hidden>';
+		foreach ( $tabs as $slug => $label ) {
 			$active = ( $slug === $current ) ? ' is-active' : '';
 			$url    = add_query_arg( 'statut', $slug, home_url( '/' . AOD_CD_SLUG . '/orders' ) );
 			printf(
-				'<a class="aod-cd-tab%s" href="%s">%s <span class="aod-cd-badge">%d</span></a>',
-				esc_attr( $active ), esc_url( $url ), esc_html( $label ), (int) $count
+				'<a class="aod-cd-filterdd-opt%s" href="%s" role="menuitem"><span class="aod-cd-filterdd-optlabel">%s</span><span class="aod-cd-badge">%d</span></a>',
+				esc_attr( $active ), esc_url( $url ), esc_html( $label ), (int) $counts[ $slug ]
 			);
 		}
+		echo '</div>';
 		echo '</div>';
 
 		$query_status = ( 'all' === $current )
@@ -538,20 +561,56 @@ class AOD_CD_Dashboard {
 		echo '<td data-label="' . esc_attr__( 'Total', 'aod-client-dashboard' ) . '">' . wp_kses_post( $order->get_formatted_order_total() ) . '</td>';
 		echo '<td class="aod-cd-cell-ship" data-label="' . esc_attr__( 'Suivi', 'aod-client-dashboard' ) . '">' . $this->ship_cell_html( $order ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput
 
-		echo '<td class="aod-cd-cell-status" data-label="' . esc_attr__( 'Statut', 'aod-client-dashboard' ) . '"><select class="aod-cd-status" data-order="' . esc_attr( $order->get_id() ) . '">';
-		foreach ( $status_options as $key => $label ) {
-			printf(
-				'<option value="%s"%s>%s</option>',
-				esc_attr( $key ), selected( $status, $key, false ), esc_html( $label )
-			);
-		}
-		echo '</select></td>';
+		echo '<td class="aod-cd-cell-status" data-label="' . esc_attr__( 'Statut', 'aod-client-dashboard' ) . '">';
+		echo $this->status_select_html( $order->get_id(), $status, $status_options ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- markup échappé dans la méthode.
+		echo '</td>';
 
 		$note_count = count( wc_get_order_notes( array( 'order_id' => $order->get_id() ) ) );
 		echo '<td class="aod-cd-cell-note" data-label="' . esc_attr__( 'Note', 'aod-client-dashboard' ) . '"><button type="button" class="aod-cd-btn aod-cd-btn-sm aod-cd-note-btn" data-order="' . esc_attr( $order->get_id() ) . '" title="' . esc_attr__( 'Ajouter une note', 'aod-client-dashboard' ) . '">📝'
 			. ( $note_count ? ' <span class="aod-cd-badge">' . (int) $note_count . '</span>' : '' )
 			. '</button></td>';
 		echo '</tr>';
+	}
+
+	/**
+	 * Sélecteur de statut de commande sous forme de menu personnalisé.
+	 *
+	 * Remplace le <select> natif : la liste d'options du select natif s'ouvrait
+	 * hors champ (rognée par l'overflow du tableau / mal placée selon le
+	 * navigateur). Le menu ci-dessous est positionné en JS (position:fixed) et
+	 * stylé aux couleurs de la boutique, avec une pastille de couleur par statut.
+	 *
+	 * @param int    $order_id
+	 * @param string $current  Statut courant préfixé wc- (ex. wc-aod-confirmed).
+	 * @param array  $options  [ 'wc-pending' => 'En attente', ... ]
+	 * @return string Markup échappé.
+	 */
+	protected function status_select_html( $order_id, $current, $options ) {
+		$current_label = isset( $options[ $current ] ) ? $options[ $current ] : $current;
+		$cur_slug      = preg_replace( '/^wc-/', '', $current );
+
+		$caret = '<svg class="aod-cd-statussel-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+		$check = '<svg class="aod-cd-statussel-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>';
+
+		$html  = '<div class="aod-cd-statussel" data-order="' . esc_attr( $order_id ) . '" data-value="' . esc_attr( $current ) . '">';
+		$html .= '<button type="button" class="aod-cd-statussel-btn" data-status="' . esc_attr( $cur_slug ) . '" aria-haspopup="listbox" aria-expanded="false">';
+		$html .= '<span class="aod-cd-statussel-dot"></span>';
+		$html .= '<span class="aod-cd-statussel-text">' . esc_html( $current_label ) . '</span>';
+		$html .= $caret . '</button>';
+		$html .= '<div class="aod-cd-statussel-menu" role="listbox" hidden>';
+		foreach ( $options as $key => $label ) {
+			$slug = preg_replace( '/^wc-/', '', $key );
+			$sel  = ( $key === $current );
+			$html .= '<button type="button" class="aod-cd-statussel-opt' . ( $sel ? ' is-active' : '' ) . '" role="option"'
+				. ' data-value="' . esc_attr( $key ) . '" data-status="' . esc_attr( $slug ) . '"'
+				. ' aria-selected="' . ( $sel ? 'true' : 'false' ) . '">';
+			$html .= '<span class="aod-cd-statussel-dot"></span>';
+			$html .= '<span class="aod-cd-statussel-text">' . esc_html( $label ) . '</span>';
+			$html .= $check . '</button>';
+		}
+		$html .= '</div></div>';
+
+		return $html;
 	}
 
 	/**
@@ -2495,16 +2554,16 @@ class AOD_CD_Dashboard {
 						<?php esc_html_e( 'Envoyer automatiquement au livreur quand une commande passe à « Confirmée »', 'aod-client-dashboard' ); ?>
 					</label>
 				</div>
-				<label class="aod-cd-field" style="max-width:320px">
+				<div class="aod-cd-field" style="max-width:320px">
 					<span class="aod-cd-label"><?php esc_html_e( 'Livreur par défaut (envoi auto)', 'aod-client-dashboard' ); ?></span>
-					<select name="auto[carrier]">
+					<select name="auto[carrier]" data-aod-select>
 						<?php foreach ( $carriers as $id => $c ) : ?>
 							<option value="<?php echo esc_attr( $id ); ?>" <?php selected( $auto['carrier'], $id ); ?>>
 								<?php echo esc_html( $c->label() ); ?><?php echo $c->is_configured() ? '' : ' ' . esc_html__( '(non configuré)', 'aod-client-dashboard' ); ?>
 							</option>
 						<?php endforeach; ?>
 					</select>
-				</label>
+				</div>
 
 				<div class="aod-cd-search">
 					<input type="search" class="aod-cd-search-input" data-filter="carriers" placeholder="<?php esc_attr_e( 'Rechercher un transporteur…', 'aod-client-dashboard' ); ?>" autocomplete="off">
