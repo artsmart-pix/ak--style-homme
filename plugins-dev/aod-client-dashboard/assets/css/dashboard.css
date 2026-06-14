@@ -524,8 +524,13 @@ body.aod-cd{
 .aod-cd-carrier-fields .form-table td{padding:8px 0;font-size:14px;background:none}
 .aod-cd-carrier-fields .form-table input[type=text],
 .aod-cd-carrier-fields .form-table input[type=number],
-.aod-cd-carrier-fields .form-table select{padding:9px 11px;border:1px solid var(--cd-line);border-radius:var(--cd-radius-sm);font-size:14px;font-family:inherit;background:#fff}
-.aod-cd-carrier-fields .form-table input.regular-text{width:100%;max-width:340px}
+.aod-cd-carrier-fields .form-table select{box-sizing:border-box;height:40px;padding:9px 11px;border:1px solid var(--cd-line);border-radius:var(--cd-radius-sm);font-size:14px;font-family:inherit;background:#fff;vertical-align:middle}
+.aod-cd-carrier-fields .form-table input[type=text]:focus,
+.aod-cd-carrier-fields .form-table input[type=number]:focus,
+.aod-cd-carrier-fields .form-table select:focus{outline:none;border-color:var(--cd-ink);box-shadow:var(--cd-focus)}
+/* champs de saisie & de sélection harmonisés : même largeur que les champs texte */
+.aod-cd-carrier-fields .form-table input.regular-text,
+.aod-cd-carrier-fields .form-table select{width:100%;max-width:340px}
 .aod-cd-carrier-fields .form-table .description{color:var(--cd-muted);font-size:12px;margin:4px 0 0}
 .aod-cd-carrier-fields .form-table label{margin-inline-end:10px}
 
