@@ -74,7 +74,15 @@ class AOD_Carrier_Ecotrack extends AOD_Carrier {
 			'weight'        => 1,
 			'fragile'       => 0,
 			'auto_validate' => 1,
+			// Plafond COD courant des transporteurs EcoTrack/CourierDZ (DZD).
+			// 0 = pas de limite. Ajustable selon le contrat du client.
+			'cod_max'       => 150000,
 		);
+	}
+
+	/** Plafond COD configuré pour cette instance EcoTrack (0 = aucun). */
+	public function cod_limit() {
+		return (int) $this->settings()['cod_max'];
 	}
 
 	/** Domaine effectif : le domaine fixe s'il existe, sinon celui saisi. */
@@ -125,6 +133,11 @@ class AOD_Carrier_Ecotrack extends AOD_Carrier {
 				<td><input type="number" min="1" step="1" name="<?php echo esc_attr( $p ); ?>[weight]" value="<?php echo esc_attr( $s['weight'] ); ?>" style="width:80px"></td>
 			</tr>
 			<tr>
+				<th scope="row"><?php esc_html_e( 'Plafond COD (DZD)', 'aod-cod-form' ); ?></th>
+				<td><input type="number" min="0" step="1000" name="<?php echo esc_attr( $p ); ?>[cod_max]" value="<?php echo esc_attr( $s['cod_max'] ); ?>" style="width:120px">
+				<p class="description"><?php esc_html_e( 'Montant maximum à encaisser accepté par le transporteur. Au-delà, l’envoi est bloqué avec un message clair (0 = aucune limite).', 'aod-cod-form' ); ?></p></td>
+			</tr>
+			<tr>
 				<th scope="row"><?php esc_html_e( 'Options', 'aod-cod-form' ); ?></th>
 				<td>
 					<label><input type="checkbox" name="<?php echo esc_attr( $p ); ?>[fragile]" value="1" <?php checked( 1, (int) $s['fragile'] ); ?>> <?php esc_html_e( 'Colis fragile par défaut', 'aod-cod-form' ); ?></label><br>
@@ -149,6 +162,7 @@ class AOD_Carrier_Ecotrack extends AOD_Carrier {
 			'weight'        => isset( $input['weight'] ) ? max( 1, absint( $input['weight'] ) ) : 1,
 			'fragile'       => empty( $input['fragile'] ) ? 0 : 1,
 			'auto_validate' => empty( $input['auto_validate'] ) ? 0 : 1,
+			'cod_max'       => isset( $input['cod_max'] ) ? absint( $input['cod_max'] ) : 150000,
 		);
 	}
 
@@ -325,6 +339,12 @@ class AOD_Carrier_Ecotrack extends AOD_Carrier {
 		$wilaya = (int) $order->get_meta( '_aod_wilaya_code' );
 		if ( ! $wilaya ) {
 			return new WP_Error( 'aod_ecotrack_no_wilaya', __( 'Wilaya de la commande manquante.', 'aod-cod-form' ) );
+		}
+
+		// Garde-fou montant : message clair avant l'appel API si le COD dépasse le plafond.
+		$over = $this->check_cod_limit( $order );
+		if ( is_wp_error( $over ) ) {
+			return $over;
 		}
 
 		// Stop-desk demandé mais la commune n'a pas de point relais EcoTrack :

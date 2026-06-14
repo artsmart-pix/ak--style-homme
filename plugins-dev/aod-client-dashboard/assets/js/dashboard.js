@@ -110,11 +110,33 @@
 					} );
 					widget.classList.add( 'is-ok' );
 					setTimeout( function () { widget.classList.remove( 'is-ok' ); }, 1500 );
-					var msg = res.data.message || 'OK';
-					if ( res.data.tracking ) {
-						msg += ' — ' + ( CD.i18nShipped || 'Colis créé' ) + ' : ' + res.data.tracking;
+					// Met à jour l'icône camion de la colonne « Suivi » en direct
+					// (gris → vert dès que l'envoi auto a réussi), sans recharger.
+					if ( typeof res.data.ship_cell === 'string' ) {
+						var row  = widget.closest( 'tr' );
+						var cell = row && row.querySelector( '.aod-cd-cell-ship' );
+						if ( cell ) {
+							// Conserve l'attribut data-label (vue cartes mobile).
+							var label = cell.getAttribute( 'data-label' );
+							cell.innerHTML = res.data.ship_cell;
+							if ( label !== null ) { cell.setAttribute( 'data-label', label ); }
+							cell.classList.add( 'is-ship-updated' );
+							setTimeout( function () { cell.classList.remove( 'is-ship-updated' ); }, 1500 );
+						}
 					}
-					toast( msg, false );
+					// Si le passage à « Confirmée » a tenté un envoi au livreur, on
+					// affiche son résultat (vert = colis créé, rouge = échec / non envoyé)
+					// pour que le gérant sache toujours si le colis est bien parti.
+					if ( res.data.ship_message ) {
+						var failed = res.data.ship_status && res.data.ship_status !== 'sent';
+						toast( res.data.ship_message, !!failed );
+					} else {
+						var msg = res.data.message || 'OK';
+						if ( res.data.tracking ) {
+							msg += ' — ' + ( CD.i18nShipped || 'Colis créé' ) + ' : ' + res.data.tracking;
+						}
+						toast( msg, false );
+					}
 				} else {
 					toast( ( res && res.data && res.data.message ) || 'Erreur.', true );
 				}

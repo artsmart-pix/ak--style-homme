@@ -210,6 +210,12 @@ class AOD_Shipping {
 			return;
 		}
 
+		// On n'expédie que les commandes COD (type de livraison renseigné : home/desk).
+		// Évite de marquer en erreur des commandes qui ne concernent pas ces livreurs.
+		if ( '' === (string) $order->get_meta( '_aod_delivery_type' ) ) {
+			return;
+		}
+
 		// Déjà expédié : on ne renvoie pas.
 		if ( $order->get_meta( AOD_Carrier::META_TRACKING ) ) {
 			return;
@@ -217,9 +223,21 @@ class AOD_Shipping {
 
 		$carrier = $this->carrier( $auto['carrier'] );
 		if ( ! $carrier || ! $carrier->is_configured() ) {
-			$order->add_order_note( __( 'Envoi automatique annulé : le livreur par défaut n’est pas configuré (Expédition).', 'aod-cod-form' ) );
-			$order->save();
-			return;
+			// Repli : si un seul transporteur est configuré, on l'utilise plutôt
+			// que d'abandonner (cas fréquent : défaut resté sur « EcoTrack »
+			// générique alors qu'un white-label précis a été connecté).
+			$configured = $this->configured();
+			if ( 1 === count( $configured ) ) {
+				$carrier = reset( $configured );
+			} else {
+				$msg = empty( $configured )
+					? __( 'Envoi automatique annulé : aucun transporteur n’est configuré (Livraison → Transporteurs).', 'aod-cod-form' )
+					: __( 'Envoi automatique annulé : le livreur par défaut n’est pas configuré. Choisissez-le dans Livraison → Transporteurs.', 'aod-cod-form' );
+				$order->update_meta_data( AOD_Carrier::META_ERROR, $msg );
+				$order->add_order_note( $msg );
+				$order->save();
+				return;
+			}
 		}
 
 		// Stop-desk sans centre choisi : on tente le premier centre disponible.

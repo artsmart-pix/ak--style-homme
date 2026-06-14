@@ -237,6 +237,9 @@ body.aod-cd{
 /* ---- Colonne Suivi (icône camion) ---- */
 .aod-cd-ship{display:inline-flex;align-items:center;gap:5px}
 .aod-cd-trackcode{font-size:11px}
+/* Pulse quand l'icône est mise à jour en direct (gris → vert après envoi auto). */
+.aod-cd-cell-ship.is-ship-updated .aod-truck{animation:aod-cd-ship-pulse .9s ease}
+@keyframes aod-cd-ship-pulse{0%{transform:scale(1)}30%{transform:scale(1.35)}100%{transform:scale(1)}}
 .aod-cd-prod{display:flex;align-items:center;gap:11px}
 .aod-cd-prod img{border-radius:var(--cd-radius-sm);display:block}
 

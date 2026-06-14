@@ -3183,13 +3183,46 @@ class AOD_CD_Dashboard {
 		$order->update_status( $status, __( 'Statut modifié depuis l’espace de gestion.', 'aod-client-dashboard' ) );
 
 		// Le passage à « Confirmée » déclenche l'envoi auto au livreur (AOD_Shipping).
+		// On recharge la commande pour lire le résultat de l'envoi (posé par le hook).
 		$order    = wc_get_order( $order_id );
 		$tracking = $order ? $order->get_meta( '_aod_ship_tracking' ) : '';
 
-		wp_send_json_success( array(
+		$resp = array(
 			'message'  => __( 'Statut mis à jour.', 'aod-client-dashboard' ),
 			'tracking' => $tracking,
-		) );
+			// Cellule « Suivi » re-rendue : le JS remplace l'icône camion en direct
+			// (gris→vert dès l'envoi auto réussi), sans recharger la page.
+			'ship_cell' => $order instanceof WC_Order ? $this->ship_cell_html( $order ) : '',
+		);
+
+		// Retour explicite sur l'envoi au transporteur quand on passe à « Confirmée »,
+		// pour une commande COD (type de livraison renseigné). Sans ce feedback, un
+		// échec d'envoi (livreur non configuré, API refusée…) passait inaperçu.
+		if (
+			$order instanceof WC_Order
+			&& class_exists( 'AOD_Shipping' )
+			&& AOD_Shipping::STATUS === $status
+			&& '' !== (string) $order->get_meta( '_aod_delivery_type' )
+		) {
+			$auto = AOD_Shipping::instance()->auto_settings();
+			if ( empty( $auto['enabled'] ) ) {
+				$resp['ship_status']  = 'disabled';
+				$resp['ship_message'] = __( 'Envoi automatique au livreur désactivé (Livraison → Transporteurs).', 'aod-client-dashboard' );
+			} elseif ( $tracking ) {
+				$resp['ship_status']  = 'sent';
+				/* translators: %s : numéro de suivi du colis. */
+				$resp['ship_message'] = sprintf( __( 'Colis créé chez le livreur ✓ Suivi : %s', 'aod-client-dashboard' ), $tracking );
+			} else {
+				$err = (string) $order->get_meta( '_aod_ship_error' );
+				$resp['ship_status']  = 'failed';
+				$resp['ship_message'] = '' !== $err
+					/* translators: %s : message d'erreur du transporteur. */
+					? sprintf( __( 'Envoi au livreur échoué : %s', 'aod-client-dashboard' ), $err )
+					: __( 'Le colis n’a pas pu être créé chez le livreur.', 'aod-client-dashboard' );
+			}
+		}
+
+		wp_send_json_success( $resp );
 	}
 
 	/**

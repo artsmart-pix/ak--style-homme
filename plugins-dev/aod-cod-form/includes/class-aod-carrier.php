@@ -62,6 +62,19 @@ abstract class AOD_Carrier {
 	}
 
 	/**
+	 * Plafond du montant COD (à encaisser) accepté par le livreur, en DZD.
+	 *
+	 * La plupart des transporteurs algériens refusent un colis dont le montant à
+	 * encaisser dépasse un certain seuil (souvent 150 000 DZD). 0 = aucune limite
+	 * connue (pas de contrôle).
+	 *
+	 * @return int
+	 */
+	public function cod_limit() {
+		return 0;
+	}
+
+	/**
 	 * Couleur de marque (pastille/icône). Surchargée par chaque livreur.
 	 *
 	 * @return string Code couleur hexadécimal (#RRGGBB).
@@ -220,5 +233,31 @@ abstract class AOD_Carrier {
 	/** La commande est-elle en stop-desk ? */
 	protected function is_stopdesk_order( $order ) {
 		return 'desk' === $order->get_meta( '_aod_delivery_type' );
+	}
+
+	/**
+	 * Garde-fou : vérifie que le montant COD ne dépasse pas le plafond du livreur,
+	 * AVANT tout appel réseau, pour renvoyer un message clair et actionnable plutôt
+	 * que l'erreur brute de l'API (« La valeur de montant ne peut être supérieure… »).
+	 *
+	 * @param WC_Order $order
+	 * @return WP_Error|null WP_Error si le plafond est dépassé, sinon null.
+	 */
+	protected function check_cod_limit( $order ) {
+		$limit = (int) $this->cod_limit();
+		if ( $limit <= 0 ) {
+			return null;
+		}
+		$amount = $this->order_total( $order );
+		if ( $amount <= $limit ) {
+			return null;
+		}
+		return new WP_Error( 'aod_cod_over_limit', sprintf(
+			/* translators: 1: montant de la commande, 2: plafond du livreur, 3: nom du livreur */
+			__( 'Montant trop élevé : %1$s DZD dépasse le plafond COD de %2$s DZD accepté par %3$s. Réduisez la commande, choisissez un autre livreur, ou envoyez le colis manuellement.', 'aod-cod-form' ),
+			number_format_i18n( $amount ),
+			number_format_i18n( $limit ),
+			$this->label()
+		) );
 	}
 }
