@@ -23,10 +23,10 @@
    (manuel — pas d'internet sortant). Cf. TEMPLATE.md §7.
 5. **Mobile d'abord.** Tester en responsive avant de dire « fini ».
 6. **Isolation Docker.** Chaque clone a SA stack. Avant toute installation :
-   `pwd` (bon dossier), `docker ps -a` (ne pas toucher aux conteneurs d'un autre
-   projet), `PROJECT_SLUG`/ports **uniques** dans `.env`, et piloter via
-   `docker compose exec <service>` depuis le dossier du clone — **jamais**
-   `docker exec wp_cli_c1 …`. Cf. TEMPLATE.md §3.
+   `pwd` (bon dossier), `PROJECT_SLUG`/ports **uniques** dans `.env`, puis lancer
+   **`bash scripts/preflight.sh`** (garde-fou : bloque si mal isolé) AVANT
+   `docker compose up`. Toujours piloter via `docker compose exec <service>`
+   depuis le dossier du clone — **jamais** `docker exec wp_cli_c1 …`. Cf. TEMPLATE.md §3.
 7. **Choix du thème :** si le client n'impose rien, choisir le kit le plus adapté
    dans la bibliothèque Elementor en **analysant les aperçus toi-même** — voir
    TEMPLATE.md §4 (procédure + commandes).

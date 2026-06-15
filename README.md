@@ -47,12 +47,15 @@ cd mon-client
 # 2. Créer le fichier d'environnement (mots de passe, ports, titre du site)
 cp .env.example .env   # puis éditer .env
 #    ⚠️  Le .env n'est PAS versionné : choisis des mots de passe propres au projet.
+#    ⚠️  PROJECT_SLUG + COMPOSE_PROJECT_NAME + ports doivent être UNIQUES par projet
+#        (sinon ce clone piloterait les conteneurs d'un autre → installations mélangées).
 
 # 3. Déposer les thèmes/plugins tiers dans library/ (voir note ci-dessous)
 #    library/plugins/*.zip   (woocommerce, polylang, chargily-epay…)
 #    library/themes/*.zip    (astra, kadence, neve…)
 
-# 4. Lancer la stack
+# 4. Vérifier l'isolation PUIS lancer la stack
+bash scripts/preflight.sh      # garde-fou : bloque si slug/ports déjà pris par un autre projet
 docker compose up -d
 
 # 5. Installer & configurer WordPress + WooCommerce (Algérie / DZD / COD)

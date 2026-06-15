@@ -79,7 +79,10 @@ WordPress + MariaDB + phpMyAdmin + WP-CLI. Voir [`README-LOCAL.md`](README-LOCAL
 >    → repère les stacks existantes ; **ne touche jamais** aux conteneurs d'un autre projet.
 > 3. `.env` : `PROJECT_SLUG` + `COMPOSE_PROJECT_NAME` **uniques**, ports libres
 >    (`WP_PORT`/`PMA_PORT`) — sinon collision / installation dans le mauvais projet.
-> 4. **Toujours** piloter via `docker compose exec <service>` **depuis le dossier
+> 4. Lancer **`bash scripts/preflight.sh`** AVANT `docker compose up` : il refuse
+>    de continuer (sortie ≠ 0) si le slug est resté au défaut, ou si un conteneur /
+>    port est déjà pris par un autre projet. C'est le garde-fou automatique.
+> 5. **Toujours** piloter via `docker compose exec <service>` **depuis le dossier
 >    du clone** — JAMAIS `docker exec wp_cli_c1 …` (nom global = risque de viser un
 >    autre projet). C'est l'erreur qui a déjà fait installer des plugins sur le
 >    mauvais site.
@@ -254,7 +257,8 @@ et `/gestion` (`aod-client-dashboard`) ; l'AR bascule en RTL via `is_rtl()`.
 git clone <repo> mon-client && cd mon-client
 cp .env.example .env            # éditer : PROJECT_SLUG + COMPOSE_PROJECT_NAME UNIQUES,
                                 #          ports libres (WP_PORT/PMA_PORT), mots de passe propres
-docker ps -a --format '{{.Names}}'   # vérifier qu'aucun conteneur du slug choisi n'existe déjà
+bash scripts/preflight.sh       # GARDE-FOU : refuse de continuer si mal isolé (slug défaut,
+                                #             conteneurs/ports déjà pris par un autre projet)
 # déposer les zips dans library/ :  plugins/*.zip (woocommerce…)  themes/*.zip (thème client)
 docker compose up -d
 docker compose exec wpcli bash /scripts/setup.sh   # idempotent : installe/configure WP+Woo (Algérie/DZD/COD)
