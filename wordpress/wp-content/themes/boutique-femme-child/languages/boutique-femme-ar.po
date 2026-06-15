@@ -285,6 +285,12 @@ msgstr "اطلبي الآن"
 msgid "Contact"
 msgstr "اتصلي بنا"
 
+msgid "Accueil"
+msgstr "الرئيسية"
+
+msgid "Boutique"
+msgstr "المتجر"
+
 msgid "On vous écoute"
 msgstr "نحن نصغي إليك"
 

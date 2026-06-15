@@ -52,6 +52,15 @@ add_filter( 'wp_nav_menu_objects', function ( $items ) {
 	foreach ( $items as $k => $item ) {
 		if ( in_array( (int) $item->object_id, $shop_pages, true ) ) {
 			unset( $items[ $k ] );
+			continue;
+		}
+		// Le switcher FR/AR change la locale mais pas les titres d'items de menu
+		// (texte stocké, pas du gettext). On les traduit donc via __() : si une
+		// traduction existe dans le .po du thème, elle s'applique ; sinon le
+		// libellé d'origine est conservé (reste générique pour tout client).
+		if ( ! empty( $item->title ) ) {
+			// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
+			$item->title = __( $item->title, 'boutique-femme' );
 		}
 	}
 	return $items;
