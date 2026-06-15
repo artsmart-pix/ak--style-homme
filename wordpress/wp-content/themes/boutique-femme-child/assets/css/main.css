@@ -417,9 +417,70 @@ html[dir="rtl"] .bf-cat:hover .bf-cat__body svg { transform: translateX(-4px) sc
 .woocommerce ul.products li.product { position: relative; }
 
 /* tri / résultats Woo */
-.woocommerce .woocommerce-result-count { color: var(--bf-ink-soft); font-size: .9rem; }
-.woocommerce .woocommerce-ordering select {
-	font-family: var(--bf-body); border: 1px solid var(--bf-line); border-radius: 10px; padding: .5rem .8rem; background: #fff;
+.woocommerce .woocommerce-result-count { color: var(--bf-ink-soft); font-size: .9rem; margin: 0; }
+
+/* Barre de tri : alignée à la fin, propre sur toutes les tailles d'écran. */
+.woocommerce .woocommerce-ordering {
+	float: none !important; margin: 0 0 1.6rem; display: flex; justify-content: flex-end;
+}
+
+/* Repli no-JS : le <select> natif stylisé en pilule. */
+.woocommerce .woocommerce-ordering select.orderby {
+	-webkit-appearance: none; -moz-appearance: none; appearance: none;
+	font-family: var(--bf-body); font-size: .92rem; line-height: 1.3; color: var(--bf-ink);
+	min-width: 13.5rem; max-width: 100%; height: 2.9rem;
+	padding-block: 0; padding-inline: 1rem 2.6rem;
+	border: 1px solid var(--bf-line); border-radius: 999px; background-color: #fff;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236F635B' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+	background-repeat: no-repeat; background-position: right 1rem center; background-size: 14px;
+	cursor: pointer;
+}
+html[dir="rtl"] .woocommerce .woocommerce-ordering select.orderby { background-position: left 1rem center; }
+
+/* Quand le dropdown custom est monté, on cache le select natif. */
+.bf-visually-hidden {
+	position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+	overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---- Dropdown de tri custom (placement + taille 100 % maîtrisés) ---- */
+.bf-orderby { position: relative; display: inline-block; max-width: 100%; }
+.bf-orderby__btn {
+	display: inline-flex; align-items: center; gap: .6rem; justify-content: space-between;
+	min-width: 13.5rem; max-width: 100%; height: 2.9rem; padding: 0 1.1rem;
+	font-family: var(--bf-body); font-size: .92rem; color: var(--bf-ink);
+	background: #fff; border: 1px solid var(--bf-line); border-radius: 999px;
+	cursor: pointer; transition: border-color .2s ease, box-shadow .2s ease;
+}
+.bf-orderby__btn:hover { border-color: var(--bf-terra); }
+.bf-orderby__btn:focus-visible { outline: none; border-color: var(--bf-terra); box-shadow: 0 0 0 3px rgba(197,123,87,.18); }
+.bf-orderby__label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bf-orderby__chev { flex: 0 0 auto; color: var(--bf-ink-soft); transition: transform .2s ease; }
+.bf-orderby.is-open .bf-orderby__chev { transform: rotate(180deg); }
+
+.bf-orderby__list {
+	position: absolute; z-index: 60; inset-inline-end: 0; top: calc(100% + .4rem);
+	width: max-content; min-width: 100%; max-width: min(20rem, calc(100vw - 2rem));
+	max-height: min(60vh, 22rem); overflow-y: auto;
+	margin: 0; padding: .4rem; list-style: none;
+	background: #fff; border: 1px solid var(--bf-line); border-radius: var(--bf-radius-sm);
+	box-shadow: var(--bf-shadow);
+}
+.bf-orderby__opt {
+	padding: .6rem .9rem; border-radius: 8px; font-size: .92rem; color: var(--bf-ink);
+	cursor: pointer; white-space: nowrap; transition: background .15s ease, color .15s ease;
+}
+.bf-orderby__opt:hover,
+.bf-orderby__opt:focus-visible { background: var(--bf-cream); outline: none; }
+.bf-orderby__opt[aria-selected="true"] { color: var(--bf-terra-dk); font-weight: 600; background: var(--bf-cream); }
+
+/* Mobile : barre + bouton pleine largeur, liste ancrée et bornée à l'écran. */
+@media (max-width: 560px) {
+	.woocommerce .woocommerce-ordering { justify-content: stretch; }
+	.woocommerce .woocommerce-ordering select.orderby { min-width: 0; width: 100%; }
+	.bf-orderby { display: block; width: 100%; }
+	.bf-orderby__btn { width: 100%; min-width: 0; }
+	.bf-orderby__list { inset-inline: 0; width: auto; max-width: none; }
 }
 
 /* Fiche produit : titres et prix */
