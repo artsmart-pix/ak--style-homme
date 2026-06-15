@@ -27,9 +27,9 @@
    **`bash scripts/preflight.sh`** (garde-fou : bloque si mal isolé) AVANT
    `docker compose up`. Toujours piloter via `docker compose exec <service>`
    depuis le dossier du clone — **jamais** `docker exec wp_cli_c1 …`. Cf. TEMPLATE.md §3.
-7. **Choix du thème :** si le client n'impose rien, choisir le kit le plus adapté
-   dans la bibliothèque Elementor en **analysant les aperçus toi-même** — voir
-   TEMPLATE.md §4 (procédure + commandes).
+7. **Thème du projet :** l'owner dépose le thème choisi dans `library/themes/`
+   (installé auto par `setup.sh`). Tu bâtis les 3 pages à partir de CE thème —
+   voir TEMPLATE.md §4. Si rien n'est fourni, demande-le avant de commencer.
 
 ---
 
@@ -43,7 +43,8 @@ Ce projet utilise la méthode **BMAD** (dossier `_bmad/`, skills `bmad-*` dans
 du code à l'arrache :
 
 1. `bmad-agent-analyst` — cerner le besoin et le **secteur d'activité** du client.
-2. `bmad-agent-ux` — **choisir le kit** (TEMPLATE.md §4) + définir l'UX des 3 pages.
+2. `bmad-agent-ux` — partir du **thème fourni dans `library/themes/`** (TEMPLATE.md §4)
+   + définir l'UX des 3 pages.
 3. `bmad-agent-architect` — plan d'intégration (thème de base + Elementor, child
    theme, branding via Personnalisateur, RTL).
 4. `bmad-create-story` → `bmad-dev-story` — découper puis implémenter.

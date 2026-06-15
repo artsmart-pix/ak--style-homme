@@ -10,12 +10,10 @@
 
 ## 0. Ta mission la plus probable sur un clone
 
-Le client fournit **un thème** (zip, maquette, ou simplement une direction
-artistique : couleurs, logo, polices, ambiance) — **ou rien de précis**, et c'est
-alors à toi de **choisir le kit le plus adapté dans la bibliothèque de thèmes**
-(voir §4). À partir de ce thème, tu dois **construire / habiller les 3 pages
-publiques** de façon **élégante, moderne et attirante**, en respectant strictement
-les règles ci-dessous.
+L'owner **dépose le thème choisi dans `library/themes/`** du projet (voir §4). À
+partir de ce thème, tu dois **construire / habiller les 3 pages publiques** de
+façon **élégante, moderne et attirante**, en respectant strictement les règles
+ci-dessous. Si aucun thème n'est fourni, demande-le avant de commencer.
 
 Le socle technique (plugins maison, COD, dashboard gérant, i18n) **existe déjà et
 ne change pas**. Ton travail côté public = **présentation + intégration du thème**,
@@ -110,84 +108,57 @@ Accès (ports dans `.env`) : Boutique `http://localhost:${WP_PORT}` · Admin
 
 ---
 
-## 4. Choisir le thème — bibliothèque de kits Elementor
+## 4. Le thème du projet — fourni dans `library/themes/`
 
-Le client n'arrive pas toujours avec un thème précis. Il existe une **grande
-bibliothèque de kits prêts à l'emploi** rangés **par secteur d'activité** ; ta
-mission est d'**analyser cette bibliothèque toi-même** et de proposer le kit qui
-colle le mieux au projet.
+**Méthode :** l'owner **choisit lui-même** le thème et le **dépose dans le dossier
+du projet**, sous `library/themes/`. Tu construis les 3 pages à partir de CE
+thème-là. (Plus de bibliothèque externe à parcourir : un seul thème, local au clone.)
 
-### Où elle se trouve
+> Si aucun thème n'est présent dans `library/themes/`, **demande-le à l'owner**
+> avant de commencer — ne choisis pas à sa place.
 
-```
-/home/ouazene/Dev/wordpress-ecommerce/themes/Wordpress - Template kits/
-```
+### Où le déposer
 
-Les catégories sont **directement** dans ce dossier (un sous-dossier par secteur).
+- **`library/themes/*.zip`** — dossier project-local, **gitignoré** (licences/poids),
+  monté dans le conteneur à `/library` et **installé automatiquement par
+  `setup.sh`** (`wp theme install`).
+- Plugins tiers nécessaires au thème (Elementor, Hello…) : **`library/plugins/*.zip`**
+  (même mécanisme d'installation auto).
 
-⚠️ Le dossier est **hors du dépôt** (local à la machine) — un clone sur un autre
-PC ne l'aura pas. S'il a bougé, localise-le par motif, p. ex.
-`ls -d /home/ouazene/Dev/wordpress-ecommerce/themes/*Template\ kits* 2>/dev/null | head -1`.
+### Deux cas selon l'artefact fourni
 
-### Ce que c'est
+1. **Vrai thème WordPress** (`.zip` Astra / Hello / child theme…) → `setup.sh`
+   l'installe ; tu l'actives et tu bâtis les 3 pages avec.
+2. **Elementor Template Kit** (`.zip` Envato : `manifest.json` + `templates/*.json`
+   + `screenshots/*.jpg`) → ce n'est **pas** un thème : il s'importe via Elementor
+   (Outils → *Importer un Kit*), sur un thème de base léger (**Hello Elementor**
+   ou **Astra**) + **Elementor** déposé dans `library/plugins/`. N'importe **que**
+   header, footer, home→Accueil, contact→Contact — **jamais** tout le démo
+   multi-pages (règle 3).
 
-Des **Elementor Template Kits** (format Envato). Chaque `.zip` contient :
+### Comprendre le thème avant de coder
 
-- `manifest.json` — métadonnées : titre, liste des templates, types de contenu ;
-- `templates/*.json` — les pages Elementor (`header`, `footer`, `home`, `about`,
-  `services`, `contact`, `pricing`, `blog`…) ;
-- `screenshots/*.jpg` — **un aperçu visuel par template** + `global-kit-styles.png`
-  (palette de couleurs + typographies globales du kit).
-
-> Conséquence importante : utiliser un kit **introduit Elementor** (+ un thème de
-> base léger : **Hello Elementor** ou **Astra**). C'est un choix par projet —
-> garde-le minimal (règle 2) et n'importe **que** ce dont les 3 pages ont besoin.
-
-### Catégories disponibles (≈ 10–11 kits chacune)
-
-Agence de Voyage & Tourisme · AI & Technology · Corporate / Business ·
-Education & Formation · Gym & Coach Sportif · Hotel & Riad · IPTV ·
-Local associations (assoc., immobilier local, déménagement, padel, ONG…) ·
-Marketing Agency · Portfolio & Personal Brand · Real Estate · Restaurant & Café ·
-Santé & Medical.
-
-### Procédure de sélection (à suivre par toi-même)
-
-1. **Cerner le besoin** : secteur d'activité du client + direction artistique
-   (couleurs, ambiance, niveau de luxe/minimalisme). Au besoin, pose 1–2 questions.
-2. **Catégorie** : choisir le dossier dont le thème métier est le plus proche
-   (ex. boutique de produits cosmétiques → souvent « Santé & Medical » ou
-   « Restaurant & Café » selon l'ambiance ; à défaut, le plus neutre/« Corporate »).
-3. **Présélection** : lister les kits de la catégorie et lire leurs `manifest.json`
-   (titre + pages incluses).
-4. **Jugement visuel — fais-le vraiment** : extraire les aperçus d'un kit candidat
-   et **les ouvrir avec l'outil Read** (il lit les images). Regarde surtout
-   `screenshots/home.jpg` (mise en page) et `screenshots/global-kit-styles.png`
-   (couleurs/typo). C'est ça « analyser par soi-même ».
-5. **Filtrer selon nos contraintes** : mobile-first, RTL-compatible (éviter les
-   mises en page trop dépendantes du sens LTR), pas de tunnel panier/compte à
-   réintroduire, et adaptable en **3 pages** (Accueil/Boutique/Contact).
-6. **Proposer 2–3 finalistes** avec une justification courte + l'aperçu de chacun,
-   et laisser l'owner trancher (`AskUserQuestion`). Ne jamais importer en masse
-   tout le démo multi-pages : on ne garde que header, footer, home→Accueil,
-   contact→Contact, et on habille la Boutique Woo au même style.
-
-### Inspecter un kit sans l'importer
+Si c'est un kit Elementor, inspecte-le sans tout importer :
 
 ```bash
-KITS="/home/ouazene/Dev/wordpress-ecommerce/themes/Wordpress - Template kits"
-#   (s'il a bougé : KITS="$(ls -d /home/ouazene/Dev/wordpress-ecommerce/themes/*Template\ kits* 2>/dev/null | head -1)")
-
-# 1) Tous les kits, par catégorie
-for c in "$KITS"/*/; do echo "## $(basename "$c")"; ls "$c" | grep -i '\.zip$'; done
-
-# 2) Pages incluses + styles d'un kit (sans dézipper tout le zip)
-unzip -p "$KITS/<Catégorie>/<Kit>.zip" manifest.json | head -60
-
-# 3) Extraire UNIQUEMENT les aperçus pour les regarder avec l'outil Read
-unzip -o "$KITS/<Catégorie>/<Kit>.zip" 'screenshots/*' -d /tmp/kit-preview
-#   puis Read /tmp/kit-preview/screenshots/home.jpg  et  global-kit-styles.png
+THEME_ZIP="library/themes/<le-zip>.zip"
+unzip -p "$THEME_ZIP" manifest.json | head -60        # pages incluses + styles
+unzip -o "$THEME_ZIP" 'screenshots/*' -d /tmp/kit      # extraire les aperçus
+#   puis ouvre-les avec l'outil Read (il lit les images) :
+#   Read /tmp/kit/screenshots/home.jpg  et  global-kit-styles.png
 ```
+
+Regarde `home.jpg` (mise en page) et `global-kit-styles.png` (couleurs/typo) pour
+t'imprégner du style, puis **reproduis-le fidèlement** sur les 3 pages.
+
+### Contraintes d'intégration
+
+- Adapter le thème en **3 pages** seulement (Accueil / Boutique / Contact),
+  **mobile-first**, **RTL-compatible** (éviter les mises en page trop dépendantes
+  du sens LTR).
+- **Pas** de tunnel panier/compte ; la **Boutique = page Woo Shop** habillée au
+  style du thème (pas une page Elementor déconnectée de WooCommerce).
+- **Branding** (logo + nom) via le Personnalisateur, jamais codé en dur.
 
 Une fois le kit retenu → l'importer dans `library/themes/` du clone (ou via
 Elementor → Outils → *Importer un Kit*), puis appliquer le cahier des charges §5.
