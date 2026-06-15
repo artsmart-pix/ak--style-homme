@@ -393,4 +393,30 @@ class AOD_Carrier_Ecotrack extends AOD_Carrier {
 			'import_id' => '',
 		);
 	}
+
+	/**
+	 * Vérifie domaine + token via un appel léger en lecture seule.
+	 *
+	 * GET get/communes (Bearer token) renvoie 2xx si le token est accepté par
+	 * l'instance EcoTrack ; un domaine ou token invalide remonte une WP_Error.
+	 *
+	 * @return array|WP_Error
+	 */
+	public function test_connection() {
+		if ( ! $this->is_configured() ) {
+			return parent::test_connection();
+		}
+		$s   = $this->settings();
+		$url = add_query_arg(
+			array( 'api_token' => $s['api_token'], 'wilaya_id' => 16 ),
+			$this->api_base() . 'get/communes'
+		);
+		$res = $this->remote( 'GET', $url, array(
+			'headers' => array( 'Authorization' => 'Bearer ' . $s['api_token'], 'Accept' => 'application/json' ),
+		) );
+		if ( is_wp_error( $res ) ) {
+			return $res;
+		}
+		return array( 'live' => true, 'message' => '' );
+	}
 }

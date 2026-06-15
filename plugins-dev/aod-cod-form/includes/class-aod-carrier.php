@@ -137,6 +137,28 @@ abstract class AOD_Carrier {
 		return null;
 	}
 
+	/**
+	 * Teste la connexion à l'API du transporteur (vérification « en direct »).
+	 *
+	 * Effectue un appel léger en lecture seule pour confirmer que les identifiants
+	 * saisis sont réellement acceptés par le livreur. Implémentation par défaut :
+	 * pas d'endpoint de vérification dédié → on ne confirme que la présence des
+	 * identifiants (live = false). Les livreurs qui exposent un point d'accès léger
+	 * (Procolis /token, Yalidine /wilayas, EcoTrack get/communes, Maystro
+	 * base/commune) surchargent cette méthode pour un vrai test « en direct ».
+	 *
+	 * @return array|WP_Error array( 'live' => bool, 'message' => string ) :
+	 *                        live = true si vérifié auprès de l'API, false si seuls
+	 *                        les identifiants sont présents (pas de test en direct) ;
+	 *                        WP_Error si non configuré ou si l'API a refusé.
+	 */
+	public function test_connection() {
+		if ( ! $this->is_configured() ) {
+			return new WP_Error( 'aod_carrier_not_configured', __( 'Identifiants du transporteur manquants.', 'aod-cod-form' ) );
+		}
+		return array( 'live' => false, 'message' => '' );
+	}
+
 	/* ---- Helpers communs ---- */
 
 	/** Clé d'option WordPress des réglages de ce livreur. */

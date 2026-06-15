@@ -542,6 +542,12 @@ body.aod-cd{
 .aod-cd-carrier-fields .form-table select{width:100%;max-width:340px}
 .aod-cd-carrier-fields .form-table .description{color:var(--cd-muted);font-size:12px;margin:4px 0 0}
 .aod-cd-carrier-fields .form-table label{margin-inline-end:10px}
+.aod-cd-carrier-test{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--cd-line)}
+.aod-cd-carrier-test-msg{font-size:13px;font-weight:600}
+.aod-cd-carrier-test-msg.is-pending{color:var(--cd-muted)}
+.aod-cd-carrier-test-msg.is-ok{color:#15803d}
+.aod-cd-carrier-test-msg.is-warn{color:#b45309}
+.aod-cd-carrier-test-msg.is-bad{color:#b91c1c}
 
 /* ---- N° de commande cliquable ---- */
 .aod-cd-order-detail{

@@ -63,6 +63,7 @@ class AOD_CD_Dashboard {
 		add_action( 'wp_ajax_aod_cd_save_category', array( $this, 'ajax_save_category' ) );
 		add_action( 'wp_ajax_aod_cd_delete_category', array( $this, 'ajax_delete_category' ) );
 		add_action( 'wp_ajax_aod_cd_save_shipping', array( $this, 'ajax_save_shipping' ) );
+		add_action( 'wp_ajax_aod_cd_test_carrier', array( $this, 'ajax_test_carrier' ) );
 		add_action( 'wp_ajax_aod_cd_save_pixels', array( $this, 'ajax_save_pixels' ) );
 		add_action( 'wp_ajax_aod_cd_save_whatsapp', array( $this, 'ajax_save_whatsapp' ) );
 		add_action( 'wp_ajax_aod_cd_test_whatsapp', array( $this, 'ajax_test_whatsapp' ) );
@@ -206,6 +207,7 @@ class AOD_CD_Dashboard {
 			i18nDeleted:    <?php echo wp_json_encode( __( 'Supprimé', 'aod-client-dashboard' ) ); ?>,
 			i18nSaved:      <?php echo wp_json_encode( __( 'Enregistré', 'aod-client-dashboard' ) ); ?>,
 			i18nSent:       <?php echo wp_json_encode( __( 'Envoyé', 'aod-client-dashboard' ) ); ?>,
+			i18nTesting:    <?php echo wp_json_encode( __( 'Test en cours…', 'aod-client-dashboard' ) ); ?>,
 			i18nProductDelConfirm: <?php echo wp_json_encode( __( 'Supprimer « %s » ? (déplacé dans la corbeille)', 'aod-client-dashboard' ) ); ?>,
 			i18nEco:        <?php echo wp_json_encode( __( 'Économie : %s', 'aod-client-dashboard' ) ); ?>,
 			i18nNoDiscount: <?php echo wp_json_encode( __( 'Aucune réduction (sera ignorée)', 'aod-client-dashboard' ) ); ?>,
@@ -2598,6 +2600,10 @@ class AOD_CD_Dashboard {
 									<td colspan="3">
 										<div class="aod-cd-carrier-fields">
 											<?php $c->render_settings_fields(); // Réutilise les champs du plugin COD (noms <id>[champ]). ?>
+											<div class="aod-cd-carrier-test">
+												<button type="button" class="aod-cd-btn aod-cd-carrier-test-btn" data-carrier="<?php echo esc_attr( $id ); ?>"><?php esc_html_e( 'Tester la connexion', 'aod-client-dashboard' ); ?></button>
+												<span class="aod-cd-carrier-test-msg" aria-live="polite"></span>
+											</div>
 										</div>
 									</td>
 								</tr>
@@ -2665,6 +2671,56 @@ class AOD_CD_Dashboard {
 		}
 
 		wp_send_json_success( array( 'message' => __( 'Réglages de livraison enregistrés.', 'aod-client-dashboard' ) ) );
+	}
+
+	/**
+	 * AJAX : teste la connexion d'un transporteur (vérification « en direct »).
+	 *
+	 * Enregistre d'abord les identifiants saisis à l'écran (pour tester exactement
+	 * ce que voit le gérant, sans imposer un « Enregistrer » préalable), puis
+	 * appelle l'API du livreur via AOD_Carrier::test_connection().
+	 */
+	public function ajax_test_carrier() {
+		check_ajax_referer( 'aod_cd', 'nonce' );
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Accès refusé.', 'aod-client-dashboard' ) ), 403 );
+		}
+		if ( ! class_exists( 'AOD_Shipping' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Module de livraison indisponible.', 'aod-client-dashboard' ) ), 400 );
+		}
+
+		$id       = isset( $_POST['carrier'] ) ? sanitize_key( wp_unslash( $_POST['carrier'] ) ) : '';
+		$carriers = AOD_Shipping::instance()->carriers();
+		if ( '' === $id || ! isset( $carriers[ $id ] ) ) {
+			wp_send_json_error( array( 'message' => __( 'Transporteur inconnu.', 'aod-client-dashboard' ) ), 400 );
+		}
+		$carrier = $carriers[ $id ];
+
+		// Enregistre les identifiants saisis avant de tester (teste l'écran actuel).
+		if ( isset( $_POST[ $id ] ) && is_array( $_POST[ $id ] ) ) {
+			$carrier->save_settings( $carrier->sanitize_settings( wp_unslash( $_POST[ $id ] ) ) );
+		}
+		if ( ! $carrier->is_configured() ) {
+			wp_send_json_error( array( 'message' => __( 'Renseignez les identifiants de ce transporteur avant de tester.', 'aod-client-dashboard' ) ), 200 );
+		}
+
+		$res = $carrier->test_connection();
+		if ( is_wp_error( $res ) ) {
+			/* translators: 1: nom du transporteur, 2: message d'erreur renvoyé par l'API. */
+			$msg = sprintf( __( 'Échec de la connexion à %1$s : %2$s', 'aod-client-dashboard' ), $carrier->label(), $res->get_error_message() );
+			wp_send_json_error( array( 'message' => $msg ), 200 );
+		}
+
+		if ( ! empty( $res['live'] ) ) {
+			/* translators: %s: nom du transporteur. */
+			$msg = sprintf( __( 'Connexion réussie à %s.', 'aod-client-dashboard' ), $carrier->label() );
+			wp_send_json_success( array( 'live' => true, 'message' => $msg ) );
+		}
+
+		// Identifiants présents mais pas de vérification en direct (ex. Noest).
+		/* translators: %s: nom du transporteur. */
+		$msg = sprintf( __( '%s : identifiants enregistrés. La validité sera confirmée au premier envoi (ce transporteur ne propose pas de test en direct).', 'aod-client-dashboard' ), $carrier->label() );
+		wp_send_json_success( array( 'live' => false, 'message' => $msg ) );
 	}
 
 	/* ============================================================

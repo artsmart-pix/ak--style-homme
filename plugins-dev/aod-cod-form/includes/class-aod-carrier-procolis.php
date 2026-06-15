@@ -158,4 +158,27 @@ class AOD_Carrier_Procolis extends AOD_Carrier {
 			'import_id' => '',
 		);
 	}
+
+	/**
+	 * Vérifie le couple token + clé via l'endpoint de test Procolis.
+	 *
+	 * GET /token renvoie { "Statut": "Accès activé" } si les identifiants sont
+	 * valides ; tout autre statut (ex. « Accès refusé ») signale un rejet.
+	 *
+	 * @return array|WP_Error
+	 */
+	public function test_connection() {
+		if ( ! $this->is_configured() ) {
+			return parent::test_connection();
+		}
+		$res = $this->remote( 'GET', self::API_BASE . 'token', array( 'headers' => $this->headers() ) );
+		if ( is_wp_error( $res ) ) {
+			return $res;
+		}
+		$statut = isset( $res['Statut'] ) ? trim( (string) $res['Statut'] ) : '';
+		if ( false === stripos( $statut, 'activ' ) ) {
+			return new WP_Error( 'aod_procolis_denied', '' !== $statut ? $statut : __( 'Accès refusé : vérifiez le token et la clé.', 'aod-cod-form' ) );
+		}
+		return array( 'live' => true, 'message' => $statut );
+	}
 }
