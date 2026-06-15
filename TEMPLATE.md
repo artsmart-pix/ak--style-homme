@@ -120,13 +120,14 @@ colle le mieux au projet.
 ### Où elle se trouve
 
 ```
-/home/ouazene/Dev/wordpress-ecommerce/themes/Wordpress - Template kits-*/Wordpress - Template kits/
+/home/ouazene/Dev/wordpress-ecommerce/themes/Wordpress - Template kits/
 ```
 
-⚠️ Le dossier est **hors du dépôt** et son nom contient un suffixe horodaté
-(téléchargement type Google Drive) qui **change à chaque export**. Ne code jamais
-ce chemin en dur : localise-le par motif, p. ex.
-`ls -d /home/ouazene/Dev/wordpress-ecommerce/themes/*/Wordpress\ -\ Template\ kits 2>/dev/null`.
+Les catégories sont **directement** dans ce dossier (un sous-dossier par secteur).
+
+⚠️ Le dossier est **hors du dépôt** (local à la machine) — un clone sur un autre
+PC ne l'aura pas. S'il a bougé, localise-le par motif, p. ex.
+`ls -d /home/ouazene/Dev/wordpress-ecommerce/themes/*Template\ kits* 2>/dev/null | head -1`.
 
 ### Ce que c'est
 
@@ -174,7 +175,8 @@ Santé & Medical.
 ### Inspecter un kit sans l'importer
 
 ```bash
-KITS="$(ls -d /home/ouazene/Dev/wordpress-ecommerce/themes/*/'Wordpress - Template kits' 2>/dev/null | head -1)"
+KITS="/home/ouazene/Dev/wordpress-ecommerce/themes/Wordpress - Template kits"
+#   (s'il a bougé : KITS="$(ls -d /home/ouazene/Dev/wordpress-ecommerce/themes/*Template\ kits* 2>/dev/null | head -1)")
 
 # 1) Tous les kits, par catégorie
 for c in "$KITS"/*/; do echo "## $(basename "$c")"; ls "$c" | grep -i '\.zip$'; done
