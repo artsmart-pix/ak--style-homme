@@ -57,8 +57,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 </header>
 
 <div class="bf-offcanvas" id="bf-offcanvas" data-offcanvas hidden>
-	<div class="bf-offcanvas__panel">
-		<button class="bf-offcanvas__close" type="button" aria-label="<?php esc_attr_e( 'Fermer le menu', 'boutique-femme' ); ?>" data-offcanvas-close>&times;</button>
+	<div class="bf-offcanvas__scrim" data-offcanvas-close></div>
+	<button class="bf-offcanvas__close" type="button" aria-label="<?php esc_attr_e( 'Fermer le menu', 'boutique-femme' ); ?>" data-offcanvas-close>&times;</button>
+	<nav class="bf-offcanvas__panel" aria-label="<?php esc_attr_e( 'Navigation principale', 'boutique-femme' ); ?>">
 		<?php
 		if ( has_nav_menu( 'mobile_menu' ) ) {
 			wp_nav_menu( array(
@@ -79,8 +80,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		}
 		?>
 		<div class="bf-offcanvas__lang"><?php echo do_shortcode( '[aod_lang_switcher]' ); ?></div>
-	</div>
-	<div class="bf-offcanvas__scrim" data-offcanvas-close></div>
+	</nav>
 </div>
 
 <main id="bf-main" class="bf-site-main">
