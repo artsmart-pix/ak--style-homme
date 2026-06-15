@@ -49,6 +49,18 @@ class AOD_Carrier_Procolis extends AOD_Carrier {
 		return '' !== $this->config['initials'] ? $this->config['initials'] : parent::initials();
 	}
 
+	/**
+	 * ZR Express / Procolis : intégration en livraison à DOMICILE uniquement.
+	 *
+	 * Le stop-desk de ZR Express exige une agence valide par commune (« Code
+	 * Stopdesk incorrect » sinon) et l'API ne fournit pas de référentiel d'agences
+	 * exploitable ici. On déclare donc le stop-desk non géré : le formulaire public
+	 * masque l'option « bureau » et build_payload() force la livraison à domicile.
+	 */
+	public function supports_stopdesk() {
+		return false;
+	}
+
 	protected function defaults() {
 		return array(
 			'token'         => '',
@@ -106,12 +118,12 @@ class AOD_Carrier_Procolis extends AOD_Carrier {
 	}
 
 	public function build_payload( $order ) {
-		$s       = $this->settings();
-		$is_desk = $this->is_stopdesk_order( $order );
+		$s = $this->settings();
 
 		return array(
 			'Tracking'      => '',
-			'TypeLivraison' => $is_desk ? '1' : '0',
+			// Toujours « domicile » (0) : stop-desk ZR Express non géré (cf. supports_stopdesk()).
+			'TypeLivraison' => '0',
 			'TypeColis'     => '0',
 			'Confrimee'     => $s['confirmed'] ? '1' : '0',
 			'Client'        => $this->full_name( $order ),

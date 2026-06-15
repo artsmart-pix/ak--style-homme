@@ -75,7 +75,14 @@ class AOD_COD_Form {
 		$auto     = $shipping->auto_settings();
 		$carrier  = $shipping->carrier( $auto['carrier'] );
 
-		if ( ! $carrier || ! $carrier->is_configured() || ! $carrier->supports_stopdesk() ) {
+		// Livreur actif configuré mais qui ne gère PAS le stop-desk (ex. ZR Express,
+		// Maystro) → l'option « bureau » doit être masquée (desk:false), pas affichée.
+		if ( $carrier && $carrier->is_configured() && ! $carrier->supports_stopdesk() ) {
+			wp_send_json_success( array( 'desk' => false ) );
+		}
+
+		// Livreur inconnu / non configuré → on n'impose rien (option visible par défaut).
+		if ( ! $carrier || ! $carrier->is_configured() ) {
 			wp_send_json_success( array( 'gated' => false ) );
 		}
 
@@ -86,6 +93,28 @@ class AOD_COD_Form {
 		}
 
 		wp_send_json_success( array( 'gated' => true, 'communes' => array_values( $set ) ) );
+	}
+
+	/**
+	 * Le livreur d'envoi automatique gère-t-il le stop-desk (point relais) ?
+	 *
+	 * Sert à masquer l'option « bureau » et à ramener une commande desk → domicile
+	 * lorsque le livreur configuré ne fait que de la livraison à domicile. On ne
+	 * restreint QUE si le livreur est réellement configuré et déclare ne pas gérer
+	 * le stop-desk ; tout cas indéterminé reste permissif (option visible).
+	 *
+	 * @return bool
+	 */
+	protected function active_carrier_supports_desk() {
+		if ( ! class_exists( 'AOD_Shipping' ) ) {
+			return true;
+		}
+		$shipping = AOD_Shipping::instance();
+		$carrier  = $shipping->carrier( $shipping->auto_settings()['carrier'] );
+		if ( $carrier && $carrier->is_configured() && ! $carrier->supports_stopdesk() ) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -881,6 +910,12 @@ class AOD_COD_Form {
 		$commune    = isset( $_POST['commune'] ) ? sanitize_text_field( wp_unslash( $_POST['commune'] ) ) : '';
 		$address    = isset( $_POST['address'] ) ? sanitize_text_field( wp_unslash( $_POST['address'] ) ) : '';
 		$delivery   = ( isset( $_POST['delivery'] ) && 'desk' === $_POST['delivery'] ) ? 'desk' : 'home';
+		// Garde-fou : si le livreur d'envoi auto ne gère pas le stop-desk (ex. ZR
+		// Express), toute commande « bureau » est ramenée à « domicile » — évite un
+		// colis rejeté à l'envoi et un tarif stop-desk facturé sans relais.
+		if ( 'desk' === $delivery && ! $this->active_carrier_supports_desk() ) {
+			$delivery = 'home';
+		}
 		// Articles : chaque entrée = une combinaison de variantes + sa quantité,
 		// ex. items[0][opt][0]=L, items[0][opt][1]=Rouge, items[0][qty]=2.
 		$items_raw  = ( isset( $_POST['items'] ) && is_array( $_POST['items'] ) ) ? wp_unslash( $_POST['items'] ) : array();

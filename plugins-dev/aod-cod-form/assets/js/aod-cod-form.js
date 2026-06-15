@@ -126,7 +126,10 @@
 				var code  = parseInt( $wilaya.val(), 10 );
 				var entry = deskCache[ code ];
 				var allowed = true;
-				if ( entry && entry.gated ) {
+				if ( entry && false === entry.supported ) {
+					// Le livreur actif ne gère pas le stop-desk : pas d'option « bureau ».
+					allowed = false;
+				} else if ( entry && entry.gated ) {
 					var val = $commune.val();
 					if ( val ) {
 						allowed = entry.set.indexOf( normCommune( val ) ) !== -1;
@@ -154,10 +157,11 @@
 					wilaya: code
 				} ).done( function ( res ) {
 					var d = ( res && res.data ) || {};
-					deskCache[ code ] = { gated: !! d.gated, set: d.communes || [] };
+					// desk:false = livreur sans stop-desk → option « bureau » masquée.
+					deskCache[ code ] = { supported: ( false !== d.desk ), gated: !! d.gated, set: d.communes || [] };
 					applyDeskGate();
 				} ).fail( function () {
-					deskCache[ code ] = { gated: false, set: [] };
+					deskCache[ code ] = { supported: true, gated: false, set: [] };
 					applyDeskGate();
 				} );
 			}
