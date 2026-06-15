@@ -1,0 +1,25 @@
+/* =========================================================================
+   Ajustements RTL (arabe) — chargé uniquement quand is_rtl()
+   ========================================================================= */
+
+body.bf { direction: rtl; text-align: right; }
+
+.bf-eyebrow { letter-spacing: 0; }
+
+.bf-menu a::after { left: auto; right: 0; }
+
+.bf-hero__inner { margin-inline-start: 0; }
+
+/* La flèche « en savoir plus » pointe vers la gauche en RTL */
+.bf-btn .icon-arrow svg,
+.bf-cat__body svg,
+.bf-section svg.bf-arrow { transform: scaleX(-1); }
+
+/* Listes : puces à droite déjà gérées par direction; on garde les paddings logiques */
+.bf-reassure-inline, .bf-split__list, .bf-contact__list { padding: 0; }
+
+/* Form : alignement */
+.bf-form__submit { justify-self: end; }
+
+/* Footer social garde l'ordre lecture */
+.bf-footer__social { justify-content: flex-start; }

@@ -1,0 +1,17 @@
+/*
+Theme Name: Boutique Femme
+Theme URI: https://artofdoing.net
+Description: Child theme Hello Elementor — boutique e-commerce COD (pantalon femme grande taille). 3 pages publiques (Accueil, Boutique, Contact), palette Nude & Terracotta, animations, FR/AR + RTL. Branding (logo + nom) via le Personnalisateur.
+Author: Art Of Doing
+Author URI: https://artofdoing.net
+Template: hello-elementor
+Version: 1.0.0
+Text Domain: boutique-femme
+Domain Path: /languages
+License: GPL-2.0-or-later
+*/
+
+/*
+  Les styles réels sont dans assets/css/main.css (chargé après le parent
+  depuis functions.php). Ce fichier ne sert que d'en-tête de thème WordPress.
+*/

@@ -1,0 +1,307 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Boutique Femme 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5);\n"
+
+msgid "Le pantalon femme grande taille, livré chez vous, payé à la livraison — partout en Algérie."
+msgstr "سروال نسائي بمقاسات كبيرة، يصلك إلى باب منزلك، الدفع عند الاستلام — في كامل ولايات الجزائر."
+
+msgid "Liens"
+msgstr "روابط"
+
+msgid "Navigation"
+msgstr "التصفّح"
+
+msgid "Nous contacter"
+msgstr "اتصلي بنا"
+
+msgid "Paiement à la livraison"
+msgstr "الدفع عند الاستلام"
+
+msgid "Commandez sans carte. Vous payez en espèces à la réception."
+msgstr "اطلبي دون بطاقة بنكية. تدفعين نقداً عند الاستلام."
+
+msgid "Tous droits réservés."
+msgstr "جميع الحقوق محفوظة."
+
+msgid "Nouvelle collection — Grande taille"
+msgstr "تشكيلة جديدة — مقاسات كبيرة"
+
+msgid "Le pantalon qui épouse vos courbes"
+msgstr "السروال الذي يحتضن انحناءاتك"
+
+msgid "Des coupes pensées pour les femmes du 42 au 56. Confort, élégance et matières qui tiennent toute la journée — livrées chez vous, payées à la livraison."
+msgstr "قصّات مدروسة للنساء من مقاس 42 إلى 56. راحة وأناقة وأقمشة تدوم طوال اليوم — تصلك إلى منزلك مع الدفع عند الاستلام."
+
+msgid "Découvrir la boutique"
+msgstr "اكتشفي المتجر"
+
+msgid "Nos best-sellers"
+msgstr "الأكثر مبيعاً"
+
+msgid "58 wilayas"
+msgstr "58 ولاية"
+
+msgid "Du 42 au 56"
+msgstr "من 42 إلى 56"
+
+msgid "Trouvez votre coupe"
+msgstr "اعثري على قصّتك"
+
+msgid "Nos catégories phares"
+msgstr "أبرز الفئات"
+
+msgid "Taille haute, large, cargo ou tailleur — chaque morphologie a son pantalon."
+msgstr "خصر عالٍ، واسع، كارغو أو كلاسيكي — لكل جسم سرواله المناسب."
+
+msgid "%d modèle"
+msgid_plural "%d modèles"
+msgstr[0] "%d موديل"
+msgstr[1] "موديل واحد"
+msgstr[2] "موديلان"
+msgstr[3] "%d موديلات"
+msgstr[4] "%d موديلاً"
+msgstr[5] "%d موديل"
+
+msgid "Taille haute"
+msgstr "خصر عالٍ"
+
+msgid "Coupe large"
+msgstr "قصّة واسعة"
+
+msgid "Cargo & utilitaire"
+msgstr "كارغو وعملي"
+
+msgid "Voir la boutique"
+msgstr "زيارة المتجر"
+
+msgid "Coups de cœur"
+msgstr "المفضّلة لدينا"
+
+msgid "Les modèles les plus aimés"
+msgstr "الموديلات الأكثر إعجاباً"
+
+msgid "Sélectionnés pour leur tombé impeccable et leur confort grande taille."
+msgstr "مُختارة لتساقطها المثالي وراحتها بالمقاسات الكبيرة."
+
+msgid "Voir toute la collection"
+msgstr "عرض كامل التشكيلة"
+
+msgid "Coupe grande taille mise en valeur"
+msgstr "قصّة بمقاس كبير تُبرز جمالك"
+
+msgid "Photo lifestyle"
+msgstr "صورة لايف ستايل"
+
+msgid "Conçu pour vous"
+msgstr "مصمّم من أجلك"
+
+msgid "Une coupe qui valorise, pas qui serre"
+msgstr "قصّة تُبرز جمالك دون أن تضيّق"
+
+msgid "Fini les pantalons qui baillent à la taille ou serrent aux hanches. Nos patrons sont étudiés pour les morphologies généreuses : taille montante, hanches confortables, longueur juste."
+msgstr "وداعاً للسراويل التي تتّسع عند الخصر أو تضيّق عند الأرداف. باتروناتنا مدروسة للأجسام الممتلئة: خصر مرتفع، أرداف مرتاحة، وطول مناسب."
+
+msgid "Tailles 42 à 56, taille montante confortable"
+msgstr "مقاسات من 42 إلى 56، خصر مرتفع ومريح"
+
+msgid "Tissus extensibles qui ne se déforment pas"
+msgstr "أقمشة مطّاطة لا تفقد شكلها"
+
+msgid "Guide des tailles clair, échange facile"
+msgstr "دليل مقاسات واضح، وتبديل سهل"
+
+msgid "Trouver ma taille"
+msgstr "إيجاد مقاسي"
+
+msgid "Elles nous font confiance"
+msgstr "يثقن بنا"
+
+msgid "Ce que disent nos clientes"
+msgstr "ماذا تقول زبوناتنا"
+
+msgid "« Enfin un pantalon à ma taille qui tombe bien ! Commande reçue en 48h et payée à la livraison, parfait. »"
+msgstr "«أخيراً سروال بمقاسي ويناسبني تماماً! وصل الطلب خلال 48 ساعة والدفع عند الاستلام، رائع.»"
+
+msgid "Amel"
+msgstr "أمال"
+
+msgid "Alger"
+msgstr "الجزائر العاصمة"
+
+msgid "« La taille haute est top, ça galbe sans serrer. Je recommande les yeux fermés. »"
+msgstr "«الخصر العالي رائع، يُبرز القوام دون تضييق. أنصح به دون تردّد.»"
+
+msgid "Nawel"
+msgstr "نوال"
+
+msgid "Oran"
+msgstr "وهران"
+
+msgid "« Livraison jusqu'à Béjaïa, paiement à la réception. Le tissu est de qualité, je vais recommander. »"
+msgstr "«توصيل حتى بجاية، الدفع عند الاستلام. القماش ذو جودة عالية، سأطلب مجدداً.»"
+
+msgid "Sarah"
+msgstr "سارة"
+
+msgid "Béjaïa"
+msgstr "بجاية"
+
+msgid "Votre nouveau pantalon préféré vous attend"
+msgstr "سروالك المفضّل الجديد بانتظارك"
+
+msgid "Commandez en 1 minute, sans compte ni carte bancaire. Vous payez à la livraison, partout en Algérie."
+msgstr "اطلبي في دقيقة واحدة، دون حساب أو بطاقة بنكية. تدفعين عند الاستلام، في كل الجزائر."
+
+msgid "Je commande maintenant"
+msgstr "أطلب الآن"
+
+msgid "Aller au contenu"
+msgstr "تخطّي إلى المحتوى"
+
+msgid "Navigation principale"
+msgstr "التصفّح الرئيسي"
+
+msgid "Ouvrir le menu"
+msgstr "فتح القائمة"
+
+msgid "Fermer le menu"
+msgstr "إغلاق القائمة"
+
+msgid "Nom complet"
+msgstr "الاسم الكامل"
+
+msgid "Téléphone"
+msgstr "الهاتف"
+
+msgid "E-mail"
+msgstr "البريد الإلكتروني"
+
+msgid "Votre message"
+msgstr "رسالتك"
+
+msgid "Ne pas remplir"
+msgstr "لا تملأ هذا الحقل"
+
+msgid "Envoyer le message"
+msgstr "إرسال الرسالة"
+
+msgid "Message envoyé."
+msgstr "تم إرسال الرسالة."
+
+msgid "Merci de remplir les champs obligatoires."
+msgstr "يرجى ملء الحقول الإلزامية."
+
+msgid "[%s] Nouveau message de contact"
+msgstr "[%s] رسالة تواصل جديدة"
+
+msgid "Nom"
+msgstr "الاسم"
+
+msgid "Message"
+msgstr "الرسالة"
+
+msgid "Message envoyé. Merci, nous vous répondrons vite."
+msgstr "تم إرسال الرسالة. شكراً، سنردّ عليك قريباً."
+
+msgid "Messages de contact"
+msgstr "رسائل التواصل"
+
+msgid "Envoi…"
+msgstr "جارٍ الإرسال…"
+
+msgid "Une erreur est survenue. Réessayez ou appelez-nous."
+msgstr "حدث خطأ. حاولي مجدداً أو اتصلي بنا."
+
+msgid "Menu principal"
+msgstr "القائمة الرئيسية"
+
+msgid "Menu mobile"
+msgstr "قائمة الجوال"
+
+msgid "Boutique — Coordonnées"
+msgstr "المتجر — معلومات الاتصال"
+
+msgid "WhatsApp (format intl, ex. 213…)"
+msgstr "واتساب (صيغة دولية، مثال 213…)"
+
+msgid "E-mail de contact"
+msgstr "بريد التواصل"
+
+msgid "Adresse"
+msgstr "العنوان"
+
+msgid "Horaires"
+msgstr "أوقات العمل"
+
+msgid "Lien Instagram"
+msgstr "رابط إنستغرام"
+
+msgid "Lien Facebook"
+msgstr "رابط فيسبوك"
+
+msgid "Lien TikTok"
+msgstr "رابط تيك توك"
+
+msgid "Héros — slogan principal"
+msgstr "الواجهة — الشعار الرئيسي"
+
+msgid "Vous payez en espèces, à la réception. Zéro risque."
+msgstr "تدفعين نقداً عند الاستلام. دون أيّ مخاطرة."
+
+msgid "Livraison 58 wilayas"
+msgstr "توصيل إلى 58 ولاية"
+
+msgid "Partout en Algérie, à domicile ou en stop-desk."
+msgstr "في كل الجزائر، إلى المنزل أو عبر مكتب التوصيل."
+
+msgid "Coupes grande taille"
+msgstr "قصّات بمقاسات كبيرة"
+
+msgid "Du 42 au 56, pensées pour valoriser vos courbes."
+msgstr "من 42 إلى 56، مدروسة لإبراز انحناءاتك."
+
+msgid "Nos engagements"
+msgstr "التزاماتنا"
+
+msgid "Notre collection"
+msgstr "تشكيلتنا"
+
+msgid "Des coupes pensées pour les vraies silhouettes — du 42 au 56. Paiement à la livraison partout en Algérie."
+msgstr "قصّات مدروسة للأجسام الحقيقية — من 42 إلى 56. الدفع عند الاستلام في كل الجزائر."
+
+msgid "Promo"
+msgstr "تخفيض"
+
+msgid "Commander"
+msgstr "اطلبي الآن"
+
+msgid "Contact"
+msgstr "اتصلي بنا"
+
+msgid "On vous écoute"
+msgstr "نحن نصغي إليك"
+
+msgid "Une question sur une taille, une commande, une livraison ? Écrivez-nous, on répond vite."
+msgstr "سؤال عن مقاس أو طلب أو توصيل؟ راسلينا، نردّ بسرعة."
+
+msgid "Nos coordonnées"
+msgstr "معلومات الاتصال"
+
+msgid "WhatsApp"
+msgstr "واتساب"
+
+msgid "Astuce : pour commander, ajoutez l'article au formulaire sur sa fiche produit. Le paiement se fait à la livraison."
+msgstr "نصيحة: للطلب، أضيفي المنتج عبر النموذج في صفحته. يتم الدفع عند الاستلام."
+
+msgid "Échange facile"
+msgstr "تبديل سهل"
+
+msgid "Tissus qui ne se déforment pas"
+msgstr "أقمشة لا تفقد شكلها"
