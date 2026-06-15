@@ -1,6 +1,13 @@
 # Environnement local — ne pas committer
 .env
-wordpress/
+# Install WordPress runtime ignorée…
+wordpress/*
+!wordpress/wp-content/
+wordpress/wp-content/*
+!wordpress/wp-content/themes/
+wordpress/wp-content/themes/*
+# …SAUF les child themes (travail client versionné — core/parent/plugins restent ignorés)
+!wordpress/wp-content/themes/*-child/
 library/themes/*.zip
 library/plugins/*.zip
 *.log
