@@ -22,7 +22,8 @@
 #   bin/make-translations.sh --strict        # code de sortie ≠ 0 s'il manque des trads
 #
 # Réglages (variables d'environnement, valeurs par défaut entre parenthèses) :
-#   AOD_WPCLI_CONTAINER  conteneur Docker contenant wp-cli   (wp_cli_c1)
+#   AOD_WPCLI_CONTAINER  conteneur Docker wp-cli (défaut : wp_cli_$PROJECT_SLUG,
+#                        slug lu dans le .env du dépôt — isolation par clone)
 #   AOD_WPCLI            commande wp-cli si installée sur l'hôte (auto-détection)
 #
 set -euo pipefail
@@ -59,8 +60,25 @@ if [ -n "${AOD_WPCLI:-}" ]; then
 elif command -v wp >/dev/null 2>&1; then
 	WPCLI="wp"; WPCLI_MODE="host"
 else
-	CONTAINER="${AOD_WPCLI_CONTAINER:-wp_cli_c1}"
 	command -v docker >/dev/null 2>&1 || die "Ni wp-cli sur l'hôte, ni docker. Définis AOD_WPCLI=… ou installe wp-cli."
+	# Isolation par clone : le conteneur dépend du PROJECT_SLUG du projet courant.
+	# Priorité : AOD_WPCLI_CONTAINER > wp_cli_$PROJECT_SLUG (lu dans le .env du dépôt)
+	#          > unique conteneur wp_cli_* en cours d'exécution.
+	if [ -n "${AOD_WPCLI_CONTAINER:-}" ]; then
+		CONTAINER="$AOD_WPCLI_CONTAINER"
+	else
+		REPO_ROOT="$(cd -- "$PLUGIN_DIR/../.." >/dev/null 2>&1 && pwd -P)"
+		SLUG_ENV=""
+		[ -f "$REPO_ROOT/.env" ] && SLUG_ENV="$(grep -E '^PROJECT_SLUG=' "$REPO_ROOT/.env" | head -1 | cut -d= -f2- | tr -d '"'\''[:space:]')"
+		if [ -n "$SLUG_ENV" ]; then
+			CONTAINER="wp_cli_$SLUG_ENV"
+		else
+			mapfile -t _cands < <(docker ps --format '{{.Names}}' | grep -E '^wp_cli_' || true)
+			[ "${#_cands[@]}" -eq 1 ] \
+				|| die "Conteneur wp-cli indéterminé (PROJECT_SLUG absent du .env, ${#_cands[@]} candidats wp_cli_*). Exporte AOD_WPCLI_CONTAINER=<nom>."
+			CONTAINER="${_cands[0]}"
+		fi
+	fi
 	docker ps --format '{{.Names}}' | grep -qx "$CONTAINER" \
 		|| die "Conteneur « $CONTAINER » introuvable/arrêté. Démarre-le ou exporte AOD_WPCLI_CONTAINER=<nom>."
 	CONTAINER_PLUGIN="/var/www/html/wp-content/plugins/$SLUG"

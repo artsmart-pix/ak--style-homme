@@ -89,7 +89,8 @@ plugins-dev/aod-client-dashboard/bin/make-translations.sh
 
 Puis édite `languages/aod-client-dashboard-ar.po` pour les chaînes signalées « à
 traduire » et relance le script (la traduction arabe reste manuelle). Détection
-auto de wp-cli (hôte ou conteneur Docker `wp_cli_c1`) ; `--strict` sort en erreur
+auto de wp-cli (hôte ou conteneur Docker `wp_cli_$PROJECT_SLUG`, déduit du `.env`
+du dépôt) ; `--strict` sort en erreur
 s'il manque des traductions (utile en CI/hook).
 
 > ⚠️ Oublier cette étape = des libellés qui restent en français quand on bascule

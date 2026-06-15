@@ -71,20 +71,33 @@ WordPress + MariaDB + phpMyAdmin + WP-CLI. Voir [`README-LOCAL.md`](README-LOCAL
 
 ## 3. Environnement de dev local (Docker)
 
-Conteneurs (voir `docker-compose.yml`) :
+> 🚨 **ISOLATION — à vérifier AVANT toute installation.** Chaque clone doit avoir
+> sa **propre** stack. Les conteneurs sont nommés `wp_<service>_${PROJECT_SLUG}`
+> (slug défini dans `.env`). Avant de lancer/installer quoi que ce soit :
+> 1. `pwd` → tu es bien dans CE clone, pas dans le template ni un autre projet.
+> 2. `docker ps -a --format 'table {{.Names}}\t{{.Label "com.docker.compose.project"}}'`
+>    → repère les stacks existantes ; **ne touche jamais** aux conteneurs d'un autre projet.
+> 3. `.env` : `PROJECT_SLUG` + `COMPOSE_PROJECT_NAME` **uniques**, ports libres
+>    (`WP_PORT`/`PMA_PORT`) — sinon collision / installation dans le mauvais projet.
+> 4. **Toujours** piloter via `docker compose exec <service>` **depuis le dossier
+>    du clone** — JAMAIS `docker exec wp_cli_c1 …` (nom global = risque de viser un
+>    autre projet). C'est l'erreur qui a déjà fait installer des plugins sur le
+>    mauvais site.
 
-- `wp_cli_c1` — WP-CLI : `docker exec wp_cli_c1 wp <cmd>`
-- `wp_app_c1` — Apache (le site), `wp_db_c1` — MariaDB, `wp_pma_c1` — phpMyAdmin
+Services (voir `docker-compose.yml`), à piloter depuis le dossier du projet :
 
-Accès (ports dans `.env`) : Boutique `http://localhost:8090` · Admin
-`/wp-admin` · phpMyAdmin `http://localhost:8091`.
+- `wpcli` — WP-CLI : `docker compose exec wpcli wp <cmd>`
+- `wordpress` — Apache (le site), `db` — MariaDB, `phpmyadmin` — phpMyAdmin
+
+Accès (ports dans `.env`) : Boutique `http://localhost:${WP_PORT}` · Admin
+`/wp-admin` · phpMyAdmin `http://localhost:${PMA_PORT}`.
 
 **À savoir :**
 
 - **HPOS actif** → le meta des commandes n'est **pas** dans `postmeta`. Ne pas
   utiliser `wp post meta get` pour une commande. Utiliser :
-  `docker exec wp_cli_c1 wp eval '$o=wc_get_order($id); echo $o->get_meta("_cle");'`
-  Lister : `wp wc shop_order list --user=1 --fields=id,status`.
+  `docker compose exec wpcli wp eval '$o=wc_get_order($id); echo $o->get_meta("_cle");'`
+  Lister : `docker compose exec wpcli wp wc shop_order list --user=1 --fields=id,status`.
 - L'hôte **n'a pas de PHP** : faire les `php -l` / lint **dans le conteneur**.
 - **Pas d'internet sortant fiable** par défaut. Un bloc `dns: [8.8.8.8, 1.1.1.1]`
   dans `docker-compose.yml` débloque les appels API externes (Ecotrack…). Si un
@@ -239,7 +252,9 @@ et `/gestion` (`aod-client-dashboard`) ; l'AR bascule en RTL via `is_rtl()`.
 
 ```bash
 git clone <repo> mon-client && cd mon-client
-cp .env.example .env            # éditer : titre, mots de passe PROPRES au projet, ports
+cp .env.example .env            # éditer : PROJECT_SLUG + COMPOSE_PROJECT_NAME UNIQUES,
+                                #          ports libres (WP_PORT/PMA_PORT), mots de passe propres
+docker ps -a --format '{{.Names}}'   # vérifier qu'aucun conteneur du slug choisi n'existe déjà
 # déposer les zips dans library/ :  plugins/*.zip (woocommerce…)  themes/*.zip (thème client)
 docker compose up -d
 docker compose exec wpcli bash /scripts/setup.sh   # idempotent : installe/configure WP+Woo (Algérie/DZD/COD)

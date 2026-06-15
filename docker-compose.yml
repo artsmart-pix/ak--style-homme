@@ -1,7 +1,7 @@
 services:
   db:
     image: mariadb:11
-    container_name: wp_db_c1
+    container_name: wp_db_${PROJECT_SLUG}
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -18,7 +18,7 @@ services:
 
   wordpress:
     image: wordpress:php8.2-apache
-    container_name: wp_app_c1
+    container_name: wp_app_${PROJECT_SLUG}
     restart: unless-stopped
     # DNS public : le resolver Docker interne ne résout pas les domaines externes
     # (ex. API de livraison EcoTrack) sur cette machine.
@@ -47,7 +47,7 @@ services:
 
   wpcli:
     image: wordpress:cli-php8.2
-    container_name: wp_cli_c1
+    container_name: wp_cli_${PROJECT_SLUG}
     dns:
       - 8.8.8.8
       - 1.1.1.1
@@ -70,7 +70,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin:5
-    container_name: wp_pma_c1
+    container_name: wp_pma_${PROJECT_SLUG}
     restart: unless-stopped
     depends_on:
       db:
