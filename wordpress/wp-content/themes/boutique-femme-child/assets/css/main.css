@@ -79,12 +79,16 @@ img { max-width: 100%; height: auto; display: block; }
 	margin: 0 0 .8rem;
 }
 
+/* Masqué hors écran par le HAUT (jamais via left:-9999px : en RTL cela crée
+   un débordement horizontal qui ancre le scroll sur une zone vide → écran blanc). */
 .bf-skip {
-	position: absolute; left: -9999px; top: 0;
+	position: absolute; top: 0; inset-inline-start: 0;
+	transform: translateY(-200%);
 	background: var(--bf-ink); color: #fff; padding: 10px 16px; z-index: 1000;
 	border-radius: 0 0 8px 0;
+	transition: transform .2s ease;
 }
-.bf-skip:focus { left: 0; }
+.bf-skip:focus { transform: translateY(0); }
 
 /* ---- Boutons ------------------------------------------------------------ */
 .bf-btn {
@@ -473,7 +477,9 @@ html[dir="rtl"] .bf-cat:hover .bf-cat__body svg { transform: translateX(-4px) sc
 	box-shadow: 0 0 0 4px rgba(197,123,87,.14);
 }
 .bf-field .is-invalid, .bf-field input.is-invalid, .bf-field textarea.is-invalid { border-color: var(--bf-error); }
-.bf-hp { position: absolute; left: -9999px; height: 0; overflow: hidden; }
+/* Honeypot : masqué sans display:none (les bots le rempliraient) et sans
+   left:-9999px (débordement horizontal cassant le RTL). */
+.bf-hp { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
 .bf-form__submit { justify-self: start; }
 .bf-form__msg { margin: 0; font-size: .95rem; min-height: 1.2em; }
 .bf-form__msg.is-ok { color: var(--bf-ok); }
