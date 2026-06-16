@@ -230,4 +230,25 @@ class AOD_Carrier_Maystro extends AOD_Carrier {
 			'import_id' => '',
 		);
 	}
+
+	/**
+	 * Vérifie le token via un appel léger en lecture seule.
+	 *
+	 * GET base/commune/ (en-tête Authorization: Token …) renvoie 2xx si le token
+	 * du magasin est accepté par Maystro ; un token invalide remonte une WP_Error.
+	 *
+	 * @return array|WP_Error
+	 */
+	public function test_connection() {
+		if ( ! $this->is_configured() ) {
+			return parent::test_connection();
+		}
+		$res = $this->remote( 'GET', self::API_BASE . 'base/commune/?wilaya=16', array(
+			'headers' => $this->headers(),
+		) );
+		if ( is_wp_error( $res ) ) {
+			return $res;
+		}
+		return array( 'live' => true, 'message' => '' );
+	}
 }

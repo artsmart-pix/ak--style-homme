@@ -225,4 +225,24 @@ class AOD_Carrier_Yalidine extends AOD_Carrier {
 			'import_id' => isset( $entry['import_id'] ) ? $entry['import_id'] : '',
 		);
 	}
+
+	/**
+	 * Vérifie les clés API via un appel léger en lecture seule.
+	 *
+	 * GET /wilayas/ exige une authentification valide (X-API-ID / X-API-TOKEN) :
+	 * une réponse 2xx confirme que les clés sont acceptées. Hérité tel quel par
+	 * Yalitec (seule la base API change).
+	 *
+	 * @return array|WP_Error
+	 */
+	public function test_connection() {
+		if ( ! $this->is_configured() ) {
+			return parent::test_connection();
+		}
+		$res = $this->request( 'GET', 'wilayas/?page=1' );
+		if ( is_wp_error( $res ) ) {
+			return $res;
+		}
+		return array( 'live' => true, 'message' => '' );
+	}
 }

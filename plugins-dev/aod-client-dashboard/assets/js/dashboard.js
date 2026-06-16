@@ -1378,6 +1378,69 @@
 		} );
 	}
 
+	// Bouton « Tester la connexion » dans le panneau d'un transporteur.
+	function bindCarrierTest() {
+		var btns = Array.prototype.slice.call( document.querySelectorAll( '.aod-cd-carrier-test-btn' ) );
+		if ( ! btns.length ) { return; }
+
+		btns.forEach( function ( btn ) {
+			btn.addEventListener( 'click', function ( e ) {
+				e.stopPropagation(); // Ne pas replier le panneau.
+				var id    = btn.getAttribute( 'data-carrier' );
+				var panel = btn.closest( '.aod-cd-carrier-panel' );
+				var msg   = panel ? panel.querySelector( '.aod-cd-carrier-test-msg' ) : null;
+
+				btn.disabled = true;
+				if ( msg ) {
+					msg.textContent = CD.i18nTesting || '…';
+					msg.className   = 'aod-cd-carrier-test-msg is-pending';
+				}
+
+				var body = new URLSearchParams();
+				body.append( 'action', 'aod_cd_test_carrier' );
+				body.append( 'nonce', CD.nonce );
+				body.append( 'carrier', id );
+				// Joint les identifiants saisis pour ce transporteur (name="id[champ]").
+				if ( panel ) {
+					panel.querySelectorAll( 'input, select' ).forEach( function ( f ) {
+						if ( ! f.name ) { return; }
+						if ( ( 'checkbox' === f.type || 'radio' === f.type ) && ! f.checked ) { return; }
+						body.append( f.name, f.value );
+					} );
+				}
+
+				fetch( CD.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body } )
+					.then( function ( r ) { return r.json(); } )
+					.then( function ( res ) {
+						btn.disabled = false;
+						var success = !! ( res && res.success );
+						var live    = !! ( success && res.data && res.data.live );
+						var m       = ( res && res.data && res.data.message ) || '';
+						if ( msg ) {
+							msg.textContent = m;
+							msg.className   = 'aod-cd-carrier-test-msg ' + ( live ? 'is-ok' : ( success ? 'is-warn' : 'is-bad' ) );
+						}
+						toast( m || ( live ? 'OK' : netErr ), ! success );
+						// Reflète « Connecté » sur la ligne si vérifié en direct.
+						if ( live ) {
+							var row = panel ? panel.previousElementSibling : null;
+							if ( row && row.classList.contains( 'aod-cd-carrier-row' ) ) {
+								row.classList.add( 'is-on' );
+							}
+						}
+					} )
+					.catch( function () {
+						btn.disabled = false;
+						if ( msg ) {
+							msg.textContent = netErr;
+							msg.className   = 'aod-cd-carrier-test-msg is-bad';
+						}
+						toast( netErr, true );
+					} );
+			} );
+		} );
+	}
+
 	// Champs de recherche : filtre les lignes des tableaux Tarifs / Transporteurs.
 	function bindShippingSearch() {
 		var inputs = Array.prototype.slice.call( document.querySelectorAll( '.aod-cd-search-input' ) );
@@ -1560,6 +1623,7 @@
 		bindSettingsForms();
 		bindShippingFree();
 		bindCarrierRows();
+		bindCarrierTest();
 		bindShippingSearch();
 		bindWhatsappTest();
 		bindOrderDetail();

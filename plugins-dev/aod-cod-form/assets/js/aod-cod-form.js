@@ -42,7 +42,7 @@
 			var $deskRadio = $form.find( 'input[name="delivery"][value="desk"]' );
 			var $homeRadio = $form.find( 'input[name="delivery"][value="home"]' );
 			var $deskLabel = $deskRadio.closest( '.aod-cod__radio' );
-			var deskCache  = {}; // wilaya -> { gated:bool, set:[clés normalisées] }
+			var deskCache  = {}; // wilaya -> { supported, gated, set:[clés] }
 
 			// Carte d'offre actuellement sélectionnée (index 0 = « 1 produit » par défaut).
 			function $selectedCard() {
@@ -126,7 +126,10 @@
 				var code  = parseInt( $wilaya.val(), 10 );
 				var entry = deskCache[ code ];
 				var allowed = true;
-				if ( entry && entry.gated ) {
+				if ( entry && false === entry.supported ) {
+					// Le livreur actif ne gère pas le stop-desk : pas d'option « bureau ».
+					allowed = false;
+				} else if ( entry && entry.gated ) {
 					var val = $commune.val();
 					if ( val ) {
 						allowed = entry.set.indexOf( normCommune( val ) ) !== -1;
@@ -154,10 +157,15 @@
 					wilaya: code
 				} ).done( function ( res ) {
 					var d = ( res && res.data ) || {};
-					deskCache[ code ] = { gated: !! d.gated, set: d.communes || [] };
+					// desk:false = livreur sans stop-desk → option « bureau » masquée.
+					deskCache[ code ] = {
+						supported: ( false !== d.desk ),
+						gated: !! d.gated,
+						set: d.communes || []
+					};
 					applyDeskGate();
 				} ).fail( function () {
-					deskCache[ code ] = { gated: false, set: [] };
+					deskCache[ code ] = { supported: true, gated: false, set: [] };
 					applyDeskGate();
 				} );
 			}
@@ -381,10 +389,7 @@
 
 				$.post( AOD_COD.ajax_url, postData ).done( function ( res ) {
 					if ( res && res.success ) {
-						$msg.addClass( 'is-success' ).text( res.data.message );
-						if ( res.data.redirect ) {
-							window.location.href = res.data.redirect;
-						}
+						showSuccess( res.data || {} );
 					} else {
 						showError( ( res && res.data && res.data.message ) || 'Erreur.' );
 						$btn.prop( 'disabled', false ).text( original );
@@ -398,6 +403,79 @@
 
 			function showError( m ) {
 				$msg.addClass( 'is-error' ).text( m );
+			}
+
+			// Remplace le formulaire par un panneau de remerciement (pas de redirection
+			// vers la page WooCommerce « commande reçue » : ce template n'expose aucun
+			// tunnel panier/checkout).
+			function showSuccess( data ) {
+				// Conversion publicitaire : le tunnel WooCommerce « commande reçue »
+				// n'étant pas utilisé, c'est ici (et non sur woocommerce_thankyou) que
+				// l'achat est mesuré. Une seule fois : la commande est marquée côté serveur.
+				fireConversion( data.pixels );
+
+				var i     = AOD_COD.i18n || {};
+				var title = data.message || i.success_title || 'Merci !';
+				var order = data.order_id ? ( ( i.order_label || 'Commande N°' ) + ' ' + data.order_id ) : '';
+				var sub   = i.success_sub || '';
+				var $done = $(
+					'<div class="aod-cod__done" role="status" aria-live="polite">' +
+						'<div class="aod-cod__done-ic" aria-hidden="true">✓</div>' +
+						'<h3 class="aod-cod__done-title"></h3>' +
+						'<p class="aod-cod__done-order"></p>' +
+						'<p class="aod-cod__done-sub"></p>' +
+					'</div>'
+				);
+				$done.find( '.aod-cod__done-title' ).text( title );
+				if ( order ) { $done.find( '.aod-cod__done-order' ).text( order ); } else { $done.find( '.aod-cod__done-order' ).remove(); }
+				if ( sub ) { $done.find( '.aod-cod__done-sub' ).text( sub ); } else { $done.find( '.aod-cod__done-sub' ).remove(); }
+				$form.replaceWith( $done );
+				if ( $done[0] && $done[0].scrollIntoView ) {
+					$done[0].scrollIntoView( { behavior: 'smooth', block: 'center' } );
+				}
+			}
+
+			// Émet l'événement d'achat vers chaque régie configurée (Meta « Purchase »,
+			// TikTok « CompletePayment », Snapchat « PURCHASE », Google Ads « conversion »).
+			// Les bases de pixel sont déjà chargées dans le <head> de la page produit,
+			// donc fbq/ttq/snaptr/gtag existent ici. La charge utile vient du serveur
+			// (valeur, devise, produits) ; reste null si aucun pixel n'est configuré.
+			function fireConversion( px ) {
+				if ( ! px ) { return; }
+				var ids = px.content_ids || [];
+				try {
+					if ( px.meta && window.fbq ) {
+						fbq( 'track', 'Purchase', {
+							value: px.value,
+							currency: px.currency,
+							content_ids: ids,
+							content_type: 'product'
+						} );
+					}
+					if ( px.tiktok && window.ttq ) {
+						ttq.track( 'CompletePayment', {
+							value: px.value,
+							currency: px.currency,
+							content_type: 'product',
+							content_id: ids.length ? ids[0] : ''
+						} );
+					}
+					if ( px.snapchat && window.snaptr ) {
+						snaptr( 'track', 'PURCHASE', {
+							price: px.value,
+							currency: px.currency,
+							transaction_id: px.transaction_id
+						} );
+					}
+					if ( px.google_send_to && window.gtag ) {
+						gtag( 'event', 'conversion', {
+							send_to: px.google_send_to,
+							value: px.value,
+							currency: px.currency,
+							transaction_id: px.transaction_id
+						} );
+					}
+				} catch ( e ) {}
 			}
 
 			render();

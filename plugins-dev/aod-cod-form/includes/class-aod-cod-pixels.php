@@ -233,6 +233,72 @@ gtag('config', <?php echo wp_json_encode( $id ); ?>);
 		echo "</script>\n<!-- /AOD COD : conversions -->\n";
 	}
 
+	/**
+	 * Charge utile de conversion (achat) prête à être déclenchée côté client.
+	 *
+	 * Le formulaire COD ne redirige PAS vers la page « commande reçue » de
+	 * WooCommerce (tunnel checkout exclu de ce template) : le hook
+	 * woocommerce_thankyou ne se déclenche donc jamais et purchase_pixels() ne
+	 * mesurerait aucun achat. On expose ici les mêmes événements pour qu'ils
+	 * soient émis en JS juste après la création de la commande (réponse AJAX du
+	 * formulaire).
+	 *
+	 * Marque la commande comme déjà comptée — anti double comptage partagé avec
+	 * purchase_pixels(). Retourne null si déjà comptée ou si aucun pixel n'est
+	 * configuré.
+	 *
+	 * @param WC_Order $order
+	 * @return array|null
+	 */
+	public function purchase_payload( $order ) {
+		if ( ! $order instanceof WC_Order ) {
+			return null;
+		}
+
+		// Anti double comptage : une seule fois par commande.
+		if ( $order->get_meta( '_aod_pixels_fired' ) ) {
+			return null;
+		}
+
+		$s = $this->settings();
+		if ( '' === $s['meta'] && '' === $s['tiktok'] && '' === $s['snapchat'] && '' === $s['google_ads'] ) {
+			return null;
+		}
+
+		$content_ids = array();
+		foreach ( $order->get_items() as $item ) {
+			$pid = $item->get_product_id();
+			if ( $pid ) {
+				$content_ids[] = (string) $pid;
+			}
+		}
+
+		// Marque tout de suite pour éviter un re-déclenchement (refresh, ou hook
+		// woocommerce_thankyou s'il venait à s'exécuter).
+		$order->update_meta_data( '_aod_pixels_fired', 1 );
+		$order->save();
+
+		$payload = array(
+			'value'          => (float) $order->get_total(),
+			'currency'       => $order->get_currency(),
+			'transaction_id' => (string) $order->get_order_number(),
+			'content_ids'    => array_values( $content_ids ),
+			'meta'           => ( '' !== $s['meta'] ),
+			'tiktok'         => ( '' !== $s['tiktok'] ),
+			'snapchat'       => ( '' !== $s['snapchat'] ),
+		);
+
+		if ( '' !== $s['google_ads'] ) {
+			$send_to = self::clean_id( $s['google_ads'] );
+			if ( '' !== $s['google_label'] ) {
+				$send_to .= '/' . self::clean_id( $s['google_label'] );
+			}
+			$payload['google_send_to'] = $send_to;
+		}
+
+		return $payload;
+	}
+
 	/* --------------------------------------------------------------------- */
 	/* Admin                                                                 */
 	/* --------------------------------------------------------------------- */

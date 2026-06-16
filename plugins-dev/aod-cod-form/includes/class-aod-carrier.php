@@ -137,6 +137,48 @@ abstract class AOD_Carrier {
 		return null;
 	}
 
+	/**
+	 * Détermine le bureau stop-desk d'une commande SANS demander à l'acheteur.
+	 *
+	 * Le formulaire public ne propose plus de liste de bureaux : pour une commande
+	 * « bureau », le point de retrait est déduit de la wilaya + commune de la
+	 * commande. Implémentation par défaut : le premier bureau de la wilaya. Les
+	 * livreurs qui exposent la commune de chaque bureau (E-com Delivery…) surchargent
+	 * pour choisir le bureau de la commune de l'acheteur (repli : premier bureau).
+	 *
+	 * @param WC_Order $order
+	 * @return string Code du bureau, ou '' si la wilaya n'a aucun bureau.
+	 */
+	public function resolve_stopdesk_code( $order ) {
+		$centers = $this->get_centers( (int) $order->get_meta( '_aod_wilaya_code' ) );
+		if ( is_array( $centers ) && ! empty( $centers ) && isset( $centers[0]['id'] ) ) {
+			return (string) $centers[0]['id'];
+		}
+		return '';
+	}
+
+	/**
+	 * Teste la connexion à l'API du transporteur (vérification « en direct »).
+	 *
+	 * Effectue un appel léger en lecture seule pour confirmer que les identifiants
+	 * saisis sont réellement acceptés par le livreur. Implémentation par défaut :
+	 * pas d'endpoint de vérification dédié → on ne confirme que la présence des
+	 * identifiants (live = false). Les livreurs qui exposent un point d'accès léger
+	 * (Procolis /token, Yalidine /wilayas, EcoTrack get/communes, Maystro
+	 * base/commune) surchargent cette méthode pour un vrai test « en direct ».
+	 *
+	 * @return array|WP_Error array( 'live' => bool, 'message' => string ) :
+	 *                        live = true si vérifié auprès de l'API, false si seuls
+	 *                        les identifiants sont présents (pas de test en direct) ;
+	 *                        WP_Error si non configuré ou si l'API a refusé.
+	 */
+	public function test_connection() {
+		if ( ! $this->is_configured() ) {
+			return new WP_Error( 'aod_carrier_not_configured', __( 'Identifiants du transporteur manquants.', 'aod-cod-form' ) );
+		}
+		return array( 'live' => false, 'message' => '' );
+	}
+
 	/* ---- Helpers communs ---- */
 
 	/** Clé d'option WordPress des réglages de ce livreur. */
@@ -175,9 +217,14 @@ abstract class AOD_Carrier {
 		$data = json_decode( $raw, true );
 
 		if ( $code < 200 || $code >= 300 ) {
-			$msg = ( is_array( $data ) && ! empty( $data['message'] ) )
-				? $data['message']
-				: sprintf( __( 'Erreur API %1$s (HTTP %2$d).', 'aod-cod-form' ), $this->label(), $code );
+			if ( is_array( $data ) && ! empty( $data['message'] ) ) {
+				$msg = $data['message'];
+			} elseif ( is_array( $data ) && isset( $data['error']['message'] ) && '' !== $data['error']['message'] ) {
+				// Format { error: { code, message, details } } (ex. E-com Delivery API v2).
+				$msg = (string) $data['error']['message'];
+			} else {
+				$msg = sprintf( __( 'Erreur API %1$s (HTTP %2$d).', 'aod-cod-form' ), $this->label(), $code );
+			}
 			// Détaille les erreurs de validation (format Laravel { errors: { champ: [..] } })
 			// au lieu du résumé tronqué « … (and 1 more error) ».
 			if ( is_array( $data ) && ! empty( $data['errors'] ) && is_array( $data['errors'] ) ) {
