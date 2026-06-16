@@ -86,6 +86,9 @@ class AOD_COD_Form {
 			wp_send_json_success( array( 'gated' => false ) );
 		}
 
+		// Le bureau de retrait n'est plus choisi par l'acheteur : il est déduit de la
+		// wilaya + commune à l'envoi (cf. AOD_Carrier::resolve_stopdesk_code()). On se
+		// contente donc d'autoriser/restreindre l'option « bureau » par commune.
 		$set = $carrier->desk_communes( $wilaya );
 		if ( ! is_array( $set ) ) {
 			// null = filtrage non applicable / référentiel indisponible : on n'impose rien.
@@ -205,6 +208,9 @@ class AOD_COD_Form {
 				'add_item'       => __( 'Ajouter un article', 'aod-cod-form' ),
 				'remove_item'    => __( 'Retirer cet article', 'aod-cod-form' ),
 				'cart_empty'     => __( 'Veuillez ajouter au moins un article.', 'aod-cod-form' ),
+				'success_title'  => __( 'Merci ! Votre commande est bien enregistrée.', 'aod-cod-form' ),
+				'order_label'    => __( 'Commande N°', 'aod-cod-form' ),
+				'success_sub'    => __( 'Nous vous appellerons bientôt pour confirmer la livraison.', 'aod-cod-form' ),
 			),
 		) );
 	}
@@ -1075,6 +1081,8 @@ class AOD_COD_Form {
 			$order->update_meta_data( '_aod_commune', $commune );
 			$order->update_meta_data( '_aod_commune_ar', AOD_COD_Data::commune_name_ar( $wilaya, $commune ) );
 			$order->update_meta_data( '_aod_delivery_type', $delivery );
+			// Le bureau stop-desk n'est plus saisi par l'acheteur : il est déduit de la
+			// wilaya + commune au moment de l'envoi au transporteur.
 			$order->update_meta_data( '_aod_source', 'aod-cod-form' );
 
 			$order->calculate_totals();
@@ -1089,12 +1097,21 @@ class AOD_COD_Form {
 			// Permet aux modules (notif WhatsApp, etc.) de réagir à la commande COD finalisée.
 			do_action( 'aod_cod_order_created', $order );
 
-			$redirect = $order->get_checkout_order_received_url();
+			// Pas de redirection vers la page WooCommerce « commande reçue » (tunnel
+			// checkout exclu de ce template) : le formulaire affiche un remerciement
+			// en place via les libellés i18n (success_title / order_label / success_sub).
+			//
+			// Le hook woocommerce_thankyou ne se déclenchant donc jamais, on expose la
+			// charge de conversion publicitaire (Meta/TikTok/Snapchat/Google) pour la
+			// déclencher en JS juste après — sinon aucun achat n'est jamais mesuré.
+			$pixels = class_exists( 'AOD_COD_Pixels' )
+				? AOD_COD_Pixels::instance()->purchase_payload( $order )
+				: null;
 
 			wp_send_json_success( array(
 				'order_id' => $order->get_id(),
-				'redirect' => $redirect,
-				'message'  => __( 'Commande enregistrée ! Nous vous appellerons pour confirmer.', 'aod-cod-form' ),
+				'message'  => __( 'Merci ! Votre commande est bien enregistrée.', 'aod-cod-form' ),
+				'pixels'   => $pixels,
 			) );
 		} catch ( Exception $e ) {
 			wp_send_json_error( array( 'message' => __( 'Erreur lors de la création de la commande.', 'aod-cod-form' ) ), 500 );
