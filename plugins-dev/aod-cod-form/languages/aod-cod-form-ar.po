@@ -121,3 +121,12 @@ msgstr "اختر: %s"
 
 msgid "— Choisir —"
 msgstr "— اختر —"
+
+msgid "Merci ! Votre commande est bien enregistrée."
+msgstr "شكرًا! تم تسجيل طلبك بنجاح."
+
+msgid "Commande N°"
+msgstr "رقم الطلب"
+
+msgid "Nous vous appellerons bientôt pour confirmer la livraison."
+msgstr "سنتصل بك قريبًا لتأكيد التوصيل."

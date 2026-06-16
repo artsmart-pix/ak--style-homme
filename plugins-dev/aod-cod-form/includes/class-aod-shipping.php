@@ -240,11 +240,12 @@ class AOD_Shipping {
 			}
 		}
 
-		// Stop-desk sans centre choisi : on tente le premier centre disponible.
+		// Stop-desk sans bureau enregistré : on le déduit de la wilaya/commune
+		// (l'acheteur ne choisit plus de bureau dans le formulaire public).
 		if ( $this->is_desk_order( $order ) && $carrier->supports_stopdesk() && '' === (string) $order->get_meta( AOD_Carrier::META_STOPDESK ) ) {
-			$centers = $carrier->get_centers( (int) $order->get_meta( '_aod_wilaya_code' ) );
-			if ( is_array( $centers ) && ! empty( $centers ) && isset( $centers[0]['id'] ) ) {
-				$order->update_meta_data( AOD_Carrier::META_STOPDESK, (string) $centers[0]['id'] );
+			$code = $carrier->resolve_stopdesk_code( $order );
+			if ( '' !== $code ) {
+				$order->update_meta_data( AOD_Carrier::META_STOPDESK, $code );
 				$order->save();
 			}
 		}
