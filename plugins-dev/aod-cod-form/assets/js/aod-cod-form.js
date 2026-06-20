@@ -445,12 +445,15 @@
 				var ids = px.content_ids || [];
 				try {
 					if ( px.meta && window.fbq ) {
+						// 4e argument { eventID } : permet à Meta de dédupliquer cet
+						// achat avec sa copie « serveur » (Conversions API) qui porte
+						// le même event_id (= n° de commande).
 						fbq( 'track', 'Purchase', {
 							value: px.value,
 							currency: px.currency,
 							content_ids: ids,
 							content_type: 'product'
-						} );
+						}, px.event_id ? { eventID: px.event_id } : undefined );
 					}
 					if ( px.tiktok && window.ttq ) {
 						ttq.track( 'CompletePayment', {

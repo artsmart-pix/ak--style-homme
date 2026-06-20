@@ -263,11 +263,30 @@ abstract class AOD_Carrier {
 		return trim( $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() );
 	}
 
-	/** Description des produits : « Nom x2, Autre x1 ». */
+	/**
+	 * Description des produits envoyée au livreur : « Nom (Couleur: Rouge, Taille: L) x2, Autre x1 ».
+	 *
+	 * Les variantes du formulaire COD ne sont pas des variations WooCommerce natives :
+	 * la commande porte le produit parent + le choix stocké en meta de ligne
+	 * (Couleur, Taille…). On annexe donc ces meta visibles, sinon le livreur ne
+	 * reçoit que le nom du parent sans la variante choisie.
+	 */
 	protected function product_list( $order ) {
 		$items = array();
 		foreach ( $order->get_items() as $item ) {
-			$items[] = $item->get_name() . ' x' . $item->get_quantity();
+			$label = $item->get_name();
+			$meta  = array();
+			foreach ( $item->get_formatted_meta_data( '_', true ) as $m ) {
+				$key = wp_strip_all_tags( $m->display_key );
+				$val = wp_strip_all_tags( $m->display_value );
+				if ( '' !== trim( $key ) && '' !== trim( $val ) ) {
+					$meta[] = $key . ': ' . trim( $val );
+				}
+			}
+			if ( $meta ) {
+				$label .= ' (' . implode( ', ', $meta ) . ')';
+			}
+			$items[] = $label . ' x' . $item->get_quantity();
 		}
 		return implode( ', ', $items );
 	}

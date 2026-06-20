@@ -130,3 +130,9 @@ msgstr "رقم الطلب"
 
 msgid "Nous vous appellerons bientôt pour confirmer la livraison."
 msgstr "سنتصل بك قريبًا لتأكيد التوصيل."
+
+msgid "Meta — Vérification de domaine"
+msgstr "Meta — التحقّق من النطاق"
+
+msgid "Colle la balise <meta name=\"facebook-domain-verification\" …> fournie par Meta (ou juste son code). Injectée dans le <head> du site pour valider le domaine."
+msgstr "الصق وسم <meta name=\"facebook-domain-verification\" …> الذي يوفّره Meta (أو رمزه فقط). يُضاف إلى <head> الموقع للتحقّق من النطاق."

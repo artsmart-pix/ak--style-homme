@@ -51,11 +51,12 @@ class AOD_COD_Pixels {
 	public function settings() {
 		$saved = get_option( self::OPTION, array() );
 		return wp_parse_args( (array) $saved, array(
-			'meta'         => '',
-			'tiktok'       => '',
-			'snapchat'     => '',
-			'google_ads'   => '',
-			'google_label' => '',
+			'meta'                     => '',
+			'tiktok'                   => '',
+			'snapchat'                 => '',
+			'google_ads'               => '',
+			'google_label'             => '',
+			'meta_domain_verification' => '',
 		) );
 	}
 
@@ -67,6 +68,24 @@ class AOD_COD_Pixels {
 	 */
 	protected static function clean_id( $v ) {
 		return preg_replace( '/[^A-Za-z0-9_\-]/', '', (string) $v );
+	}
+
+	/**
+	 * Extrait le code de vérification de domaine Meta.
+	 *
+	 * Accepte aussi bien le code brut que la balise complète collée telle quelle :
+	 * <meta name="facebook-domain-verification" content="XXXX" />. Ne conserve
+	 * que le contenu de l’attribut content, nettoyé.
+	 *
+	 * @param string $v
+	 * @return string
+	 */
+	protected static function clean_domain_verification( $v ) {
+		$v = (string) $v;
+		if ( preg_match( '/content\s*=\s*[\'"]([^\'"]+)[\'"]/i', $v, $m ) ) {
+			$v = $m[1];
+		}
+		return preg_replace( '/[^A-Za-z0-9_\-]/', '', trim( $v ) );
 	}
 
 	/* --------------------------------------------------------------------- */
@@ -81,6 +100,16 @@ class AOD_COD_Pixels {
 			return;
 		}
 		$s = $this->settings();
+
+		// --- Vérification de domaine Meta ---
+		// Balise statique dans le <head> (jamais injectée par JS, sinon Meta ne la
+		// trouve pas). Présente sur toutes les pages, donc sur l’accueil exigé.
+		if ( '' !== $s['meta_domain_verification'] ) {
+			printf(
+				"<meta name=\"facebook-domain-verification\" content=\"%s\" />\n",
+				esc_attr( $s['meta_domain_verification'] )
+			);
+		}
 
 		// --- Meta (Facebook) Pixel ---
 		if ( '' !== $s['meta'] ) {
@@ -174,6 +203,10 @@ gtag('config', <?php echo wp_json_encode( $id ); ?>);
 		$value    = (float) $order->get_total();
 		$currency = $order->get_currency();
 		$tx       = (string) $order->get_order_number();
+		// Identifiant d'événement stable (= n° de commande) pour la déduplication
+		// Meta « pixel ↔ Conversions API » : même event_name + même event_id =
+		// un seul achat comptabilisé. Cf. fbq(..., { eventID }).
+		$event_id = $tx;
 
 		$content_ids = array();
 		foreach ( $order->get_items() as $item ) {
@@ -191,10 +224,11 @@ gtag('config', <?php echo wp_json_encode( $id ); ?>);
 
 		if ( '' !== $s['meta'] ) {
 			printf(
-				"if(window.fbq){fbq('track','Purchase',{value:%s,currency:%s,content_ids:%s,content_type:'product'});}\n",
+				"if(window.fbq){fbq('track','Purchase',{value:%s,currency:%s,content_ids:%s,content_type:'product'},{eventID:%s});}\n",
 				wp_json_encode( $value ),
 				wp_json_encode( $currency ),
-				wp_json_encode( $content_ids )
+				wp_json_encode( $content_ids ),
+				wp_json_encode( $event_id )
 			);
 		}
 
@@ -282,6 +316,8 @@ gtag('config', <?php echo wp_json_encode( $id ); ?>);
 			'value'          => (float) $order->get_total(),
 			'currency'       => $order->get_currency(),
 			'transaction_id' => (string) $order->get_order_number(),
+			// Déduplication Meta pixel ↔ Conversions API (même event_id côté serveur).
+			'event_id'       => (string) $order->get_order_number(),
 			'content_ids'    => array_values( $content_ids ),
 			'meta'           => ( '' !== $s['meta'] ),
 			'tiktok'         => ( '' !== $s['tiktok'] ),
@@ -329,6 +365,7 @@ gtag('config', <?php echo wp_json_encode( $id ); ?>);
 			'snapchat'     => isset( $_POST['snapchat'] ) ? self::clean_id( wp_unslash( $_POST['snapchat'] ) ) : '',
 			'google_ads'   => isset( $_POST['google_ads'] ) ? self::clean_id( wp_unslash( $_POST['google_ads'] ) ) : '',
 			'google_label' => isset( $_POST['google_label'] ) ? self::clean_id( wp_unslash( $_POST['google_label'] ) ) : '',
+			'meta_domain_verification' => isset( $_POST['meta_domain_verification'] ) ? self::clean_domain_verification( wp_unslash( $_POST['meta_domain_verification'] ) ) : '',
 		);
 		update_option( self::OPTION, $settings );
 
@@ -380,6 +417,13 @@ gtag('config', <?php echo wp_json_encode( $id ); ?>);
 						<td>
 							<input type="text" id="aod_px_google_label" name="google_label" value="<?php echo esc_attr( $s['google_label'] ); ?>" class="regular-text" placeholder="AbC-D_efG-h12">
 							<p class="description"><?php esc_html_e( 'La partie après la barre « / » dans send_to (étiquette de l’action de conversion « Achat »). Sans elle, seule la balise de base est posée.', 'aod-cod-form' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="aod_px_meta_dv"><?php esc_html_e( 'Meta — Vérification de domaine', 'aod-cod-form' ); ?></label></th>
+						<td>
+							<input type="text" id="aod_px_meta_dv" name="meta_domain_verification" value="<?php echo esc_attr( $s['meta_domain_verification'] ); ?>" class="regular-text" placeholder="q7tv7ppepuk3m4z9op7bjcr3747t93">
+							<p class="description"><?php esc_html_e( 'Colle la balise <meta name="facebook-domain-verification" …> fournie par Meta (ou juste son code). Injectée dans le <head> du site pour valider le domaine.', 'aod-cod-form' ); ?></p>
 						</td>
 					</tr>
 				</table>

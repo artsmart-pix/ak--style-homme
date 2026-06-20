@@ -2731,17 +2731,30 @@ class AOD_CD_Dashboard {
 	protected function pixels_settings() {
 		$saved = get_option( 'aod_cod_pixels', array() );
 		return wp_parse_args( (array) $saved, array(
-			'meta'         => '',
-			'tiktok'       => '',
-			'snapchat'     => '',
-			'google_ads'   => '',
-			'google_label' => '',
+			'meta'                     => '',
+			'tiktok'                   => '',
+			'snapchat'                 => '',
+			'google_ads'               => '',
+			'google_label'             => '',
+			'meta_domain_verification' => '',
 		) );
 	}
 
 	/** Nettoie un identifiant de pixel (mêmes caractères sûrs que le plugin COD). */
 	protected static function clean_pixel_id( $v ) {
 		return preg_replace( '/[^A-Za-z0-9_\-]/', '', (string) $v );
+	}
+
+	/**
+	 * Extrait le code de vérification de domaine Meta (code brut OU balise
+	 * <meta name="facebook-domain-verification" content="…"> collée telle quelle).
+	 */
+	protected static function clean_domain_verification( $v ) {
+		$v = (string) $v;
+		if ( preg_match( '/content\s*=\s*[\'"]([^\'"]+)[\'"]/i', $v, $m ) ) {
+			$v = $m[1];
+		}
+		return preg_replace( '/[^A-Za-z0-9_\-]/', '', trim( $v ) );
 	}
 
 	protected function section_marketing() {
@@ -2768,6 +2781,12 @@ class AOD_CD_Dashboard {
 				</label>
 			<?php endforeach; ?>
 
+			<label class="aod-cd-field" style="max-width:480px">
+				<span class="aod-cd-label"><?php esc_html_e( 'Meta — Vérification de domaine', 'aod-client-dashboard' ); ?></span>
+				<input type="text" name="meta_domain_verification" value="<?php echo esc_attr( $s['meta_domain_verification'] ); ?>" placeholder="q7tv7ppepuk3m4z9op7bjcr3747t93">
+				<span class="aod-cd-note" style="font-size:12px;margin-top:2px"><?php esc_html_e( 'Pour confirmer que le domaine t’appartient. Colle ici la balise <meta name="facebook-domain-verification" …> donnée par Meta (ou seulement son code) : elle sera ajoutée automatiquement dans l’en-tête du site. Puis clique « Vérifier le domaine » dans Meta.', 'aod-client-dashboard' ); ?></span>
+			</label>
+
 			<div class="aod-cd-form-foot">
 				<button type="submit" class="aod-cd-btn aod-cd-btn-primary"><?php esc_html_e( 'Enregistrer les pixels', 'aod-client-dashboard' ); ?></button>
 				<span class="aod-cd-form-msg"></span>
@@ -2788,6 +2807,7 @@ class AOD_CD_Dashboard {
 			'snapchat'     => isset( $_POST['snapchat'] ) ? self::clean_pixel_id( wp_unslash( $_POST['snapchat'] ) ) : '',
 			'google_ads'   => isset( $_POST['google_ads'] ) ? self::clean_pixel_id( wp_unslash( $_POST['google_ads'] ) ) : '',
 			'google_label' => isset( $_POST['google_label'] ) ? self::clean_pixel_id( wp_unslash( $_POST['google_label'] ) ) : '',
+			'meta_domain_verification' => isset( $_POST['meta_domain_verification'] ) ? self::clean_domain_verification( wp_unslash( $_POST['meta_domain_verification'] ) ) : '',
 		);
 		update_option( 'aod_cod_pixels', $settings );
 		wp_send_json_success( array( 'message' => __( 'Pixels enregistrés.', 'aod-client-dashboard' ) ) );
