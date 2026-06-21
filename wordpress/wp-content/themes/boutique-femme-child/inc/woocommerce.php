@@ -132,6 +132,18 @@ add_action( 'init', function () {
 	remove_action( 'woocommerce_before_shop_loop', 'woocommerce_result_count', 20 );
 } );
 
+// Corrige l'inversion du prix sur les cartes (Accueil/Boutique) et la fiche.
+// Cause : le symbole de la devise DZD est arabe (« د.ج », fortement RTL) ; or
+// WooCommerce enveloppe le prix dans un <bdi> sans dir → dir="auto" par défaut.
+// L'algorithme bidi déduit alors la direction du 1er caractère FORT : les
+// chiffres sont neutres, donc c'est le « د » arabe qui l'emporte → tout le bloc
+// bascule en RTL et le symbole se retrouve à GAUCHE du nombre (« د.ج 4 900 »),
+// y compris sur la page française. On force un dir="ltr" explicite : les chiffres
+// (latins) précèdent toujours le symbole — ordre correct et lisible en FR ET AR.
+add_filter( 'wc_price', function ( $html ) {
+	return str_replace( '<bdi>', '<bdi dir="ltr">', $html );
+}, 10, 1 );
+
 /* -------------------------------------------------------------------------
  *  2bis. Traductions des chaînes WooCommerce visibles (FR/AR)
  *

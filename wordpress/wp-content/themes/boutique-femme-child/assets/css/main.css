@@ -399,6 +399,10 @@ html[dir="rtl"] .bf-cat:hover .bf-cat__body svg { transform: translateX(-4px) sc
 .woocommerce ul.products li.product .price {
 	color: var(--bf-terra-dk) !important; font-weight: 700; padding: .2rem .3rem .4rem; font-family: var(--bf-head);
 }
+/* Prix : le symbole DZD « د.ج » est arabe (RTL) ; on force la lecture nombre →
+   symbole pour éviter l'inversion bidi (filet de sécurité, cf. filtre wc_price). */
+.woocommerce-Price-amount,
+.woocommerce-Price-amount bdi { direction: ltr; unicode-bidi: isolate; }
 .woocommerce ul.products li.product .price del { color: var(--bf-ink-soft) !important; font-weight: 400; opacity: .7; }
 .woocommerce ul.products li.product .price ins { text-decoration: none; }
 .woocommerce ul.products li.product .button,
