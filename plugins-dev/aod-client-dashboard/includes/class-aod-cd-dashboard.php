@@ -185,6 +185,7 @@ class AOD_CD_Dashboard {
 <!DOCTYPE html>
 <html <?php echo $is_rtl ? 'dir="rtl"' : ''; ?> lang="<?php echo esc_attr( get_bloginfo( 'language' ) ); ?>">
 <head>
+	<!-- AOD Client Dashboard v<?php echo esc_html( AOD_CD_VERSION ); ?> — repère de déploiement (vérifier la version servie) -->
 	<meta charset="<?php echo esc_attr( get_bloginfo( 'charset' ) ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="robots" content="noindex,nofollow">
@@ -370,7 +371,7 @@ class AOD_CD_Dashboard {
 		echo '</div>';
 
 		$query_status = ( 'all' === $current )
-			? array_keys( wc_get_order_statuses() )
+			? $this->all_order_status_keys()
 			: array( 'wc-' . $current );
 
 		$search   = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
@@ -382,6 +383,7 @@ class AOD_CD_Dashboard {
 		$this->render_search_bar( $base_url, $search, __( 'Rechercher : n°, nom, téléphone…', 'aod-client-dashboard' ), array( 'statut' => $current ) );
 
 		$args = array(
+			'type'     => 'shop_order', // Exclut les remboursements (shop_order_refund) du listing.
 			'limit'    => $per_page,
 			'paged'    => $paged,
 			'paginate' => true,
@@ -440,6 +442,13 @@ class AOD_CD_Dashboard {
 		echo '</tr></thead><tbody>';
 
 		foreach ( $orders as $order ) {
+			// Filet de sécurité : ne jamais tenter de rendre autre chose qu'une
+			// vraie commande. Un remboursement (WC_Order_Refund) qui se glisserait
+			// dans le résultat n'a pas get_billing_state() et provoquerait une
+			// erreur fatale qui couperait tout le tableau (et la pagination).
+			if ( ! $order instanceof WC_Order ) {
+				continue;
+			}
 			$this->render_order_row( $order, $status_options, $can_delete );
 		}
 		echo '</tbody></table></div>';
@@ -736,6 +745,27 @@ class AOD_CD_Dashboard {
 	}
 
 	/**
+	 * Statuts utilisés par l'onglet « Toutes » et les compteurs.
+	 *
+	 * On part de wc_get_order_statuses(), mais on GARANTIT la présence du statut
+	 * personnalisé « Confirmée » (wc-aod-confirmed). Ce statut est fourni par le
+	 * plugin AOD COD Form ; si sa registration ne s'exécute pas (plugin désactivé,
+	 * ordre de chargement, copie en double sur le serveur…), il manquerait à la
+	 * liste et TOUTES les commandes confirmées disparaîtraient de « Toutes » et
+	 * des compteurs — alors qu'elles existent toujours en base. Ce filet empêche
+	 * cette disparition silencieuse, indépendamment de l'état du plugin COD.
+	 *
+	 * @return string[] Clés de statut préfixées wc- (ex. wc-pending, wc-aod-confirmed…).
+	 */
+	protected function all_order_status_keys() {
+		$keys = array_keys( wc_get_order_statuses() );
+		if ( ! in_array( 'wc-aod-confirmed', $keys, true ) ) {
+			$keys[] = 'wc-aod-confirmed';
+		}
+		return $keys;
+	}
+
+	/**
 	 * Compte les commandes d'un statut (ou toutes).
 	 *
 	 * @param string $slug 'all' ou statut sans préfixe wc-.
@@ -749,10 +779,11 @@ class AOD_CD_Dashboard {
 		// HPOS-safe, contrairement à un wc_get_orders( limit => -1 ) qui chargeait
 		// tous les IDs de chaque statut à chaque affichage de la page Commandes.
 		$status = ( 'all' === $slug )
-			? array_keys( wc_get_order_statuses() )
+			? $this->all_order_status_keys()
 			: array( 'wc-' . $slug );
 
 		$args = array(
+			'type'     => 'shop_order', // Cohérent avec le listing : pas de remboursements dans les compteurs.
 			'limit'    => 1,
 			'paginate' => true,
 			'return'   => 'ids',

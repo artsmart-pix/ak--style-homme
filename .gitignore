@@ -24,3 +24,6 @@ woo-jude-form-premium.1.0.7/
 
 # BMAD — config personnelle uniquement (le reste est versionné)
 **/config.user.toml
+
+# Exports/téléchargements depuis la prod Hostinger (données clients/PII, volumineux) — jamais versionnés
+contenu-gestionnaire-fichier-hostinger/
