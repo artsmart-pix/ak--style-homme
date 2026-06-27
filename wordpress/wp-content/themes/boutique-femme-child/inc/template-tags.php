@@ -103,7 +103,7 @@ function bf_picture( $slot, $alt = '', $args = array() ) {
 function bf_bg_style( $slot ) {
 	$url = bf_image_url( $slot );
 	if ( $url ) {
-		return 'background-image:linear-gradient(rgba(28,20,16,.42),rgba(28,20,16,.30)),url(' . esc_url( $url ) . ');';
+		return 'background-image:linear-gradient(rgba(12,16,26,.50),rgba(12,16,26,.40)),url(' . esc_url( $url ) . ');';
 	}
 	return 'background-image:' . bf_placeholder_gradient( $slot ) . ';';
 }
@@ -128,8 +128,8 @@ function bf_reassurance_items() {
 		),
 		array(
 			'icon'  => 'heart',
-			'title' => __( 'Coupes grande taille', 'boutique-femme' ),
-			'text'  => __( 'Du 42 au 56, pensées pour valoriser vos courbes.', 'boutique-femme' ),
+			'title' => __( 'Coupe moderne homme', 'boutique-femme' ),
+			'text'  => __( 'Du S au 3XL, coupe nette et confortable.', 'boutique-femme' ),
 		),
 	);
 }
@@ -217,7 +217,7 @@ function bf_marquee() {
 	$items = array(
 		array( 'truck', __( 'Paiement à la livraison', 'boutique-femme' ) ),
 		array( 'pin',   __( 'Livraison 58 wilayas', 'boutique-femme' ) ),
-		array( 'heart', __( 'Du 42 au 56', 'boutique-femme' ) ),
+		array( 'heart', __( 'Du S au 3XL', 'boutique-femme' ) ),
 		array( 'check', __( 'Échange facile', 'boutique-femme' ) ),
 		array( 'star',  __( 'Tissus qui ne se déforment pas', 'boutique-femme' ) ),
 	);

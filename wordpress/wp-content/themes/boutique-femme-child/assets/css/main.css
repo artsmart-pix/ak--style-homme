@@ -4,24 +4,30 @@
    ========================================================================= */
 
 :root {
-	--bf-nude:      #E8D9CF;
-	--bf-nude-soft: #F3E9E1;
-	--bf-cream:     #FAF6F1;
-	--bf-terra:     #C57B57;
-	--bf-terra-dk:  #A9613F;
-	--bf-gold:      #C9A86A;
-	--bf-ink:       #2A211C;   /* texte fort, brun très foncé */
-	--bf-ink-soft:  #6F635B;   /* texte secondaire */
-	--bf-line:      #EADFD5;
+	/* Palette « AK Style » — sombre + orange (inspiration Mozi) */
+	--bf-nude:      #26262B;   /* surface haute (pastilles, survols) */
+	--bf-nude-soft: #1B1B1F;   /* section alternée sombre */
+	--bf-cream:     #141417;   /* fond de page (charbon) */
+	--bf-terra:     #FF8A1E;   /* accent orange */
+	--bf-terra-dk:  #F2730B;   /* orange foncé (prix, survol) */
+	--bf-gold:      #FFB45A;   /* orange clair secondaire (étoiles, eyebrow) */
+	--bf-ink:       #0E0E11;   /* surface la plus sombre (footer, sections, boutons sombres) */
+	--bf-ink-soft:  #A4A4AE;   /* texte secondaire (gris clair) */
+	--bf-line:      rgba(255,255,255,.10);
 	--bf-white:     #FFFFFF;
 
-	--bf-ok:    #1a7f37;
-	--bf-error: #c0392b;
+	/* Rôles ajoutés pour le thème sombre */
+	--bf-text:      #F2F2F4;   /* texte principal clair */
+	--bf-surface:   #1D1D22;   /* cartes (produits, citations, formulaire) */
+	--bf-surface-2: #232329;   /* champs de saisie, états survol */
+
+	--bf-ok:    #36c46a;
+	--bf-error: #ff6b5e;
 
 	--bf-radius:    18px;
 	--bf-radius-sm: 12px;
-	--bf-shadow:    0 18px 50px -24px rgba(80, 50, 30, .45);
-	--bf-shadow-sm: 0 8px 26px -16px rgba(80, 50, 30, .45);
+	--bf-shadow:    0 24px 60px -28px rgba(0, 0, 0, .85);
+	--bf-shadow-sm: 0 12px 30px -18px rgba(0, 0, 0, .7);
 
 	--bf-head: "Barlow", system-ui, sans-serif;
 	--bf-body: "Inter", system-ui, sans-serif;
@@ -719,4 +725,220 @@ html[dir="rtl"] .bf-marquee__track { animation-direction: reverse; }
 	.bf-cta::before { animation: none; }
 	.bf-marquee__track { animation: none; transform: none; white-space: normal; }
 	.bf-marquee { white-space: normal; }
+}
+
+/* =========================================================================
+   HÉRO PRO — overlay éditorial, entrée en cascade, indicateur de scroll
+   ========================================================================= */
+.bf-hero { min-height: clamp(620px, 90vh, 900px); }
+
+/* Overlay directionnel (texte lisible à gauche, profondeur en bas) */
+.bf-hero::after {
+	content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+	background:
+		linear-gradient(100deg, rgba(8,11,20,.88) 0%, rgba(8,11,20,.5) 42%, rgba(8,11,20,.05) 78%),
+		linear-gradient(0deg, rgba(8,11,20,.7), transparent 45%);
+}
+.bf-hero__inner { z-index: 3; max-width: 680px; }
+
+.bf-hero h1 {
+	font-size: clamp(2.8rem, 7vw, 5.4rem);
+	line-height: 1.02; letter-spacing: -0.02em;
+	text-shadow: 0 2px 30px rgba(0,0,0,.35);
+}
+.bf-hero__sub { color: rgba(255,255,255,.92); font-size: clamp(1.05rem, 2vw, 1.3rem); }
+
+/* Eyebrow avec trait animé */
+.bf-hero .bf-eyebrow { display: inline-flex; align-items: center; gap: .8rem; color: var(--bf-gold); }
+.bf-hero .bf-eyebrow::before {
+	content: ""; width: 42px; height: 2px; background: currentColor; display: inline-block;
+	transform-origin: left; animation: bfLine 1s cubic-bezier(.16,1,.3,1) .15s both;
+}
+
+/* CTA principal : blanc contrasté sur la photo */
+.bf-hero .bf-btn--primary {
+	background: #fff; color: var(--bf-ink); border: 1px solid #fff;
+	box-shadow: 0 14px 34px -16px rgba(0,0,0,.6);
+}
+.bf-hero .bf-btn--primary:hover { background: var(--bf-terra); color: #fff; border-color: var(--bf-terra); }
+
+/* Entrée en cascade des éléments du héro */
+.bf-hero__inner > * { animation: bfHeroIn .9s cubic-bezier(.16,1,.3,1) both; }
+.bf-hero__inner > *:nth-child(1) { animation-delay: .05s; }
+.bf-hero__inner > *:nth-child(2) { animation-delay: .18s; }
+.bf-hero__inner > *:nth-child(3) { animation-delay: .30s; }
+.bf-hero__inner > *:nth-child(4) { animation-delay: .42s; }
+.bf-hero__inner > *:nth-child(5) { animation-delay: .54s; }
+@keyframes bfHeroIn { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+@keyframes bfLine { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* Indicateur de scroll */
+.bf-hero__scroll {
+	position: absolute; left: 50%; bottom: 1.7rem; transform: translateX(-50%); z-index: 3;
+	width: 26px; height: 42px; border: 2px solid rgba(255,255,255,.55); border-radius: 14px;
+}
+.bf-hero__scroll::before {
+	content: ""; position: absolute; left: 50%; top: 7px; width: 4px; height: 9px;
+	background: #fff; border-radius: 2px; transform: translateX(-50%);
+	animation: bfScroll 1.7s ease-in-out infinite;
+}
+@keyframes bfScroll {
+	0% { opacity: 0; transform: translate(-50%, 0); }
+	30% { opacity: 1; }
+	100% { opacity: 0; transform: translate(-50%, 15px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.bf-hero__inner > * { animation: none; }
+	.bf-hero .bf-eyebrow::before { animation: none; transform: none; }
+	.bf-hero__scroll::before { animation: none; }
+}
+
+/* =========================================================================
+   IMAGE DU HÉRO — animée : révélation à l'entrée + Ken Burns (zoom + pano)
+   ========================================================================= */
+.bf-hero::before {
+	transform-origin: 68% 42%;
+	/* 1) révélation au chargement, puis 2) Ken Burns en boucle */
+	animation:
+		bfHeroIntro 1.8s cubic-bezier(.16,1,.3,1) both,
+		bfHeroKen 26s ease-in-out 1.8s infinite alternate;
+}
+@keyframes bfHeroIntro {
+	from { transform: scale(1.22); opacity: 0; filter: saturate(.6); }
+	to   { transform: scale(1.06); opacity: 1; filter: saturate(1); }
+}
+@keyframes bfHeroKen {
+	0%   { transform: scale(1.06) translate3d(0, 0, 0); }
+	100% { transform: scale(1.16) translate3d(-2.6%, -2.2%, 0); }
+}
+
+/* Voile lumineux qui balaie lentement la photo (effet premium) */
+.bf-hero__inner::after { content: none; } /* garde-fou */
+.bf-hero .bf-hero__sheen {
+	position: absolute; inset: 0; z-index: 2; pointer-events: none; mix-blend-mode: soft-light;
+	background: linear-gradient(75deg, transparent 35%, rgba(255,255,255,.18) 50%, transparent 65%);
+	background-size: 250% 100%;
+	animation: bfSheen 9s ease-in-out 2s infinite;
+}
+@keyframes bfSheen {
+	0%, 100% { background-position: 120% 0; opacity: 0; }
+	45%      { opacity: 1; }
+	50%      { background-position: -20% 0; }
+	60%      { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.bf-hero::before { animation: none; transform: scale(1.04); opacity: 1; }
+	.bf-hero .bf-hero__sheen { animation: none; opacity: 0; }
+}
+
+/* =========================================================================
+   THÈME SOMBRE « AK Style » (inspiration Mozi) — superpose la palette sombre
+   sur les composants pensés à l'origine pour un fond clair.
+   ========================================================================= */
+
+/* ---- Texte clair sur fond sombre ---------------------------------------- */
+body.bf { background: var(--bf-cream); color: var(--bf-text); }
+body.bf h1, body.bf h2, body.bf h3, body.bf h4 { color: var(--bf-text); }
+a:hover { color: var(--bf-gold); }
+
+/* ---- Surfaces sombres (remplacent les anciens fonds blancs) -------------- */
+.bf-reassure,
+.woocommerce ul.products li.product,
+.woocommerce-page ul.products li.product,
+.bf-quote,
+.bf-form,
+.bf-orderby__btn,
+.bf-orderby__list,
+.woocommerce .woocommerce-ordering select.orderby,
+.bf-burger {
+	background: var(--bf-surface);
+	border-color: var(--bf-line);
+}
+
+/* ---- En-tête sombre, translucide sur le héros --------------------------- */
+.bf-header { background: rgba(16, 16, 19, .72); border-bottom: 1px solid transparent; }
+.bf-header.is-scrolled {
+	background: rgba(16, 16, 19, .96);
+	border-bottom-color: var(--bf-line);
+	box-shadow: 0 10px 30px -24px #000;
+}
+
+/* ---- Logo + navigation en clair ----------------------------------------- */
+.bf-logo-text, .bf-logo-text__b { color: var(--bf-text); }
+.bf-menu a { color: var(--bf-text); }
+.bf-burger span { background: var(--bf-text); }
+.bf-header__actions .aod-lang-switcher a.is-active,
+.bf-header__actions .aod-lang-switcher a:hover { color: var(--bf-text); background: var(--bf-nude); }
+
+/* ---- Boutons : pilules orange en dégradé (style « Go Premium ») ---------- */
+.bf-btn--primary,
+.bf-hero .bf-btn--primary,
+.bf-btn--card {
+	background: linear-gradient(135deg, #FFA422 0%, #F2730B 100%);
+	color: #1a1206; border-color: transparent;
+	box-shadow: 0 14px 30px -14px rgba(242, 115, 11, .65);
+}
+.bf-btn--primary:hover,
+.bf-hero .bf-btn--primary:hover,
+.bf-btn--card:hover {
+	background: linear-gradient(135deg, #FFB845 0%, #FF7E12 100%);
+	color: #1a1206; filter: none;
+}
+.bf-btn--ghost { color: var(--bf-text); border-color: rgba(255, 255, 255, .28); }
+.bf-btn--ghost:hover { background: var(--bf-text); color: var(--bf-ink); }
+
+/* ---- Sections sombres : texte clair ------------------------------------- */
+.bf-section--ink { color: rgba(255, 255, 255, .85); }
+
+/* ---- Cartes produit (WooCommerce) --------------------------------------- */
+.woocommerce ul.products li.product .woocommerce-loop-product__title { color: var(--bf-text); }
+.woocommerce ul.products li.product:hover { border-color: rgba(255, 255, 255, .16); }
+.woocommerce nav.woocommerce-pagination ul li a,
+.woocommerce nav.woocommerce-pagination ul li span { color: var(--bf-text); border-color: var(--bf-line); }
+
+/* ---- Barre + menu de tri ------------------------------------------------ */
+.bf-orderby__btn,
+.woocommerce .woocommerce-ordering select.orderby { color: var(--bf-text); }
+.bf-orderby__opt { color: var(--bf-text); }
+.bf-orderby__opt:hover,
+.bf-orderby__opt:focus-visible,
+.bf-orderby__opt[aria-selected="true"] { background: var(--bf-surface-2); color: var(--bf-gold); }
+
+/* ---- Formulaire de contact ---------------------------------------------- */
+.bf-field__label { color: var(--bf-text); }
+.bf-field input, .bf-field textarea {
+	background: var(--bf-surface-2); color: var(--bf-text); border-color: var(--bf-line);
+}
+.bf-field input:focus, .bf-field textarea:focus {
+	background: #2a2a30; border-color: var(--bf-terra);
+	box-shadow: 0 0 0 4px rgba(255, 138, 30, .16);
+}
+
+/* ---- Pastilles d'icônes (réassurance) ----------------------------------- */
+.bf-reassure__icon { background: var(--bf-surface-2); color: var(--bf-terra); }
+.bf-reassure-inline__i { background: var(--bf-surface-2); color: var(--bf-gold); }
+
+/* ---- Témoignages -------------------------------------------------------- */
+.bf-quote p { color: var(--bf-text); }
+.bf-quote__author span { color: var(--bf-ink-soft); }
+
+/* ---- Bandeau défilant (marquee) : dégradé orange sombre ----------------- */
+.bf-marquee {
+	background:
+		radial-gradient(140% 200% at 50% -60%, rgba(255, 138, 30, .16), transparent 55%),
+		linear-gradient(180deg, #241a10 0%, var(--bf-ink) 100%);
+	border-block-color: rgba(255, 138, 30, .25);
+}
+.bf-marquee__item svg {
+	color: var(--bf-gold);
+	background: rgba(255, 138, 30, .14);
+	border-color: rgba(255, 138, 30, .32);
+}
+.bf-marquee__item::after { color: var(--bf-gold); }
+
+/* ---- Bandeau CTA final : voile orange ----------------------------------- */
+.bf-cta::after {
+	background: linear-gradient(120deg, rgba(15, 15, 17, .82), rgba(242, 115, 11, .55));
 }

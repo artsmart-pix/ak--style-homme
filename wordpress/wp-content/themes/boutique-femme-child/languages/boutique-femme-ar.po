@@ -311,3 +311,86 @@ msgstr "تبديل سهل"
 
 msgid "Tissus qui ne se déforment pas"
 msgstr "أقمشة لا تفقد شكلها"
+
+# --- Chaînes spécifiques « Homme » (AK Style) ---
+
+msgid "Nouvelle collection — Homme"
+msgstr "تشكيلة جديدة — رجال"
+
+msgid "Le style masculin, sans effort"
+msgstr "الأناقة الرجالية، بلا عناء"
+
+msgid "Des essentiels masculins bien coupés — t-shirts, polos, sweats et accessoires. Qualité, confort et livraison partout en Algérie, payée à la réception."
+msgstr "أساسيات رجالية بقصّات أنيقة — تيشيرتات وبولو وسويت شيرت وإكسسوارات. جودة وراحة وتوصيل إلى كامل ولايات الجزائر، مع الدفع عند الاستلام."
+
+msgid "Du S au 3XL"
+msgstr "من S إلى 3XL"
+
+msgid "Trouvez votre style"
+msgstr "اعثر على أسلوبك"
+
+msgid "T-shirts, polos, sweats ou accessoires — tout le vestiaire masculin au même endroit."
+msgstr "تيشيرتات أو بولو أو سويت شيرت أو إكسسوارات — كل خزانة الرجل في مكان واحد."
+
+msgid "Sélectionnés pour leur style et leur confort au quotidien."
+msgstr "مُختارة لأناقتها وراحتها في كل يوم."
+
+msgid "Style masculin mis en valeur"
+msgstr "أناقة رجالية في أبهى صورة"
+
+msgid "Une coupe moderne, un confort toute la journée"
+msgstr "قصّة عصرية وراحة طوال اليوم"
+
+msgid "Des pièces pensées pour l'homme moderne : matières agréables, coupe nette ni trop ajustée ni trop ample, et des finitions qui durent lavage après lavage."
+msgstr "قطع مصمّمة للرجل العصري: أقمشة مريحة، وقصّة متّزنة ليست ضيّقة ولا واسعة، وتشطيبات تدوم غسلة بعد غسلة."
+
+msgid "Tailles S à 3XL, coupe ajustée moderne"
+msgstr "مقاسات من S إلى 3XL، قصّة عصرية متّزنة"
+
+msgid "Coton de qualité qui ne se déforme pas"
+msgstr "قطن عالي الجودة لا يفقد شكله"
+
+msgid "Ils nous font confiance"
+msgstr "يثقون بنا"
+
+msgid "Ce que disent nos clients"
+msgstr "ماذا يقول زبائننا"
+
+msgid "« Qualité au top et livraison en 48h, payée à la réception. Le t-shirt taille parfaitement, je recommande. »"
+msgstr "«جودة ممتازة وتوصيل خلال 48 ساعة مع الدفع عند الاستلام. التيشيرت بمقاسي تماماً، أنصح به.»"
+
+msgid "Karim"
+msgstr "كريم"
+
+msgid "« Le hoodie est exactement comme sur les photos, matière épaisse et coupe nickel. Service rapide. »"
+msgstr "«الهودي مطابق تماماً للصور، قماش سميك وقصّة ممتازة. خدمة سريعة.»"
+
+msgid "Yacine"
+msgstr "ياسين"
+
+msgid "« Livraison jusqu'à Constantine, paiement à la réception. Le polo est de qualité, je vais recommander. »"
+msgstr "«توصيل حتى قسنطينة، الدفع عند الاستلام. البولو ذو جودة عالية، سأطلب مجدداً.»"
+
+msgid "Sofiane"
+msgstr "سفيان"
+
+msgid "Constantine"
+msgstr "قسنطينة"
+
+msgid "Votre nouveau look vous attend"
+msgstr "إطلالتك الجديدة بانتظارك"
+
+msgid "Coupe moderne homme"
+msgstr "قصّة رجالية عصرية"
+
+msgid "Du S au 3XL, coupe nette et confortable."
+msgstr "من S إلى 3XL، قصّة أنيقة ومريحة."
+
+msgid "Des essentiels masculins bien coupés — t-shirts, polos, sweats et accessoires. Paiement à la livraison partout en Algérie."
+msgstr "أساسيات رجالية بقصّات أنيقة — تيشيرتات وبولو وسويت شيرت وإكسسوارات. الدفع عند الاستلام في كل الجزائر."
+
+msgid "Filtrer par catégorie"
+msgstr "التصفية حسب الفئة"
+
+msgid "Tout"
+msgstr "الكل"

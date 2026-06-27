@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BF_VERSION', '1.0.9' );
+define( 'BF_VERSION', '2.4.0' );
 define( 'BF_DIR', get_stylesheet_directory() );
 define( 'BF_URI', get_stylesheet_directory_uri() );
 

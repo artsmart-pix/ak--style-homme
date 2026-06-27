@@ -29,6 +29,28 @@ add_action( 'after_setup_theme', function () {
 }, 5 );
 
 /**
+ * Force la direction RTL en arabe, même quand le pack de langue core « ar »
+ * n'est pas installé (déploiement hors-ligne, cf. TEMPLATE.md §3).
+ *
+ * Sans ce correctif, is_rtl() reste faux : WordPress lit la direction du texte
+ * depuis la traduction core absente (_x( 'ltr', 'text direction' )), donc ni
+ * dir="rtl" (language_attributes() dans header.php) ni la feuille rtl.css
+ * (enqueue.php) ne s'activent. On positionne la direction sur le hook « wp »,
+ * qui s'exécute avant get_header() et wp_enqueue_scripts.
+ */
+add_action( 'wp', function () {
+	if ( is_admin() ) {
+		return;
+	}
+	if ( 0 !== strpos( get_locale(), 'ar' ) ) {
+		return;
+	}
+	if ( isset( $GLOBALS['wp_locale'] ) && is_object( $GLOBALS['wp_locale'] ) ) {
+		$GLOBALS['wp_locale']->text_direction = 'rtl';
+	}
+} );
+
+/**
  * Supports du thème + emplacements de menus.
  *
  * Le menu principal est assigné à « primary » ET « mobile_menu » :
@@ -108,7 +130,7 @@ add_action( 'customize_register', function ( $wp_customize ) {
 
 	// Slogan du héros (modifiable sans toucher au code).
 	$wp_customize->add_setting( 'bf_hero_title', array(
-		'default'           => __( 'Le pantalon qui épouse vos courbes', 'boutique-femme' ),
+		'default'           => __( 'Le style masculin, sans effort', 'boutique-femme' ),
 		'sanitize_callback' => 'sanitize_text_field',
 	) );
 	$wp_customize->add_control( 'bf_hero_title', array(

@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php else : ?>
 				<?php echo bf_brand_wordmark( true ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 			<?php endif; ?>
-			<p class="bf-footer__tag"><?php esc_html_e( 'Le pantalon femme grande taille, livré chez vous, payé à la livraison — partout en Algérie.', 'boutique-femme' ); ?></p>
+			<p class="bf-footer__tag"><?php esc_html_e( 'Le vestiaire masculin, livré chez vous, payé à la livraison — partout en Algérie.', 'boutique-femme' ); ?></p>
 
 			<div class="bf-footer__social">
 				<?php

@@ -94,16 +94,67 @@ add_action( 'woocommerce_after_main_content', function () {
 	echo '</div></div>';
 }, 10 );
 
-// En-tête de boutique sur-mesure (titre + accroche) au-dessus de la grille.
+// En-tête de boutique sur-mesure (bandeau + filtres par catégorie).
 add_action( 'woocommerce_before_main_content', function () {
-	if ( is_shop() || is_product_category() || is_product_tag() ) {
-		$title = woocommerce_page_title( false );
-		echo '<header class="bf-shop-head reveal">';
-		echo '<p class="bf-eyebrow">' . esc_html__( 'Notre collection', 'boutique-femme' ) . '</p>';
-		echo '<h1 class="bf-shop-title">' . esc_html( $title ) . '</h1>';
-		echo '<p class="bf-shop-sub">' . esc_html__( 'Des coupes pensées pour les vraies silhouettes — du 42 au 56. Paiement à la livraison partout en Algérie.', 'boutique-femme' ) . '</p>';
-		echo '</header>';
+	if ( ! ( is_shop() || is_product_category() || is_product_tag() ) ) {
+		return;
 	}
+
+	$title    = woocommerce_page_title( false );
+	$shop_url = get_permalink( wc_get_page_id( 'shop' ) );
+	$current  = is_product_category() ? get_queried_object_id() : 0;
+
+	// Sous-titre : description de la catégorie si dispo, sinon accroche générique.
+	$sub = __( 'Des essentiels masculins bien coupés — t-shirts, polos, sweats et accessoires. Paiement à la livraison partout en Algérie.', 'boutique-femme' );
+	if ( is_product_category() ) {
+		$term = get_queried_object();
+		if ( $term && ! empty( $term->description ) ) {
+			$sub = wp_strip_all_tags( $term->description );
+		}
+	}
+
+	// Catégories, rangées dans l'ordre logique du rayon (sinon alphabétique).
+	$cats = get_terms( array(
+		'taxonomy'   => 'product_cat',
+		'hide_empty' => true,
+		'exclude'    => array( (int) get_option( 'default_product_cat' ) ),
+	) );
+	$rank = array( 't-shirts-polos' => 1, 'pantalons' => 2, 'sweats' => 3, 'accessoires' => 4 );
+	if ( ! is_wp_error( $cats ) ) {
+		usort( $cats, function ( $a, $b ) use ( $rank ) {
+			$ra = isset( $rank[ $a->slug ] ) ? $rank[ $a->slug ] : 99;
+			$rb = isset( $rank[ $b->slug ] ) ? $rank[ $b->slug ] : 99;
+			return ( $ra === $rb ) ? strcmp( $a->name, $b->name ) : $ra - $rb;
+		} );
+	}
+
+	echo '<header class="bf-shop-hero reveal">';
+	echo '<span class="bf-shop-hero__glow" aria-hidden="true"></span>';
+	echo '<p class="bf-eyebrow">' . esc_html__( 'Notre collection', 'boutique-femme' ) . '</p>';
+	echo '<h1 class="bf-shop-title ak-grad-text">' . esc_html( $title ) . '</h1>';
+	echo '<p class="bf-shop-sub">' . esc_html( $sub ) . '</p>';
+
+	if ( ! empty( $cats ) && ! is_wp_error( $cats ) ) {
+		echo '<nav class="bf-shop-filters" aria-label="' . esc_attr__( 'Filtrer par catégorie', 'boutique-femme' ) . '">';
+		printf(
+			'<a class="bf-chip%s" href="%s">%s</a>',
+			$current ? '' : ' is-active',
+			esc_url( $shop_url ),
+			esc_html__( 'Tout', 'boutique-femme' )
+		);
+		foreach ( $cats as $cat ) {
+			printf(
+				'<a class="bf-chip%s" href="%s">%s<span class="bf-chip__n">%d</span></a>',
+				( (int) $cat->term_id === (int) $current ) ? ' is-active' : '',
+				esc_url( get_term_link( $cat ) ),
+				esc_html( $cat->name ),
+				(int) $cat->count
+			);
+		}
+		echo '</nav>';
+	}
+
+	echo '</header>';
 }, 25 );
 
 // Supprime le titre Woo natif (remplacé par le nôtre).

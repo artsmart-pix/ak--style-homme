@@ -16,10 +16,10 @@ add_action( 'wp_enqueue_scripts', function () {
 		// déjà géré par le parent
 	}
 
-	// Police : Barlow (titres) + Inter (texte) — héritage du style du kit.
+	// Polices : Sora (titres display) + Space Grotesk (libellés) + Inter (texte).
 	wp_enqueue_style(
 		'bf-fonts',
-		'https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap',
+		'https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap',
 		array(),
 		null
 	);
@@ -32,12 +32,20 @@ add_action( 'wp_enqueue_scripts', function () {
 		BF_VERSION
 	);
 
+	// Refonte « bold & coloré · animation maximale » (couche au-dessus de main).
+	wp_enqueue_style(
+		'bf-redesign',
+		BF_URI . '/assets/css/redesign.css',
+		array( 'bf-main' ),
+		BF_VERSION
+	);
+
 	// Variante RTL (arabe).
 	if ( is_rtl() ) {
 		wp_enqueue_style(
 			'bf-rtl',
 			BF_URI . '/assets/css/rtl.css',
-			array( 'bf-main' ),
+			array( 'bf-main', 'bf-redesign' ),
 			BF_VERSION
 		);
 	}
@@ -46,6 +54,15 @@ add_action( 'wp_enqueue_scripts', function () {
 	wp_enqueue_script(
 		'bf-main',
 		BF_URI . '/assets/js/main.js',
+		array(),
+		BF_VERSION,
+		true
+	);
+
+	// Moteur d'animations « spectaculaire » (curseur, magnétique, tilt, scroll).
+	wp_enqueue_script(
+		'bf-fx',
+		BF_URI . '/assets/js/fx.js',
 		array(),
 		BF_VERSION,
 		true

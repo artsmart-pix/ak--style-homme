@@ -1,0 +1,276 @@
+{
+    "version": "0.4",
+    "title": "Mozi V1 &#8211; Slide Menu",
+    "type": "popup",
+    "metadata": {
+        "template_type": "section-popup",
+        "include_in_zip": "1",
+        "elementor_pro_required": "1",
+        "elementor_library_type": "popup",
+        "additional_template_information": [
+            "This is a \"Popup\" template for Elementor Pro."
+        ],
+        "wp_page_template": "default"
+    },
+    "content": [
+        {
+            "id": "60e3539",
+            "settings": {
+                "_ob_glider_nav_pos_y_alt": "50% - 25px",
+                "_ob_glider_nav_pos_x_prev_alt": "0%",
+                "_ob_glider_nav_pos_x_next_alt": "0%",
+                "padding": {
+                    "unit": "em",
+                    "top": "1",
+                    "right": "1",
+                    "bottom": "1",
+                    "left": "1",
+                    "isLinked": true
+                }
+            },
+            "elements": [
+                {
+                    "id": "6705ef00",
+                    "settings": {
+                        "_column_size": 100,
+                        "_inline_size": null
+                    },
+                    "elements": [
+                        {
+                            "id": "49986467",
+                            "settings": {
+                                "image": {
+                                    "url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/logo_mozi.png",
+                                    "id": 41,
+                                    "alt": "",
+                                    "source": "library"
+                                },
+                                "image_size": "custom",
+                                "image_custom_dimension": {
+                                    "width": "",
+                                    "height": "45"
+                                },
+                                "align": "left"
+                            },
+                            "elements": [],
+                            "isInner": false,
+                            "widgetType": "image",
+                            "elType": "widget"
+                        }
+                    ],
+                    "isInner": false,
+                    "elType": "column"
+                }
+            ],
+            "isInner": false,
+            "elType": "section"
+        },
+        {
+            "id": "6ded5173",
+            "settings": {
+                "_ob_glider_nav_pos_y_alt": "50% - 25px",
+                "_ob_glider_nav_pos_x_prev_alt": "0%",
+                "_ob_glider_nav_pos_x_next_alt": "0%",
+                "margin": {
+                    "unit": "em",
+                    "top": "2",
+                    "right": 0,
+                    "bottom": "0",
+                    "left": 0,
+                    "isLinked": false
+                }
+            },
+            "elements": [
+                {
+                    "id": "39f32fae",
+                    "settings": {
+                        "_column_size": 100,
+                        "_inline_size": null,
+                        "padding": {
+                            "unit": "em",
+                            "top": "1",
+                            "right": "1",
+                            "bottom": "1",
+                            "left": "1",
+                            "isLinked": true
+                        }
+                    },
+                    "elements": [
+                        {
+                            "id": "54d2a908",
+                            "settings": {
+                                "layout": "dropdown",
+                                "pointer": "none",
+                                "indicator": "angle",
+                                "dropdown": "none",
+                                "color_dropdown_item": "#FFFFFF",
+                                "background_color_dropdown_item": "#02010100",
+                                "color_dropdown_item_hover": "#EEB500",
+                                "background_color_dropdown_item_hover": "#02010100",
+                                "color_dropdown_item_active": "#EEB500",
+                                "background_color_dropdown_item_active": "#02010100",
+                                "dropdown_typography_typography": "custom",
+                                "dropdown_typography_font_family": "Heebo",
+                                "dropdown_typography_font_size": {
+                                    "unit": "px",
+                                    "size": 15,
+                                    "sizes": []
+                                },
+                                "dropdown_typography_font_size_mobile": {
+                                    "unit": "px",
+                                    "size": 14,
+                                    "sizes": []
+                                },
+                                "dropdown_typography_font_weight": "500",
+                                "padding_vertical_dropdown_item": {
+                                    "unit": "px",
+                                    "size": 16,
+                                    "sizes": []
+                                },
+                                "dropdown_divider_border": "solid",
+                                "dropdown_divider_color": "#1A1E21",
+                                "dropdown_divider_width": {
+                                    "unit": "px",
+                                    "size": 1,
+                                    "sizes": []
+                                },
+                                "__globals__": {
+                                    "dropdown_typography_typography": "globals\/typography?id=520c191",
+                                    "color_dropdown_item": "globals\/colors?id=dea41e4",
+                                    "color_dropdown_item_hover": "globals\/colors?id=a185853",
+                                    "color_dropdown_item_active": "globals\/colors?id=a185853",
+                                    "dropdown_divider_color": ""
+                                },
+                                "dropdown_typography_line_height": {
+                                    "unit": "em",
+                                    "size": "",
+                                    "sizes": []
+                                },
+                                "dropdown_typography_line_height_tablet": {
+                                    "unit": "em",
+                                    "size": "",
+                                    "sizes": []
+                                },
+                                "dropdown_typography_line_height_mobile": {
+                                    "unit": "em",
+                                    "size": "",
+                                    "sizes": []
+                                }
+                            },
+                            "elements": [],
+                            "isInner": false,
+                            "widgetType": "nav-menu",
+                            "elType": "widget"
+                        },
+                        {
+                            "id": "3135af03",
+                            "settings": {
+                                "social_icon_list": [
+                                    {
+                                        "social_icon": {
+                                            "value": "fab fa-facebook-f",
+                                            "library": "fa-brands"
+                                        },
+                                        "_id": "395f565"
+                                    },
+                                    {
+                                        "social_icon": {
+                                            "value": "icon icon-instagram-1",
+                                            "library": "ekiticons"
+                                        },
+                                        "_id": "f365427"
+                                    },
+                                    {
+                                        "social_icon": {
+                                            "value": "fab fa-twitter",
+                                            "library": "fa-brands"
+                                        },
+                                        "_id": "49c6a63"
+                                    },
+                                    {
+                                        "social_icon": {
+                                            "value": "fab fa-youtube",
+                                            "library": "fa-brands"
+                                        },
+                                        "_id": "a9257bb"
+                                    }
+                                ],
+                                "shape": "circle",
+                                "icon_color": "custom",
+                                "icon_size": {
+                                    "unit": "px",
+                                    "size": 16,
+                                    "sizes": []
+                                },
+                                "hover_animation": "pop",
+                                "__globals__": {
+                                    "icon_primary_color": "globals\/colors?id=308e809",
+                                    "icon_secondary_color": "globals\/colors?id=dea41e4",
+                                    "hover_primary_color": "globals\/colors?id=text",
+                                    "hover_secondary_color": "globals\/colors?id=a185853"
+                                }
+                            },
+                            "elements": [],
+                            "isInner": false,
+                            "widgetType": "social-icons",
+                            "elType": "widget"
+                        },
+                        {
+                            "id": "6faccf62",
+                            "settings": {
+                                "title": "Copyright \u00a9 2021 Mozi Streaming Media, All rights reserved. Present by MoxCreative.",
+                                "header_size": "span",
+                                "align": "center",
+                                "__globals__": {
+                                    "typography_typography": "globals\/typography?id=112b6c4"
+                                }
+                            },
+                            "elements": [],
+                            "isInner": false,
+                            "widgetType": "heading",
+                            "elType": "widget"
+                        }
+                    ],
+                    "isInner": false,
+                    "elType": "column"
+                }
+            ],
+            "isInner": false,
+            "elType": "section"
+        }
+    ],
+    "page_settings": {
+        "width": {
+            "unit": "px",
+            "size": 360,
+            "sizes": []
+        },
+        "height_type": "fit_to_screen",
+        "horizontal_position": "left",
+        "entrance_animation": "fadeInLeft",
+        "exit_animation": "fadeInLeft",
+        "entrance_animation_duration": {
+            "unit": "px",
+            "size": 0.59999999999999997779553950749686919152736663818359375,
+            "sizes": []
+        },
+        "eael_ext_toc_title": "Table of Contents",
+        "background_background": "classic",
+        "overlay_background_color": "#00000066",
+        "close_button_vertical": {
+            "unit": "px",
+            "size": 28,
+            "sizes": []
+        },
+        "icon_size": {
+            "unit": "px",
+            "size": 28,
+            "sizes": []
+        },
+        "__globals__": {
+            "background_color": "globals\/colors?id=91455cb",
+            "close_button_color": "globals\/colors?id=dea41e4",
+            "close_button_hover_color": "globals\/colors?id=a185853"
+        }
+    }
+}

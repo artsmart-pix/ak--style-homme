@@ -1,0 +1,361 @@
+/* =========================================================================
+   AK Style — REDESIGN « Bold & coloré · animation maximale »
+   Couche additive chargée APRÈS main.css. Recolore la palette --bf-* en
+   multicolore néon + ajoute fond mesh animé, verre dépoli, dégradés, gros
+   typographie. Repli prefers-reduced-motion en fin de fichier.
+   ========================================================================= */
+
+:root {
+	/* Accents — Bleu électrique & cyan */
+	--ak-violet: #2E6BFF;   /* bleu électrique (primaire) */
+	--ak-pink:   #18E0FF;   /* cyan (secondaire) */
+	--ak-cyan:   #18E0FF;
+	--ak-lime:   #7FE9FF;   /* ciel clair */
+	--ak-orange: #5A8CFF;   /* bleu moyen */
+	--ak-grad:      linear-gradient(120deg, #2E6BFF 0%, #18E0FF 100%);
+	--ak-grad-cool: linear-gradient(120deg, #18E0FF 0%, #2E6BFF 100%);
+	--ak-bg: #070A14;
+
+	/* Remap de la palette du thème → tout se recolore d'un coup */
+	--bf-cream:     transparent;     /* sections transparentes : le mesh transparaît */
+	--bf-nude-soft: transparent;
+	--bf-nude:      #121A34;
+	--bf-ink:       #06090F;         /* sections/footer opaques (contraste) */
+	--bf-ink-soft:  #A6B0CE;
+	--bf-terra:     #2E6BFF;         /* accent principal (liens, prix, eyebrow) */
+	--bf-terra-dk:  #18E0FF;
+	--bf-gold:      #18E0FF;         /* secondaire (étoiles, eyebrow héros) */
+	--bf-line:      rgba(255,255,255,.12);
+	--bf-text:      #EEF2FF;
+	--bf-surface:   rgba(16,22,44,.55);
+	--bf-surface-2: rgba(20,28,56,.72);
+
+	--bf-radius:    22px;
+	--bf-radius-sm: 14px;
+	--bf-head: "Sora", system-ui, sans-serif;
+	--bf-body: "Inter", system-ui, sans-serif;
+}
+
+/* ---- Fond global : mesh multicolore animé --------------------------------- */
+html, body.bf { background: var(--ak-bg); }
+body.bf { color: var(--bf-text); }
+
+body.bf::before {
+	content: ""; position: fixed; inset: -25%; z-index: -2; pointer-events: none;
+	background:
+		radial-gradient(38% 38% at 16% 20%, rgba(46,107,255,.60), transparent 60%),
+		radial-gradient(34% 34% at 84% 16%, rgba(24,224,255,.55), transparent 60%),
+		radial-gradient(42% 42% at 74% 84%, rgba(24,224,255,.42), transparent 62%),
+		radial-gradient(38% 38% at 22% 86%, rgba(90,140,255,.42), transparent 60%);
+	filter: blur(46px) saturate(125%);
+	animation: akMesh 24s ease-in-out infinite alternate;
+}
+/* Voile sombre + grain léger pour la lisibilité du texte */
+body.bf::after {
+	content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+	background: rgba(6,9,18,.62);
+}
+@keyframes akMesh {
+	0%   { transform: translate3d(0,0,0) scale(1); }
+	50%  { transform: translate3d(-4%,3%,0) scale(1.12); }
+	100% { transform: translate3d(4%,-3%,0) scale(1.06); }
+}
+
+/* ---- Barre de progression de scroll (néon) -------------------------------- */
+.ak-progress {
+	position: fixed; top: 0; inset-inline: 0; height: 3px; z-index: 999;
+	background: var(--ak-grad); transform-origin: 0 50%; transform: scaleX(0);
+	box-shadow: 0 0 16px rgba(24,224,255,.6);
+}
+
+/* ---- Curseur personnalisé ------------------------------------------------- */
+.ak-cursor, .ak-cursor-ring { position: fixed; top: 0; left: 0; z-index: 9998; pointer-events: none; border-radius: 50%; mix-blend-mode: screen; }
+.ak-cursor { width: 10px; height: 10px; background: var(--ak-pink); transform: translate(-50%,-50%); }
+.ak-cursor-ring { width: 40px; height: 40px; border: 1.6px solid rgba(255,255,255,.55); transform: translate(-50%,-50%); transition: width .22s ease, height .22s ease, border-color .22s ease, background .22s ease; }
+body.ak-cursor-hot .ak-cursor-ring { width: 64px; height: 64px; border-color: var(--ak-cyan); background: rgba(24,224,255,.10); }
+@media (hover: none) { .ak-cursor, .ak-cursor-ring { display: none; } }
+
+/* ---- Typographie : gros titres + texte dégradé ---------------------------- */
+body.bf h1, body.bf h2, body.bf h3, body.bf h4 { font-family: var(--bf-head); letter-spacing: -.03em; }
+.bf-eyebrow { color: var(--ak-pink); letter-spacing: .26em; }
+.ak-grad-text, .bf-hero h1 {
+	background: var(--ak-grad); -webkit-background-clip: text; background-clip: text;
+	-webkit-text-fill-color: transparent; color: transparent;
+}
+
+/* ---- Héros : plus grand, kinétique --------------------------------------- */
+.bf-hero h1 { font-size: clamp(3rem, 9vw, 6.4rem); font-weight: 800; line-height: .98; text-shadow: none; }
+.bf-hero .bf-eyebrow { color: var(--ak-cyan); }
+.bf-hero__sub { color: rgba(255,255,255,.9); }
+/* lavage couleur par-dessus la photo du héros */
+.bf-hero::after {
+	background:
+		linear-gradient(115deg, rgba(46,107,255,.42) 0%, rgba(24,224,255,.22) 45%, transparent 75%),
+		linear-gradient(0deg, rgba(6,9,18,.82), transparent 55%) !important;
+}
+.bf-hero__chips span {
+	background: rgba(255,255,255,.06); border: 1px solid var(--bf-line);
+	padding: .5em 1em; border-radius: 999px; backdrop-filter: blur(8px);
+}
+
+/* ---- Boutons : dégradé néon + halo --------------------------------------- */
+.bf-btn { font-family: var(--bf-head); font-weight: 700; letter-spacing: -.01em; will-change: transform; }
+.bf-btn--primary,
+.bf-hero .bf-btn--primary,
+.bf-btn--card {
+	background: var(--ak-grad); background-size: 180% 180%; color: #0A0816 !important;
+	border-color: transparent;
+	box-shadow: 0 12px 34px -10px rgba(24,224,255,.6), 0 0 0 0 rgba(46,107,255,.5);
+	animation: akBtnShift 6s ease infinite;
+}
+.bf-btn--primary:hover,
+.bf-hero .bf-btn--primary:hover,
+.bf-btn--card:hover {
+	color: #0A0816 !important; transform: translateY(-3px);
+	box-shadow: 0 18px 44px -10px rgba(24,224,255,.75), 0 0 28px -4px rgba(46,107,255,.6);
+}
+@keyframes akBtnShift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.bf-btn--ghost { color: var(--bf-text); border-color: rgba(255,255,255,.32); }
+.bf-btn--ghost:hover { background: rgba(255,255,255,.08); color: #fff; border-color: var(--ak-cyan); }
+.bf-btn--light { background: rgba(255,255,255,.95); color: #0A0816; }
+
+/* ---- En-tête : verre dépoli ---------------------------------------------- */
+.bf-header { background: rgba(8,12,26,.45) !important; backdrop-filter: saturate(160%) blur(14px); }
+.bf-header.is-scrolled { background: rgba(8,12,26,.78) !important; border-bottom-color: var(--bf-line); }
+.bf-logo-text__a { color: var(--ak-pink); }
+.bf-logo-text__a::after { background: var(--ak-grad); }
+.bf-menu a::after { background: var(--ak-grad); height: 3px; }
+
+/* ---- Sections : titres + halo + transparence ------------------------------ */
+.bf-section--cream, .bf-section--nude { background: transparent; }
+.bf-section__head h2 { font-size: clamp(2.1rem, 5.5vw, 3.4rem); font-weight: 800; }
+
+/* ---- Cartes en verre (produits, citations, formulaire, réassurance) ------- */
+.bf-reassure,
+.woocommerce ul.products li.product,
+.woocommerce-page ul.products li.product,
+.bf-quote, .bf-form {
+	background: var(--bf-surface) !important;
+	border: 1px solid var(--bf-line) !important;
+	backdrop-filter: blur(14px) saturate(130%);
+	-webkit-backdrop-filter: blur(14px) saturate(130%);
+}
+.bf-reassure { border-radius: var(--bf-radius); }
+.bf-reassure__icon, .bf-reassure-inline__i { background: var(--ak-grad); color: #0A0816; }
+
+/* Produits : survol néon + image plus haute */
+.woocommerce ul.products li.product { transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease; }
+.woocommerce ul.products li.product:hover {
+	border-color: rgba(24,224,255,.55) !important;
+	box-shadow: 0 26px 60px -28px rgba(46,107,255,.7), 0 0 0 1px rgba(24,224,255,.25);
+}
+.woocommerce ul.products li.product .woocommerce-loop-product__title { color: var(--bf-text); }
+.woocommerce ul.products li.product .price { color: var(--ak-cyan) !important; font-size: 1.12rem; }
+.woocommerce span.onsale, .bf-badge--sale { background: var(--ak-grad) !important; color: #0A0816 !important; }
+
+/* ---- Catégories : survol audacieux + cadre dégradé ------------------------ */
+.bf-cat { box-shadow: 0 20px 50px -30px rgba(0,0,0,.8); transition: transform .35s ease; }
+.bf-cat::before {
+	content: ""; position: absolute; inset: 0; z-index: 0; padding: 2px; border-radius: var(--bf-radius);
+	background: var(--ak-grad); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+	-webkit-mask-composite: xor; mask-composite: exclude; opacity: 0; transition: opacity .3s ease;
+}
+.bf-cat:hover::before { opacity: 1; }
+.bf-cat:hover { transform: translateY(-6px); }
+.bf-cat__body h3 { font-size: 1.5rem; }
+
+/* ---- Bandeau défilant (marquee) : néon ----------------------------------- */
+.bf-marquee {
+	background: linear-gradient(180deg, rgba(46,107,255,.18), rgba(8,12,26,.9)) !important;
+	border-block: 1px solid rgba(24,224,255,.35) !important; opacity: 1;
+}
+.bf-marquee__item { color: #fff; }
+.bf-marquee__item svg { color: var(--ak-cyan); background: rgba(24,224,255,.14); border-color: rgba(24,224,255,.4); }
+.bf-marquee__item::after { color: var(--ak-pink); }
+
+/* ---- Témoignages / sections sombres -------------------------------------- */
+.bf-section--ink { background: var(--bf-ink); }
+.bf-quote__stars { color: var(--ak-cyan); }
+
+/* ---- CTA : dégradé animé -------------------------------------------------- */
+.bf-cta::after {
+	background: linear-gradient(115deg, rgba(46,107,255,.85), rgba(24,224,255,.7) 50%, rgba(90,140,255,.7)) !important;
+	background-size: 200% 200%; animation: akMesh 14s ease infinite alternate;
+}
+.bf-cta h2 { font-weight: 800; }
+
+/* ---- Formulaire ---------------------------------------------------------- */
+.bf-field input, .bf-field textarea { background: rgba(8,12,26,.55); color: var(--bf-text); border-color: var(--bf-line); }
+.bf-field input:focus, .bf-field textarea:focus { border-color: var(--ak-pink); box-shadow: 0 0 0 4px rgba(24,224,255,.18); background: rgba(8,12,26,.8); }
+
+/* ---- Pied de page -------------------------------------------------------- */
+.bf-footer { background: var(--bf-ink); border-top: 2px solid transparent; border-image: var(--ak-grad) 1; }
+.bf-footer__cod-badge { background: rgba(46,107,255,.18); color: var(--ak-cyan); }
+
+/* ---- Cartes : base d'inclinaison 3D (animée par fx.js) -------------------- */
+.bf-cat, .woocommerce ul.products li.product { transform-style: preserve-3d; }
+
+/* =========================================================================
+   En-tête de Boutique — bandeau pro + filtres par catégorie
+   ========================================================================= */
+.bf-shop-hero {
+	position: relative; text-align: center;
+	max-width: 800px; margin: 0 auto clamp(2rem, 5vw, 3.2rem);
+	padding: clamp(1.5rem, 4vw, 2.4rem) 1rem 0;
+}
+.bf-shop-hero__glow {
+	position: absolute; z-index: -1; top: -40%; left: 50%; transform: translateX(-50%);
+	width: min(680px, 90%); height: 320px; pointer-events: none;
+	background: radial-gradient(50% 50% at 50% 50%, rgba(46,107,255,.35), transparent 70%),
+		radial-gradient(40% 40% at 65% 40%, rgba(24,224,255,.28), transparent 70%);
+	filter: blur(20px);
+}
+.bf-shop-hero .bf-shop-title { font-size: clamp(2.4rem, 6.5vw, 4rem); font-weight: 800; margin: .1em 0 .35em; }
+.bf-shop-hero .bf-shop-sub { color: var(--bf-ink-soft); font-size: 1.04rem; max-width: 38em; margin-inline: auto; }
+
+/* Filtres (puces) */
+.bf-shop-filters {
+	display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem;
+	margin-top: 1.8rem;
+}
+.bf-chip {
+	display: inline-flex; align-items: center; gap: .5rem;
+	font-family: var(--bf-head); font-weight: 600; font-size: .92rem;
+	color: var(--bf-text); padding: .55em 1.1em; border-radius: 999px;
+	background: var(--bf-surface); border: 1px solid var(--bf-line);
+	-webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+	transition: transform .2s ease, border-color .2s ease, color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+.bf-chip:hover { transform: translateY(-2px); border-color: var(--ak-cyan); color: #fff; }
+.bf-chip__n {
+	font-size: .74rem; font-weight: 700; line-height: 1; padding: .25em .5em;
+	border-radius: 999px; background: rgba(255,255,255,.10); color: var(--bf-text);
+}
+.bf-chip.is-active {
+	background: var(--ak-grad); color: #06121F; border-color: transparent;
+	box-shadow: 0 12px 28px -10px rgba(24,224,255,.6);
+}
+.bf-chip.is-active .bf-chip__n { background: rgba(6,18,31,.22); color: #06121F; }
+
+/* La barre de tri s'aligne proprement sous le bandeau */
+.woocommerce .woocommerce-ordering { margin-top: -.4rem; }
+
+/* =========================================================================
+   Cartes produit « affiche » — modernes & animées
+   ========================================================================= */
+/* La grille produit est en CSS grid : on neutralise le clearfix de
+   WooCommerce (::before/::after) qui, sinon, occupe de fausses cellules
+   et crée des trous dans la grille. */
+.woocommerce ul.products::before, .woocommerce ul.products::after,
+.woocommerce-page ul.products::before, .woocommerce-page ul.products::after {
+	content: none; display: none;
+}
+
+.woocommerce ul.products li.product.bf-card,
+.woocommerce-page ul.products li.product.bf-card {
+	padding: 0 !important; overflow: hidden; border-radius: var(--bf-radius);
+	display: flex; flex-direction: column;
+}
+
+/* Média en affiche */
+.bf-card__media { position: relative; aspect-ratio: 3 / 4; overflow: hidden; background: #0A1020; }
+.bf-card__link { display: block; position: absolute; inset: 0; }
+.bf-card__media img {
+	width: 100%; height: 100%; object-fit: cover; aspect-ratio: auto;
+	margin: 0; border-radius: 0; display: block;
+	transition: transform .65s cubic-bezier(.16,1,.3,1);
+}
+.bf-card:hover .bf-card__media img { transform: scale(1.07); }
+
+/* Balayage lumineux au survol */
+.bf-card__media::after {
+	content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+	background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.20) 48%, transparent 66%);
+	transform: translateX(-130%); transition: transform .75s ease;
+}
+.bf-card:hover .bf-card__media::after { transform: translateX(130%); }
+
+/* Overlay CTA « Voir le produit » */
+.bf-card__overlay {
+	position: absolute; inset: 0; z-index: 3; pointer-events: none;
+	display: flex; align-items: flex-end; justify-content: center; padding: 1.1rem;
+	background: linear-gradient(0deg, rgba(6,9,18,.85), transparent 55%);
+	opacity: 0; transition: opacity .35s ease;
+}
+.bf-card:hover .bf-card__overlay { opacity: 1; }
+.bf-card__view {
+	display: inline-flex; align-items: center; gap: .5rem;
+	font-family: var(--bf-head); font-weight: 700; font-size: .9rem; color: #06121F;
+	background: var(--ak-grad); padding: .6em 1.15em; border-radius: 999px;
+	transform: translateY(16px); transition: transform .35s cubic-bezier(.16,1,.3,1);
+	box-shadow: 0 12px 26px -8px rgba(24,224,255,.6);
+}
+.bf-card:hover .bf-card__view { transform: none; }
+.bf-card__view svg { width: 1em; height: 1em; }
+
+/* Puce catégorie + badge promo */
+.bf-card__cat {
+	position: absolute; top: .8rem; inset-inline-start: .8rem; z-index: 4;
+	font-family: var(--bf-head); font-weight: 600; font-size: .68rem;
+	letter-spacing: .12em; text-transform: uppercase; color: #fff;
+	background: rgba(8,12,26,.55); border: 1px solid var(--bf-line);
+	-webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+	padding: .35em .8em; border-radius: 999px;
+}
+.bf-card .bf-badge--sale {
+	top: .8rem; inset-inline-end: .8rem; inset-inline-start: auto; z-index: 4;
+}
+
+/* Corps */
+.bf-card__body { padding: 1.05rem 1.15rem 1.2rem; display: flex; flex-direction: column; gap: .55rem; flex: 1; }
+.bf-card__body .woocommerce-loop-product__title { padding: 0; font-family: var(--bf-head); font-weight: 700; font-size: 1.06rem; line-height: 1.25; margin: 0; }
+.bf-card__body .woocommerce-loop-product__title a { color: var(--bf-text); transition: color .25s ease; }
+.bf-card:hover .bf-card__body .woocommerce-loop-product__title a { color: var(--ak-cyan); }
+.bf-card__price { font-family: var(--bf-head); font-weight: 700; font-size: 1.18rem; color: var(--ak-cyan); }
+.bf-card__price del { color: var(--bf-ink-soft); font-weight: 400; font-size: .92rem; opacity: .7; margin-inline-end: .4rem; }
+.bf-card__price ins { text-decoration: none; }
+.bf-card__body .bf-btn--card { margin-top: auto; width: 100%; justify-content: center; }
+
+/* Apparition en cascade (gérée par fx.js) */
+.bf-card--anim { opacity: 0; transform: translateY(28px); transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+.bf-card--anim.is-in { opacity: 1; transform: none; }
+
+/* ---- Transitions entre pages --------------------------------------------- */
+.ak-svg-filters { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+.ak-transition {
+	position: fixed; inset: 0; z-index: 9997; pointer-events: none;
+	background: var(--ak-grad); background-size: 180% 180%;
+	transform: translateY(100%);
+}
+.ak-transition.is-exit {
+	transform: translateY(0);
+	transition: transform .5s cubic-bezier(.76,0,.24,1);
+}
+
+/* Entrée de page : le contenu monte en fondu (joué à chaque chargement) */
+@keyframes akPageIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+.bf-site-main { animation: akPageIn .55s cubic-bezier(.16,1,.3,1) both; }
+
+/* ---- Distorsion liquide des images au survol ----------------------------- */
+.bf-cat:hover .bf-pic,
+.bf-cat:hover .bf-pic--ph,
+.woocommerce ul.products li.product:hover a img {
+	filter: url(#ak-distort);
+}
+
+/* =========================================================================
+   Repli : accessibilité / mouvement réduit
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce) {
+	body.bf::before { animation: none; }
+	.bf-btn--primary, .bf-hero .bf-btn--primary, .bf-btn--card, .bf-cta::after { animation: none; }
+	.ak-cursor, .ak-cursor-ring, .ak-progress, .ak-transition { display: none; }
+	.bf-site-main { animation: none; }
+	.bf-cat:hover .bf-pic,
+	.bf-cat:hover .bf-pic--ph,
+	.woocommerce ul.products li.product:hover a img { filter: none; }
+	.bf-card--anim { opacity: 1; transform: none; transition: none; }
+	.bf-card__media::after { display: none; }
+	.bf-card:hover .bf-card__media img { transform: none; }
+}

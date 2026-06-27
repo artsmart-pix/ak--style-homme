@@ -1,0 +1,1247 @@
+{
+    "manifest_version": "1.0.20",
+    "title": "Mozi - template kit for movie streaming service",
+    "page_builder": "elementor",
+    "kit_version": "1.0.0",
+    "templates": [
+        {
+            "name": "Global Kit Styles",
+            "screenshot": "screenshots\/global-kit-styles.jpg",
+            "source": "templates\/global.json",
+            "preview_url": "https:\/\/demo.moxcreative.com",
+            "type": "section",
+            "category": "page",
+            "metadata": {
+                "template_type": "global-styles",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1",
+                "additional_template_information": [
+                    "These are the global theme styles configured through the Elementor Theme Styles area."
+                ]
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Movies template ( Release, Popular, Recommeded)",
+            "screenshot": "screenshots\/movies-template-release-popular-recommeded-.png",
+            "source": "templates\/movies-template-release-popular-recommeded-.json",
+            "preview_url": "https:\/\/demo.moxcreative.com\/mozi\/template-kit\/movies-template-release-popular-recommeded\/",
+            "type": "section",
+            "category": "section",
+            "metadata": {
+                "template_type": "section-other",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Help Center",
+            "screenshot": "screenshots\/help-center.jpg",
+            "source": "templates\/help-center.json",
+            "preview_url": "https:\/\/demo.moxcreative.com\/mozi\/template-kit\/help-center\/",
+            "type": "page",
+            "category": "page",
+            "metadata": {
+                "template_type": "single-page",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Mozi V1 - Footer",
+            "screenshot": "screenshots\/mozi-v1-footer.png",
+            "source": "templates\/mozi-v1-footer.json",
+            "preview_url": "https:\/\/demo.moxcreative.com\/mozi\/?elementor_library=mozi-v1-footer",
+            "type": "footer",
+            "category": "section",
+            "metadata": {
+                "template_type": "section-footer",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1",
+                "elementor_library_type": "footer",
+                "elementor_pro_conditions": [
+                    "include\/general"
+                ],
+                "additional_template_information": [
+                    "This is a \"Footer\" template for Elementor Pro.",
+                    "This template will display on: Entire Site."
+                ]
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Mozi V1 - Slide Menu",
+            "screenshot": "screenshots\/mozi-v1-slide-menu.png",
+            "source": "templates\/mozi-v1-slide-menu.json",
+            "preview_url": "https:\/\/demo.moxcreative.com\/mozi\/?elementor_library=mozi-v1-slide-menu",
+            "type": "popup",
+            "category": "section",
+            "metadata": {
+                "template_type": "section-popup",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1",
+                "elementor_library_type": "popup",
+                "additional_template_information": [
+                    "This is a \"Popup\" template for Elementor Pro."
+                ]
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Mozi V1 - Single Post",
+            "screenshot": "screenshots\/mozi-v1-single-post.jpg",
+            "source": "templates\/mozi-v1-single-post.json",
+            "preview_url": "https:\/\/demo.moxcreative.com\/mozi\/?elementor_library=mozi-v1-single-post",
+            "type": "single-post",
+            "category": "page",
+            "metadata": {
+                "template_type": "single-post",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1",
+                "elementor_library_type": "single-post",
+                "elementor_pro_conditions": [
+                    "include\/singular\/post"
+                ],
+                "additional_template_information": [
+                    "This is a \"Single Post\" template for Elementor Pro.",
+                    "This template will display on: Posts."
+                ]
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Mozi V1 - Archive Blog",
+            "screenshot": "screenshots\/mozi-v1-archive-blog.jpg",
+            "source": "templates\/mozi-v1-archive-blog.json",
+            "preview_url": "https:\/\/demo.moxcreative.com\/mozi\/?elementor_library=mozi-v1-archive-blog",
+            "type": "archive",
+            "category": "page",
+            "metadata": {
+                "template_type": "archive-blog",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1",
+                "elementor_library_type": "archive",
+                "elementor_pro_conditions": [
+                    "include\/archive"
+                ],
+                "additional_template_information": [
+                    "This is a \"Archive\" template for Elementor Pro.",
+                    "This template will display on: All Archives."
+                ]
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Mozi V1 - Error 404",
+            "screenshot": "screenshots\/mozi-v1-error-404.jpg",
+            "source": "templates\/mozi-v1-error-404.json",
+            "preview_url": "https:\/\/demo.moxcreative.com\/mozi\/?elementor_library=mozi-v1-error-404",
+            "type": "error-404",
+            "category": "page",
+            "metadata": {
+                "template_type": "single-404",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1",
+                "elementor_library_type": "error-404",
+                "elementor_pro_conditions": [
+                    "include\/singular\/not_found404"
+                ],
+                "additional_template_information": [
+                    "This is a \"Error 404\" template for Elementor Pro.",
+                    "This template will display on: 404 Page."
+                ]
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Login Page",
+            "screenshot": "screenshots\/login-page.jpg",
+            "source": "templates\/login-page.json",
+            "preview_url": "https:\/\/demo.moxcreative.com\/mozi\/template-kit\/login-page\/",
+            "type": "page",
+            "category": "page",
+            "metadata": {
+                "template_type": "single-page",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Slide Carousel Template",
+            "screenshot": "screenshots\/slide-carousel-template.png",
+            "source": "templates\/slide-carousel-template.json",
+            "preview_url": "https:\/\/demo.moxcreative.com\/mozi\/template-kit\/slide-carousel-template\/",
+            "type": "section",
+            "category": "section",
+            "metadata": {
+                "template_type": "section-other",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Contact Us",
+            "screenshot": "screenshots\/contact-us.jpg",
+            "source": "templates\/contact-us.json",
+            "preview_url": "https:\/\/demo.moxcreative.com\/mozi\/template-kit\/contact-us\/",
+            "type": "page",
+            "category": "page",
+            "metadata": {
+                "template_type": "single-page",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Pricing",
+            "screenshot": "screenshots\/pricing.jpg",
+            "source": "templates\/pricing.json",
+            "preview_url": "https:\/\/demo.moxcreative.com\/mozi\/template-kit\/pricing\/",
+            "type": "page",
+            "category": "page",
+            "metadata": {
+                "template_type": "single-page",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "About Us",
+            "screenshot": "screenshots\/about-us.jpg",
+            "source": "templates\/about-us.json",
+            "preview_url": "https:\/\/demo.moxcreative.com\/mozi\/template-kit\/about-us\/",
+            "type": "page",
+            "category": "page",
+            "metadata": {
+                "template_type": "single-page",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Team",
+            "screenshot": "screenshots\/team.jpg",
+            "source": "templates\/team.json",
+            "preview_url": "https:\/\/demo.moxcreative.com\/mozi\/template-kit\/team\/",
+            "type": "page",
+            "category": "page",
+            "metadata": {
+                "template_type": "single-page",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Single Movie",
+            "screenshot": "screenshots\/single-movie.jpg",
+            "source": "templates\/single-movie.json",
+            "preview_url": "https:\/\/demo.moxcreative.com\/mozi\/template-kit\/single-movie\/",
+            "type": "page",
+            "category": "page",
+            "metadata": {
+                "template_type": "single-page",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Movies",
+            "screenshot": "screenshots\/movies.jpg",
+            "source": "templates\/movies.json",
+            "preview_url": "https:\/\/demo.moxcreative.com\/mozi\/template-kit\/movies\/",
+            "type": "page",
+            "category": "page",
+            "metadata": {
+                "template_type": "single-page",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Homepage",
+            "screenshot": "screenshots\/homepage.jpg",
+            "source": "templates\/homepage.json",
+            "preview_url": "https:\/\/demo.moxcreative.com\/mozi\/template-kit\/homepage\/",
+            "type": "section",
+            "category": "page",
+            "metadata": {
+                "template_type": "single-home",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1"
+            },
+            "elementor_pro_required": true
+        },
+        {
+            "name": "Mozi V1 - Header",
+            "screenshot": "screenshots\/mozi-v1-header.png",
+            "source": "templates\/mozi-v1-header.json",
+            "preview_url": "https:\/\/demo.moxcreative.com\/mozi\/?elementor_library=mozi-v1-header",
+            "type": "header",
+            "category": "section",
+            "metadata": {
+                "template_type": "section-header",
+                "include_in_zip": "1",
+                "elementor_pro_required": "1",
+                "elementor_library_type": "header",
+                "elementor_pro_conditions": [
+                    "include\/general"
+                ],
+                "additional_template_information": [
+                    "This is a \"Header\" template for Elementor Pro.",
+                    "This template will display on: Entire Site."
+                ]
+            },
+            "elementor_pro_required": true
+        }
+    ],
+    "required_plugins": [
+        {
+            "name": "Prime Slider",
+            "version": "1.14.3",
+            "file": "bdthemes-prime-slider-lite\/bdthemes-prime-slider.php",
+            "author": "BdThemes"
+        },
+        {
+            "name": "ElementsKit Lite",
+            "version": "2.3.7",
+            "file": "elementskit-lite\/elementskit-lite.php",
+            "author": "Wpmet"
+        },
+        {
+            "name": "Premium Addons for Elementor",
+            "version": "4.5.6",
+            "file": "premium-addons-for-elementor\/premium-addons-for-elementor.php",
+            "author": "Leap13"
+        },
+        {
+            "name": "Essential Addons for Elementor",
+            "version": "4.9.3",
+            "file": "essential-addons-for-elementor-lite\/essential_adons_elementor.php",
+            "author": "WPDeveloper"
+        },
+        {
+            "name": "Element Pack Lite - Addon for Elementor",
+            "version": "3.2.2",
+            "file": "bdthemes-element-pack-lite\/bdthemes-element-pack-lite.php",
+            "author": "BdThemes"
+        },
+        {
+            "name": "Elementor Pro",
+            "version": "3.2.2",
+            "file": "elementor-pro\/elementor-pro.php",
+            "author": "Elementor.com"
+        }
+    ],
+    "images": [
+        {
+            "filename": "poster_18.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/poster_18.jpg",
+            "templates": [
+                {
+                    "source": "templates\/movies-template-release-popular-recommeded-.json",
+                    "name": "Movies template ( Release, Popular, Recommeded)"
+                },
+                {
+                    "source": "templates\/movies.json",
+                    "name": "Movies"
+                }
+            ],
+            "filesize": 83094,
+            "dimensions": [
+                794,
+                1123
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "poster_16.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/poster_16.jpg",
+            "templates": [
+                {
+                    "source": "templates\/movies-template-release-popular-recommeded-.json",
+                    "name": "Movies template ( Release, Popular, Recommeded)"
+                },
+                {
+                    "source": "templates\/movies.json",
+                    "name": "Movies"
+                }
+            ],
+            "filesize": 96130,
+            "dimensions": [
+                794,
+                1123
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "poster_15.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/poster_15.jpg",
+            "templates": [
+                {
+                    "source": "templates\/movies-template-release-popular-recommeded-.json",
+                    "name": "Movies template ( Release, Popular, Recommeded)"
+                },
+                {
+                    "source": "templates\/movies.json",
+                    "name": "Movies"
+                }
+            ],
+            "filesize": 53511,
+            "dimensions": [
+                794,
+                1123
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "poster_14.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/poster_14.jpg",
+            "templates": [
+                {
+                    "source": "templates\/movies-template-release-popular-recommeded-.json",
+                    "name": "Movies template ( Release, Popular, Recommeded)"
+                },
+                {
+                    "source": "templates\/movies.json",
+                    "name": "Movies"
+                }
+            ],
+            "filesize": 65446,
+            "dimensions": [
+                794,
+                1123
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "poster_11.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/poster_11.jpg",
+            "templates": [
+                {
+                    "source": "templates\/movies-template-release-popular-recommeded-.json",
+                    "name": "Movies template ( Release, Popular, Recommeded)"
+                },
+                {
+                    "source": "templates\/movies.json",
+                    "name": "Movies"
+                }
+            ],
+            "filesize": 65140,
+            "dimensions": [
+                794,
+                1123
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "poster_9.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/poster_9.jpg",
+            "templates": [
+                {
+                    "source": "templates\/movies-template-release-popular-recommeded-.json",
+                    "name": "Movies template ( Release, Popular, Recommeded)"
+                },
+                {
+                    "source": "templates\/movies.json",
+                    "name": "Movies"
+                }
+            ],
+            "filesize": 44618,
+            "dimensions": [
+                794,
+                1123
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "movie-in-bed.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/movie-in-bed-800x533.jpg",
+            "templates": [
+                {
+                    "source": "templates\/help-center.json",
+                    "name": "Help Center"
+                }
+            ],
+            "filesize": 198073,
+            "dimensions": [
+                2000,
+                1333
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/image-W8TAU2G"
+        },
+        {
+            "filename": "logo_mozi.png",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/logo_mozi.png",
+            "templates": [
+                {
+                    "source": "templates\/mozi-v1-footer.json",
+                    "name": "Mozi V1 - Footer"
+                },
+                {
+                    "source": "templates\/mozi-v1-slide-menu.json",
+                    "name": "Mozi V1 - Slide Menu"
+                },
+                {
+                    "source": "templates\/mozi-v1-header.json",
+                    "name": "Mozi V1 - Header"
+                }
+            ],
+            "filesize": 7881,
+            "dimensions": [
+                265,
+                105
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "man-choosing-movie-for-streaming-on-tablet-e1632919875893.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/man-choosing-movie-for-streaming-on-tablet-800x534.jpg",
+            "templates": [
+                {
+                    "source": "templates\/mozi-v1-single-post.json",
+                    "name": "Mozi V1 - Single Post"
+                }
+            ],
+            "filesize": 92886,
+            "dimensions": [
+                1080,
+                720
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/image-G6SPU8C"
+        },
+        {
+            "filename": "movie-streaming-app-e1632919896979.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/movie-streaming-app-800x450.jpg",
+            "templates": [
+                {
+                    "source": "templates\/mozi-v1-archive-blog.json",
+                    "name": "Mozi V1 - Archive Blog"
+                }
+            ],
+            "filesize": 118932,
+            "dimensions": [
+                1080,
+                608
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "no",
+            "image_urls": "https:\/\/elements.envato.com\/image-P6R9A68"
+        },
+        {
+            "filename": "video-movie-cinema-concept-retro-camera-clapperboard-and-director-chair-3d-e1632919914728.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/video-movie-cinema-concept-retro-camera-clapperboard-and-director-chair-3d-800x600.jpg",
+            "templates": [
+                {
+                    "source": "templates\/mozi-v1-archive-blog.json",
+                    "name": "Mozi V1 - Archive Blog"
+                }
+            ],
+            "filesize": 65590,
+            "dimensions": [
+                1080,
+                810
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "no",
+            "image_urls": "https:\/\/elements.envato.com\/image-P6VW6RV"
+        },
+        {
+            "filename": "earth-e1632919930478.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/earth-800x450.jpg",
+            "templates": [
+                {
+                    "source": "templates\/mozi-v1-error-404.json",
+                    "name": "Mozi V1 - Error 404"
+                }
+            ],
+            "filesize": 109868,
+            "dimensions": [
+                1080,
+                608
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "no",
+            "image_urls": "https:\/\/elements.envato.com\/image-UDV9Z5C"
+        },
+        {
+            "filename": "vintage-film-projector-and-film-screening-e1632919950385.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/vintage-film-projector-and-film-screening-800x396.jpg",
+            "templates": [
+                {
+                    "source": "templates\/login-page.json",
+                    "name": "Login Page"
+                },
+                {
+                    "source": "templates\/about-us.json",
+                    "name": "About Us"
+                }
+            ],
+            "filesize": 46360,
+            "dimensions": [
+                1080,
+                535
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "no",
+            "image_urls": "https:\/\/elements.envato.com\/image-VTMHG65"
+        },
+        {
+            "filename": "action-e1632919979965.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/action-800x534.jpg",
+            "templates": [
+                {
+                    "source": "templates\/slide-carousel-template.json",
+                    "name": "Slide Carousel Template"
+                }
+            ],
+            "filesize": 74095,
+            "dimensions": [
+                1080,
+                720
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/image-P5AG256"
+        },
+        {
+            "filename": "watching-movie-under-blanket-e1632919997715.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/watching-movie-under-blanket-800x533.jpg",
+            "templates": [
+                {
+                    "source": "templates\/contact-us.json",
+                    "name": "Contact Us"
+                }
+            ],
+            "filesize": 80741,
+            "dimensions": [
+                1080,
+                720
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/image-URPESNN"
+        },
+        {
+            "filename": "side-view-of-cheerful-woman-with-popcorn-watching-movie-in-cinema-e1632920021703.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/side-view-of-cheerful-woman-with-popcorn-watching-movie-in-cinema-800x534.jpg",
+            "templates": [
+                {
+                    "source": "templates\/pricing.json",
+                    "name": "Pricing"
+                }
+            ],
+            "filesize": 67582,
+            "dimensions": [
+                1080,
+                721
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/image-JSBZU78"
+        },
+        {
+            "filename": "mockup-device.png",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/mockup-device.png",
+            "templates": [
+                {
+                    "source": "templates\/pricing.json",
+                    "name": "Pricing"
+                },
+                {
+                    "source": "templates\/about-us.json",
+                    "name": "About Us"
+                },
+                {
+                    "source": "templates\/movies.json",
+                    "name": "Movies"
+                },
+                {
+                    "source": "templates\/homepage.json",
+                    "name": "Homepage"
+                }
+            ],
+            "filesize": 109667,
+            "dimensions": [
+                720,
+                500
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "no",
+            "image_urls": "https:\/\/elements.envato.com\/2019-devices-psd-mock-ups-L3VYMNY"
+        },
+        {
+            "filename": "young-woman-watching-a-movie-on-laptop-in-bed--e1632920048649.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/young-woman-watching-a-movie-on-laptop-in-bed--800x491.jpg",
+            "templates": [
+                {
+                    "source": "templates\/about-us.json",
+                    "name": "About Us"
+                },
+                {
+                    "source": "templates\/homepage.json",
+                    "name": "Homepage"
+                }
+            ],
+            "filesize": 46141,
+            "dimensions": [
+                1080,
+                663
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/image-L9E5HDG"
+        },
+        {
+            "filename": "family-movie-night-father-with-kids-watching-movie-with-popcorn-by-laptop-indoor-lifestyle-e1632920070580.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/family-movie-night-father-with-kids-watching-movie-with-popcorn-by-laptop-indoor-lifestyle-800x534.jpg",
+            "templates": [
+                {
+                    "source": "templates\/about-us.json",
+                    "name": "About Us"
+                },
+                {
+                    "source": "templates\/homepage.json",
+                    "name": "Homepage"
+                }
+            ],
+            "filesize": 92061,
+            "dimensions": [
+                1080,
+                720
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/image-6LDJYZK"
+        },
+        {
+            "filename": "group-of-friends-with-drinks-sitting-on-sofa-at-home-watching-horror-movie-together-e1632920089153.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/group-of-friends-with-drinks-sitting-on-sofa-at-home-watching-horror-movie-together-800x533.jpg",
+            "templates": [
+                {
+                    "source": "templates\/about-us.json",
+                    "name": "About Us"
+                },
+                {
+                    "source": "templates\/team.json",
+                    "name": "Team"
+                },
+                {
+                    "source": "templates\/homepage.json",
+                    "name": "Homepage"
+                }
+            ],
+            "filesize": 86574,
+            "dimensions": [
+                1080,
+                720
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/image-BCFCSUT"
+        },
+        {
+            "filename": "two-little-kids-e1632920106268.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/two-little-kids-800x533.jpg",
+            "templates": [
+                {
+                    "source": "templates\/about-us.json",
+                    "name": "About Us"
+                },
+                {
+                    "source": "templates\/homepage.json",
+                    "name": "Homepage"
+                }
+            ],
+            "filesize": 76456,
+            "dimensions": [
+                1080,
+                720
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/image-P3YVDHM"
+        },
+        {
+            "filename": "athletic-soccer-player-kicking-ball-on-soccer-pitch-e1632920128578.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/athletic-soccer-player-kicking-ball-on-soccer-pitch-800x534.jpg",
+            "templates": [
+                {
+                    "source": "templates\/about-us.json",
+                    "name": "About Us"
+                },
+                {
+                    "source": "templates\/homepage.json",
+                    "name": "Homepage"
+                }
+            ],
+            "filesize": 130356,
+            "dimensions": [
+                1080,
+                721
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/image-KSW2U85"
+        },
+        {
+            "filename": "img_9.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/img_9.jpg",
+            "templates": [
+                {
+                    "source": "templates\/team.json",
+                    "name": "Team"
+                }
+            ],
+            "filesize": 60648,
+            "dimensions": [
+                500,
+                667
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/happy-casual-man-84VL3GJ"
+        },
+        {
+            "filename": "img_6.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/img_6.jpg",
+            "templates": [
+                {
+                    "source": "templates\/team.json",
+                    "name": "Team"
+                }
+            ],
+            "filesize": 40315,
+            "dimensions": [
+                500,
+                667
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/full-length-portrait-of-a-smiling-mature-man-P8SEU5V"
+        },
+        {
+            "filename": "img_4.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/img_4.jpg",
+            "templates": [
+                {
+                    "source": "templates\/team.json",
+                    "name": "Team"
+                }
+            ],
+            "filesize": 70504,
+            "dimensions": [
+                500,
+                667
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/handsome-fit-smiling-man-with-folded-arms-EB7MJYA"
+        },
+        {
+            "filename": "img_8.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/img_8.jpg",
+            "templates": [
+                {
+                    "source": "templates\/team.json",
+                    "name": "Team"
+                }
+            ],
+            "filesize": 63416,
+            "dimensions": [
+                500,
+                667
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/portrait-of-happy-young-beautiful-asian-woman-smil-CCEMYEK"
+        },
+        {
+            "filename": "img_5.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/img_5.jpg",
+            "templates": [
+                {
+                    "source": "templates\/team.json",
+                    "name": "Team"
+                }
+            ],
+            "filesize": 40264,
+            "dimensions": [
+                500,
+                667
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/happy-african-american-man-holding-digital-tablet--YZ8RLHZ"
+        },
+        {
+            "filename": "img_3.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/img_3.jpg",
+            "templates": [
+                {
+                    "source": "templates\/team.json",
+                    "name": "Team"
+                }
+            ],
+            "filesize": 40105,
+            "dimensions": [
+                500,
+                667
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/portrait-of-happy-young-beautiful-woman-smiling-an-Y96LVYK"
+        },
+        {
+            "filename": "img_2.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/img_2.jpg",
+            "templates": [
+                {
+                    "source": "templates\/team.json",
+                    "name": "Team"
+                }
+            ],
+            "filesize": 41860,
+            "dimensions": [
+                500,
+                667
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/the-woman-wore-a-white-shirt-and-raised-her-right--4WPQHL8"
+        },
+        {
+            "filename": "img_1.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/img_1.jpg",
+            "templates": [
+                {
+                    "source": "templates\/team.json",
+                    "name": "Team"
+                }
+            ],
+            "filesize": 60175,
+            "dimensions": [
+                500,
+                667
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/smiling-young-african-woman-standing-BLXR77C"
+        },
+        {
+            "filename": "multiethnic-actors-and-actresses-rehearsing-with-theater-director-on-stage-e1632920150756.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/multiethnic-actors-and-actresses-rehearsing-with-theater-director-on-stage-800x534.jpg",
+            "templates": [
+                {
+                    "source": "templates\/team.json",
+                    "name": "Team"
+                }
+            ],
+            "filesize": 125158,
+            "dimensions": [
+                1080,
+                721
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/image-RPAX55N"
+        },
+        {
+            "filename": "close-up-view-of-popcorn-in-paper-container-and-movie-clapper-board-on-table-movie-time-concept-e1632920171858.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/close-up-view-of-popcorn-in-paper-container-and-movie-clapper-board-on-table-movie-time-concept-800x533.jpg",
+            "templates": [
+                {
+                    "source": "templates\/team.json",
+                    "name": "Team"
+                }
+            ],
+            "filesize": 161181,
+            "dimensions": [
+                1080,
+                720
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "no",
+            "image_urls": "https:\/\/elements.envato.com\/image-HDYY2S7"
+        },
+        {
+            "filename": "souls-of-victims-in-abandoned-house-at-the-night-e1632920197341.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/souls-of-victims-in-abandoned-house-at-the-night-800x605.jpg",
+            "templates": [
+                {
+                    "source": "templates\/single-movie.json",
+                    "name": "Single Movie"
+                }
+            ],
+            "filesize": 104834,
+            "dimensions": [
+                1080,
+                817
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/image-ZDSV5F9"
+        },
+        {
+            "filename": "poster_6.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/poster_6.jpg",
+            "templates": [
+                {
+                    "source": "templates\/movies.json",
+                    "name": "Movies"
+                }
+            ],
+            "filesize": 57820,
+            "dimensions": [
+                794,
+                1123
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "poster_5.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/poster_5.jpg",
+            "templates": [
+                {
+                    "source": "templates\/movies.json",
+                    "name": "Movies"
+                }
+            ],
+            "filesize": 75240,
+            "dimensions": [
+                794,
+                1123
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "poster_4.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/poster_4.jpg",
+            "templates": [
+                {
+                    "source": "templates\/movies.json",
+                    "name": "Movies"
+                }
+            ],
+            "filesize": 36097,
+            "dimensions": [
+                794,
+                1123
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "poster_2.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/poster_2.jpg",
+            "templates": [
+                {
+                    "source": "templates\/movies.json",
+                    "name": "Movies"
+                }
+            ],
+            "filesize": 46232,
+            "dimensions": [
+                794,
+                1123
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "poster_3.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/poster_3.jpg",
+            "templates": [
+                {
+                    "source": "templates\/movies.json",
+                    "name": "Movies"
+                }
+            ],
+            "filesize": 60125,
+            "dimensions": [
+                794,
+                1123
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "poster_1.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/poster_1.jpg",
+            "templates": [
+                {
+                    "source": "templates\/movies.json",
+                    "name": "Movies"
+                }
+            ],
+            "filesize": 71764,
+            "dimensions": [
+                794,
+                1123
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "poster_17.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/poster_17.jpg",
+            "templates": [
+                {
+                    "source": "templates\/movies.json",
+                    "name": "Movies"
+                }
+            ],
+            "filesize": 52848,
+            "dimensions": [
+                794,
+                1123
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "poster_13.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/poster_13.jpg",
+            "templates": [
+                {
+                    "source": "templates\/movies.json",
+                    "name": "Movies"
+                }
+            ],
+            "filesize": 84368,
+            "dimensions": [
+                794,
+                1123
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "poster_10.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/poster_10.jpg",
+            "templates": [
+                {
+                    "source": "templates\/movies.json",
+                    "name": "Movies"
+                }
+            ],
+            "filesize": 51962,
+            "dimensions": [
+                794,
+                1123
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "poster_12.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/poster_12.jpg",
+            "templates": [
+                {
+                    "source": "templates\/movies.json",
+                    "name": "Movies"
+                }
+            ],
+            "filesize": 48375,
+            "dimensions": [
+                794,
+                1123
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "poster_8.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/poster_8.jpg",
+            "templates": [
+                {
+                    "source": "templates\/movies.json",
+                    "name": "Movies"
+                }
+            ],
+            "filesize": 67197,
+            "dimensions": [
+                794,
+                1123
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "poster_7.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/poster_7.jpg",
+            "templates": [
+                {
+                    "source": "templates\/movies.json",
+                    "name": "Movies"
+                }
+            ],
+            "filesize": 86398,
+            "dimensions": [
+                794,
+                1123
+            ],
+            "image_source": "self_created",
+            "person_or_place": "no",
+            "image_urls": ""
+        },
+        {
+            "filename": "family-sitting-on-sofa-at-home-and-watching-movie-on-tv-together-e1632920216677.jpg",
+            "thumbnail_url": "https:\/\/demo.moxcreative.com\/mozi\/wp-content\/uploads\/sites\/70\/2021\/09\/family-sitting-on-sofa-at-home-and-watching-movie-on-tv-together-800x534.jpg",
+            "templates": [
+                {
+                    "source": "templates\/homepage.json",
+                    "name": "Homepage"
+                }
+            ],
+            "filesize": 115222,
+            "dimensions": [
+                1080,
+                720
+            ],
+            "image_source": "envato_elements",
+            "person_or_place": "yes",
+            "image_urls": "https:\/\/elements.envato.com\/image-LNBKVPW"
+        }
+    ]
+}

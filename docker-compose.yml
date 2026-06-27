@@ -40,7 +40,10 @@ services:
         define('WP_DEBUG_LOG', true);
         define('WP_MEMORY_LIMIT', '512M');
     volumes:
-      - ./wordpress:/var/www/html
+      # Cœur WP dans un volume Docker (ext4/WSL2) = rapide. Seul le child theme
+      # reste bind-monté depuis l'hôte pour l'édition live.
+      - wp_html:/var/www/html
+      - ./wordpress/wp-content/themes/boutique-femme-child:/var/www/html/wp-content/themes/boutique-femme-child
       - ./library:/library:ro
       - ./plugins-dev/aod-cod-form:/var/www/html/wp-content/plugins/aod-cod-form
       - ./plugins-dev/aod-client-dashboard:/var/www/html/wp-content/plugins/aod-client-dashboard
@@ -61,7 +64,8 @@ services:
       WORDPRESS_DB_USER: ${MYSQL_USER}
       WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
-      - ./wordpress:/var/www/html
+      - wp_html:/var/www/html
+      - ./wordpress/wp-content/themes/boutique-femme-child:/var/www/html/wp-content/themes/boutique-femme-child
       - ./library:/library:ro
       - ./scripts:/scripts
       - ./plugins-dev/aod-cod-form:/var/www/html/wp-content/plugins/aod-cod-form
@@ -83,3 +87,4 @@ services:
 
 volumes:
   db_data:
+  wp_html:

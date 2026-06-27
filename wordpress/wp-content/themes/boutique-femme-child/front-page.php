@@ -21,9 +21,9 @@ $shop = bf_shop_url();
 <section class="bf-hero" style="<?php echo esc_attr( bf_bg_style( 'hero' ) ); ?>">
 	<div class="bf-container">
 		<div class="bf-hero__inner reveal is-visible">
-			<p class="bf-eyebrow"><?php esc_html_e( 'Nouvelle collection — Grande taille', 'boutique-femme' ); ?></p>
-			<h1><?php echo esc_html( get_theme_mod( 'bf_hero_title', __( 'Le pantalon qui épouse vos courbes', 'boutique-femme' ) ) ); ?></h1>
-			<p class="bf-hero__sub"><?php esc_html_e( 'Des coupes pensées pour les femmes du 42 au 56. Confort, élégance et matières qui tiennent toute la journée — livrées chez vous, payées à la livraison.', 'boutique-femme' ); ?></p>
+			<p class="bf-eyebrow"><?php esc_html_e( 'Nouvelle collection — Homme', 'boutique-femme' ); ?></p>
+			<h1><?php echo esc_html( get_theme_mod( 'bf_hero_title', __( 'Le style masculin, sans effort', 'boutique-femme' ) ) ); ?></h1>
+			<p class="bf-hero__sub"><?php esc_html_e( 'Des essentiels masculins bien coupés — t-shirts, polos, sweats et accessoires. Qualité, confort et livraison partout en Algérie, payée à la réception.', 'boutique-femme' ); ?></p>
 			<div class="bf-hero__cta">
 				<a class="bf-btn bf-btn--primary" href="<?php echo esc_url( $shop ); ?>">
 					<?php esc_html_e( 'Découvrir la boutique', 'boutique-femme' ); ?> <?php echo bf_icon( 'arrow' ); // phpcs:ignore ?>
@@ -33,10 +33,12 @@ $shop = bf_shop_url();
 			<div class="bf-hero__chips">
 				<span><?php echo bf_icon( 'truck' ); // phpcs:ignore ?> <?php esc_html_e( 'Paiement à la livraison', 'boutique-femme' ); ?></span>
 				<span><?php echo bf_icon( 'pin' ); // phpcs:ignore ?> <?php esc_html_e( '58 wilayas', 'boutique-femme' ); ?></span>
-				<span><?php echo bf_icon( 'heart' ); // phpcs:ignore ?> <?php esc_html_e( 'Du 42 au 56', 'boutique-femme' ); ?></span>
+				<span><?php echo bf_icon( 'heart' ); // phpcs:ignore ?> <?php esc_html_e( 'Du S au 3XL', 'boutique-femme' ); ?></span>
 			</div>
 		</div>
 	</div>
+	<span class="bf-hero__sheen" aria-hidden="true"></span>
+	<span class="bf-hero__scroll" aria-hidden="true"></span>
 </section>
 
 <!-- ======================== RÉASSURANCE ========================= -->
@@ -59,9 +61,9 @@ $cats = get_terms( array(
 <section class="bf-section bf-section--cream">
 	<div class="bf-container">
 		<div class="bf-section__head reveal">
-			<p class="bf-eyebrow"><?php esc_html_e( 'Trouvez votre coupe', 'boutique-femme' ); ?></p>
+			<p class="bf-eyebrow"><?php esc_html_e( 'Trouvez votre style', 'boutique-femme' ); ?></p>
 			<h2><?php esc_html_e( 'Nos catégories phares', 'boutique-femme' ); ?></h2>
-			<p><?php esc_html_e( 'Taille haute, large, cargo ou tailleur — chaque morphologie a son pantalon.', 'boutique-femme' ); ?></p>
+			<p><?php esc_html_e( 'T-shirts, polos, sweats ou accessoires — tout le vestiaire masculin au même endroit.', 'boutique-femme' ); ?></p>
 		</div>
 
 		<div class="bf-cats reveal">
@@ -116,7 +118,7 @@ $cats = get_terms( array(
 		<div class="bf-section__head reveal">
 			<p class="bf-eyebrow"><?php esc_html_e( 'Coups de cœur', 'boutique-femme' ); ?></p>
 			<h2><?php esc_html_e( 'Les modèles les plus aimés', 'boutique-femme' ); ?></h2>
-			<p><?php esc_html_e( 'Sélectionnés pour leur tombé impeccable et leur confort grande taille.', 'boutique-femme' ); ?></p>
+			<p><?php esc_html_e( 'Sélectionnés pour leur style et leur confort au quotidien.', 'boutique-femme' ); ?></p>
 		</div>
 		<div class="reveal">
 			<?php
@@ -135,15 +137,15 @@ $cats = get_terms( array(
 	<div class="bf-container">
 		<div class="bf-split reveal">
 			<div class="bf-split__media">
-				<?php bf_picture( 'fit', __( 'Coupe grande taille mise en valeur', 'boutique-femme' ), array( 'ratio' => '4 / 5', 'label' => __( 'Photo lifestyle', 'boutique-femme' ) ) ); ?>
+				<?php bf_picture( 'fit', __( 'Style masculin mis en valeur', 'boutique-femme' ), array( 'ratio' => '4 / 5', 'label' => __( 'Photo lifestyle', 'boutique-femme' ) ) ); ?>
 			</div>
 			<div class="bf-split__body">
 				<p class="bf-eyebrow"><?php esc_html_e( 'Conçu pour vous', 'boutique-femme' ); ?></p>
-				<h2><?php esc_html_e( 'Une coupe qui valorise, pas qui serre', 'boutique-femme' ); ?></h2>
-				<p><?php esc_html_e( 'Fini les pantalons qui baillent à la taille ou serrent aux hanches. Nos patrons sont étudiés pour les morphologies généreuses : taille montante, hanches confortables, longueur juste.', 'boutique-femme' ); ?></p>
+				<h2><?php esc_html_e( 'Une coupe moderne, un confort toute la journée', 'boutique-femme' ); ?></h2>
+				<p><?php esc_html_e( 'Des pièces pensées pour l\'homme moderne : matières agréables, coupe nette ni trop ajustée ni trop ample, et des finitions qui durent lavage après lavage.', 'boutique-femme' ); ?></p>
 				<ul class="bf-split__list">
-					<li><span class="bf-reassure-inline__i"><?php echo bf_icon( 'check' ); // phpcs:ignore ?></span> <?php esc_html_e( 'Tailles 42 à 56, taille montante confortable', 'boutique-femme' ); ?></li>
-					<li><span class="bf-reassure-inline__i"><?php echo bf_icon( 'check' ); // phpcs:ignore ?></span> <?php esc_html_e( 'Tissus extensibles qui ne se déforment pas', 'boutique-femme' ); ?></li>
+					<li><span class="bf-reassure-inline__i"><?php echo bf_icon( 'check' ); // phpcs:ignore ?></span> <?php esc_html_e( 'Tailles S à 3XL, coupe ajustée moderne', 'boutique-femme' ); ?></li>
+					<li><span class="bf-reassure-inline__i"><?php echo bf_icon( 'check' ); // phpcs:ignore ?></span> <?php esc_html_e( 'Coton de qualité qui ne se déforme pas', 'boutique-femme' ); ?></li>
 					<li><span class="bf-reassure-inline__i"><?php echo bf_icon( 'check' ); // phpcs:ignore ?></span> <?php esc_html_e( 'Guide des tailles clair, échange facile', 'boutique-femme' ); ?></li>
 				</ul>
 				<a class="bf-btn bf-btn--primary" href="<?php echo esc_url( $shop ); ?>"><?php esc_html_e( 'Trouver ma taille', 'boutique-femme' ); ?></a>
@@ -156,26 +158,26 @@ $cats = get_terms( array(
 <section class="bf-section bf-section--ink">
 	<div class="bf-container">
 		<div class="bf-section__head reveal">
-			<p class="bf-eyebrow"><?php esc_html_e( 'Elles nous font confiance', 'boutique-femme' ); ?></p>
-			<h2><?php esc_html_e( 'Ce que disent nos clientes', 'boutique-femme' ); ?></h2>
+			<p class="bf-eyebrow"><?php esc_html_e( 'Ils nous font confiance', 'boutique-femme' ); ?></p>
+			<h2><?php esc_html_e( 'Ce que disent nos clients', 'boutique-femme' ); ?></h2>
 		</div>
 		<div class="bf-testimonials">
 			<?php
 			$quotes = array(
 				array(
-					'text'   => __( '« Enfin un pantalon à ma taille qui tombe bien ! Commande reçue en 48h et payée à la livraison, parfait. »', 'boutique-femme' ),
-					'author' => __( 'Amel', 'boutique-femme' ),
+					'text'   => __( '« Qualité au top et livraison en 48h, payée à la réception. Le t-shirt taille parfaitement, je recommande. »', 'boutique-femme' ),
+					'author' => __( 'Karim', 'boutique-femme' ),
 					'city'   => __( 'Alger', 'boutique-femme' ),
 				),
 				array(
-					'text'   => __( '« La taille haute est top, ça galbe sans serrer. Je recommande les yeux fermés. »', 'boutique-femme' ),
-					'author' => __( 'Nawel', 'boutique-femme' ),
+					'text'   => __( '« Le hoodie est exactement comme sur les photos, matière épaisse et coupe nickel. Service rapide. »', 'boutique-femme' ),
+					'author' => __( 'Yacine', 'boutique-femme' ),
 					'city'   => __( 'Oran', 'boutique-femme' ),
 				),
 				array(
-					'text'   => __( '« Livraison jusqu\'à Béjaïa, paiement à la réception. Le tissu est de qualité, je vais recommander. »', 'boutique-femme' ),
-					'author' => __( 'Sarah', 'boutique-femme' ),
-					'city'   => __( 'Béjaïa', 'boutique-femme' ),
+					'text'   => __( '« Livraison jusqu\'à Constantine, paiement à la réception. Le polo est de qualité, je vais recommander. »', 'boutique-femme' ),
+					'author' => __( 'Sofiane', 'boutique-femme' ),
+					'city'   => __( 'Constantine', 'boutique-femme' ),
 				),
 			);
 			$d = 0;
@@ -196,7 +198,7 @@ $cats = get_terms( array(
 <section class="bf-section bf-section--cream">
 	<div class="bf-container">
 		<div class="bf-cta reveal" style="<?php echo esc_attr( bf_bg_style( 'cta' ) ); ?>">
-			<h2><?php esc_html_e( 'Votre nouveau pantalon préféré vous attend', 'boutique-femme' ); ?></h2>
+			<h2><?php esc_html_e( 'Votre nouveau look vous attend', 'boutique-femme' ); ?></h2>
 			<p><?php esc_html_e( 'Commandez en 1 minute, sans compte ni carte bancaire. Vous payez à la livraison, partout en Algérie.', 'boutique-femme' ); ?></p>
 			<a class="bf-btn bf-btn--light" href="<?php echo esc_url( $shop ); ?>"><?php esc_html_e( 'Je commande maintenant', 'boutique-femme' ); ?> <?php echo bf_icon( 'arrow' ); // phpcs:ignore ?></a>
 		</div>
