@@ -19,13 +19,13 @@ msgid "Navigation"
 msgstr "التصفّح"
 
 msgid "Nous contacter"
-msgstr "اتصلي بنا"
+msgstr "اتصل بنا"
 
 msgid "Paiement à la livraison"
 msgstr "الدفع عند الاستلام"
 
 msgid "Commandez sans carte. Vous payez en espèces à la réception."
-msgstr "اطلبي دون بطاقة بنكية. تدفعين نقداً عند الاستلام."
+msgstr "اطلب دون بطاقة بنكية. تدفع نقداً عند الاستلام."
 
 msgid "Tous droits réservés."
 msgstr "جميع الحقوق محفوظة."
@@ -40,7 +40,7 @@ msgid "Des coupes pensées pour les femmes du 42 au 56. Confort, élégance et m
 msgstr "قصّات مدروسة للنساء من مقاس 42 إلى 56. راحة وأناقة وأقمشة تدوم طوال اليوم — تصلك إلى منزلك مع الدفع عند الاستلام."
 
 msgid "Découvrir la boutique"
-msgstr "اكتشفي المتجر"
+msgstr "اكتشف المتجر"
 
 msgid "Nos best-sellers"
 msgstr "الأكثر مبيعاً"
@@ -157,7 +157,7 @@ msgid "Votre nouveau pantalon préféré vous attend"
 msgstr "سروالك المفضّل الجديد بانتظارك"
 
 msgid "Commandez en 1 minute, sans compte ni carte bancaire. Vous payez à la livraison, partout en Algérie."
-msgstr "اطلبي في دقيقة واحدة، دون حساب أو بطاقة بنكية. تدفعين عند الاستلام، في كل الجزائر."
+msgstr "اطلب في دقيقة واحدة، دون حساب أو بطاقة بنكية. تدفع عند الاستلام، في كل الجزائر."
 
 msgid "Je commande maintenant"
 msgstr "أطلب الآن"
@@ -217,7 +217,7 @@ msgid "Envoi…"
 msgstr "جارٍ الإرسال…"
 
 msgid "Une erreur est survenue. Réessayez ou appelez-nous."
-msgstr "حدث خطأ. حاولي مجدداً أو اتصلي بنا."
+msgstr "حدث خطأ. حاول مجدداً أو اتصل بنا."
 
 msgid "Menu principal"
 msgstr "القائمة الرئيسية"
@@ -280,10 +280,10 @@ msgid "Promo"
 msgstr "تخفيض"
 
 msgid "Commander"
-msgstr "اطلبي الآن"
+msgstr "اطلب الآن"
 
 msgid "Contact"
-msgstr "اتصلي بنا"
+msgstr "اتصل بنا"
 
 msgid "Accueil"
 msgstr "الرئيسية"
@@ -295,7 +295,7 @@ msgid "On vous écoute"
 msgstr "نحن نصغي إليك"
 
 msgid "Une question sur une taille, une commande, une livraison ? Écrivez-nous, on répond vite."
-msgstr "سؤال عن مقاس أو طلب أو توصيل؟ راسلينا، نردّ بسرعة."
+msgstr "سؤال عن مقاس أو طلب أو توصيل؟ راسلنا، نردّ بسرعة."
 
 msgid "Nos coordonnées"
 msgstr "معلومات الاتصال"
@@ -304,7 +304,7 @@ msgid "WhatsApp"
 msgstr "واتساب"
 
 msgid "Astuce : pour commander, ajoutez l'article au formulaire sur sa fiche produit. Le paiement se fait à la livraison."
-msgstr "نصيحة: للطلب، أضيفي المنتج عبر النموذج في صفحته. يتم الدفع عند الاستلام."
+msgstr "نصيحة: للطلب، أضِف المنتج عبر النموذج في صفحته. يتم الدفع عند الاستلام."
 
 msgid "Échange facile"
 msgstr "تبديل سهل"
@@ -394,3 +394,9 @@ msgstr "التصفية حسب الفئة"
 
 msgid "Tout"
 msgstr "الكل"
+
+msgid "Le vestiaire masculin, livré chez vous, payé à la livraison — partout en Algérie."
+msgstr "خزانة الرجل، تصلك إلى باب منزلك، الدفع عند الاستلام — في كامل ولايات الجزائر."
+
+msgid "Voir le produit"
+msgstr "عرض المنتج"

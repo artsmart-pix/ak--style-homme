@@ -245,6 +245,70 @@ add_filter( 'gettext_woocommerce', function ( $translation, $text, $domain ) {
 }, 10, 3 );
 
 /* -------------------------------------------------------------------------
+ *  2ter. Traduction AR des données « contenu » : titre de la Boutique et
+ *  noms de catégories produit. Ce sont des données (titre de page + termes
+ *  de taxonomie), pas du gettext : elles ne passent pas par le .po. On les
+ *  traduit donc via une table de correspondance, uniquement en arabe et côté
+ *  public. Les libellés FR correspondent aux catégories de cette boutique ;
+ *  ajuster ici si les catégories changent.
+ * ---------------------------------------------------------------------- */
+function bf_ar_term_map() {
+	return array(
+		'Boutique'              => 'المتجر',
+		// Le nom est stocké avec l'entité HTML « &amp; » ; on couvre les deux formes.
+		'T-shirts &amp; Polos'  => 'تيشيرتات وبولو',
+		'T-shirts & Polos'      => 'تيشيرتات وبولو',
+		'Pantalons'             => 'سراويل',
+		'Sweats'           => 'سويت شيرت',
+		'Accessoires'      => 'إكسسوارات',
+	);
+}
+
+/** Vrai si l'on doit traduire en arabe (front public uniquement). */
+function bf_is_ar_front() {
+	return ! is_admin() && 0 === strpos( get_locale(), 'ar' );
+}
+
+// Titre de la Boutique (et titre d'archive de catégorie) en arabe.
+add_filter( 'woocommerce_page_title', function ( $title ) {
+	if ( ! bf_is_ar_front() ) {
+		return $title;
+	}
+	$map = bf_ar_term_map();
+	return isset( $map[ $title ] ) ? $map[ $title ] : $title;
+} );
+
+// Noms de catégories renvoyés par get_terms() (puces de la Boutique, accueil).
+add_filter( 'get_terms', function ( $terms ) {
+	if ( ! bf_is_ar_front() ) {
+		return $terms;
+	}
+	$map = bf_ar_term_map();
+	foreach ( (array) $terms as $t ) {
+		if ( is_object( $t ) && isset( $t->name, $map[ $t->name ] ) ) {
+			$t->name = $map[ $t->name ];
+		}
+	}
+	return $terms;
+}, 10, 1 );
+
+// Noms de catégories renvoyés par get_the_terms() (puce sur la carte produit).
+add_filter( 'get_the_terms', function ( $terms ) {
+	if ( ! bf_is_ar_front() ) {
+		return $terms;
+	}
+	$map = bf_ar_term_map();
+	if ( is_array( $terms ) ) {
+		foreach ( $terms as $t ) {
+			if ( is_object( $t ) && isset( $t->name, $map[ $t->name ] ) ) {
+				$t->name = $map[ $t->name ];
+			}
+		}
+	}
+	return $terms;
+}, 10, 1 );
+
+/* -------------------------------------------------------------------------
  *  3. Réassurance sous le formulaire, sur la fiche produit
  * ---------------------------------------------------------------------- */
 add_action( 'woocommerce_single_product_summary', function () {
